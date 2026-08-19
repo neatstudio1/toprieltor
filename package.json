@@ -1,0 +1,13 @@
+{
+  "name": "toprieltor",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "sync:parsed": "node scripts/sync-parsed.js",
+    "import:catalog": "node scripts/import-parsed.js",
+    "bootstrap:strapi": "node scripts/bootstrap-strapi.js",
+    "seed:content": "node scripts/seed-content.js"
+  }
+}

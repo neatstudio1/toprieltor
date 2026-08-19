@@ -1,0 +1,388 @@
+.section {
+  padding: 64px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+.title {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-size: clamp(26px, 2.6vw, 38px);
+  margin: 0;
+}
+
+.sortRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sortLabel {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.sortBtn {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.chips {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink2);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.priceInputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.priceLabel {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.priceBox {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  overflow: hidden;
+}
+
+.priceInput {
+  width: 108px;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0 12px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  color: var(--ink);
+}
+
+.priceDivider {
+  width: 1px;
+  height: 20px;
+  background: var(--line);
+}
+
+.clearBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+
+.empty {
+  border: 1px dashed var(--line);
+  border-radius: 16px;
+  padding: 60px 32px;
+  text-align: center;
+  background: var(--card);
+}
+
+.emptyTitle {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.emptyDesc {
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 22px;
+}
+
+.emptyBtn {
+  border: none;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: 150px 1fr auto;
+  gap: 28px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+  padding: 20px 24px;
+  color: var(--ink);
+}
+
+.planWrap {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+
+.body {
+  min-width: 0;
+}
+
+.aptTitle {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.meta {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 5px 10px;
+}
+
+.priceCol {
+  text-align: right;
+  font-family: var(--mono);
+  min-width: 190px;
+}
+
+.priceLabelSmall {
+  font-size: 11px;
+  color: var(--faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.priceValue {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 4px;
+}
+
+.priceRange {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.lots {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.pageNav {
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink2);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.pageNav:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.pageNumbers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pageBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink2);
+  font-family: var(--mono);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pageBtn[data-on="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 44px 0;
+  }
+
+  .head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .filterRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chips {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .priceInputs {
+    justify-content: space-between;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .priceBox {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .priceInput {
+    width: auto;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .card {
+    grid-template-columns: 96px 1fr;
+    grid-template-areas:
+      "plan body"
+      "price price";
+    gap: 14px 16px;
+    padding: 16px;
+  }
+
+  .planWrap {
+    grid-area: plan;
+    width: 96px;
+    height: 96px;
+  }
+
+  .body {
+    grid-area: body;
+  }
+
+  .aptTitle {
+    font-size: 18px;
+  }
+
+  .priceCol {
+    grid-area: price;
+    text-align: left;
+    min-width: 0;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+}

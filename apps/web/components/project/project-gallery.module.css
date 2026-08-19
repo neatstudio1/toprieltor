@@ -1,0 +1,88 @@
+.gallery {
+  padding: 22px 0 0;
+  display: grid;
+  grid-template-columns: 1fr 108px;
+  gap: 14px;
+}
+
+.main {
+  position: relative;
+  height: min(60vh, 460px);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--dark2);
+}
+
+.mainImg {
+  object-fit: cover;
+  cursor: zoom-in;
+}
+
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 16px -6px rgba(0, 0, 0, 0.4);
+}
+
+.navBtnPrev {
+  left: 16px;
+}
+
+.navBtnNext {
+  right: 16px;
+}
+
+.posBadge {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: #fff;
+  background: rgba(9, 9, 11, 0.6);
+  backdrop-filter: blur(6px);
+  padding: 7px 12px;
+  border-radius: 8px;
+}
+
+.thumbs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: min(60vh, 460px);
+  overflow-y: auto;
+}
+
+.thumb {
+  width: 100%;
+  height: 78px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex: none;
+}
+
+@media (max-width: 640px) {
+  .gallery {
+    grid-template-columns: 1fr;
+    padding: 0;
+  }
+
+  .main {
+    height: 280px;
+    border-radius: 0;
+  }
+
+  .thumbs {
+    display: none;
+  }
+}

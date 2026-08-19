@@ -1,0 +1,71 @@
+.section {
+  padding: 56px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 22px;
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.imageWrap {
+  position: relative;
+  height: min(48vh, 420px);
+  cursor: zoom-in;
+}
+
+.factsList {
+  font-family: var(--mono);
+}
+
+.factRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.factRow:last-child {
+  border-bottom: none;
+}
+
+.factLabel {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.factValue {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 40px 0;
+  }
+
+  .card {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 18px;
+  }
+
+  .imageWrap {
+    height: 260px;
+  }
+}

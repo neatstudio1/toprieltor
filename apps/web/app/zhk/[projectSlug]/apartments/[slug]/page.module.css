@@ -1,0 +1,26 @@
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.topGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 32px;
+  align-items: start;
+  padding-bottom: 56px;
+  border-bottom: 1px solid var(--line);
+}
+
+@media (max-width: 860px) {
+  .container {
+    padding: 0 18px;
+  }
+
+  .topGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-bottom: 36px;
+  }
+}

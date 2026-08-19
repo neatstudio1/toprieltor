@@ -1,0 +1,39 @@
+{
+  "kind": "collectionType",
+  "collectionName": "comments",
+  "info": {
+    "singularName": "comment",
+    "pluralName": "comments",
+    "displayName": "Комментарии к статьям",
+    "description": "Комментарии читателей под статьями блога. Новые комментарии приходят со статусом «На модерации» и не видны на сайте, пока вы не переключите статус на «Одобрен». Статус «Спам/скрыт» скрывает комментарий с сайта окончательно."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "article": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::article.article",
+      "inversedBy": "comments",
+      "description": "Статья, под которой оставлен комментарий"
+    },
+    "author_name": {
+      "type": "string",
+      "required": true,
+      "description": "Имя, указанное читателем"
+    },
+    "text": {
+      "type": "text",
+      "required": true,
+      "description": "Текст комментария"
+    },
+    "moderation_status": {
+      "type": "enumeration",
+      "enum": ["pending", "approved", "rejected"],
+      "default": "pending",
+      "description": "На модерации — виден только вам, Одобрен — виден всем на сайте, Спам/скрыт — не виден никому"
+    }
+  }
+}

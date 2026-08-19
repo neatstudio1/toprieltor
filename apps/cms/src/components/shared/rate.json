@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_shared_rates",
+  "info": {
+    "displayName": "Rate",
+    "description": "Ипотечная ставка (таб калькулятора)"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "rate": {
+      "type": "float",
+      "required": true
+    },
+    "text": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

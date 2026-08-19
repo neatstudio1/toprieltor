@@ -1,0 +1,144 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(9, 9, 11, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: var(--card);
+  border-radius: 20px;
+  padding: 36px;
+  box-shadow: 0 30px 80px -30px rgba(9, 9, 11, 0.5);
+}
+
+.closeButton {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--accent-weak);
+  color: var(--muted);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.closeButton:hover {
+  color: var(--ink);
+}
+
+.title {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  font-size: 24px;
+  margin: 0 0 8px;
+  padding-right: 30px;
+}
+
+.lead {
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0 0 24px;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink2);
+  margin-bottom: 6px;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-family: var(--sans);
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--bg);
+  transition: border-color 0.2s ease;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.errorText {
+  font-size: 13.5px;
+  color: #dc2626;
+  margin-bottom: 16px;
+}
+
+.submitButton {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 13px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15.5px;
+  cursor: pointer;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.successState {
+  text-align: center;
+  padding: 12px 0 4px;
+}
+
+.successIcon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: var(--accent-weak);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 600;
+}

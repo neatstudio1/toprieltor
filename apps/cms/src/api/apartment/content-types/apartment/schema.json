@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "apartments",
+  "info": {
+    "singularName": "apartment",
+    "pluralName": "apartments",
+    "displayName": "Квартиры",
+    "description": "Квартиры внутри ЖК. Заполняются автоматически при импорте с сайтов застройщиков (npm run import:catalog) — вручную обычно не редактируются, только для точечных правок конкретного лота."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "slug": {
+      "type": "string",
+      "required": true
+    },
+    "project": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::project.project",
+      "inversedBy": "apartments"
+    },
+    "type": {
+      "type": "string",
+      "required": true
+    },
+    "area_m2": {
+      "type": "decimal"
+    },
+    "price_from": {
+      "type": "integer"
+    },
+    "price_min": {
+      "type": "integer"
+    },
+    "price_max": {
+      "type": "integer"
+    },
+    "lots_count": {
+      "type": "integer"
+    },
+    "floors": {
+      "type": "json"
+    },
+    "finish": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "json"
+    },
+    "floor_plan_url": {
+      "type": "string"
+    },
+    "photo_urls": {
+      "type": "json"
+    },
+    "type_corrected": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

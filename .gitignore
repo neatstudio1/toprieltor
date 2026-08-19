@@ -1,0 +1,20 @@
+node_modules/
+data/parsed/
+.env
+.env.local
+.env.*.local
+
+# Next.js
+apps/web/.next/
+apps/web/out/
+
+# Strapi
+apps/cms/.tmp/
+apps/cms/dist/
+apps/cms/build/
+apps/cms/.strapi/
+apps/cms/database/
+apps/cms/.admin-credentials.local
+
+.DS_Store
+*.log

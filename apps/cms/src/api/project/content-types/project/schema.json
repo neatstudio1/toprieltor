@@ -1,0 +1,77 @@
+{
+  "kind": "collectionType",
+  "collectionName": "projects",
+  "info": {
+    "singularName": "project",
+    "pluralName": "projects",
+    "displayName": "ЖК (проекты)",
+    "description": "Жилые комплексы. Основные данные заполняются автоматически при импорте каталога. Статус «Черновик» скрывает ЖК с сайта (например, если по нему ещё нет квартир) — «Опубликовано» показывает публично."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "slug": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "developer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::developer.developer",
+      "inversedBy": "projects"
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "url": {
+      "type": "string"
+    },
+    "district": {
+      "type": "string"
+    },
+    "geo_lat": {
+      "type": "float"
+    },
+    "geo_lon": {
+      "type": "float"
+    },
+    "concept": {
+      "type": "text"
+    },
+    "advantages": {
+      "type": "json"
+    },
+    "infrastructure": {
+      "type": "json"
+    },
+    "finish_types": {
+      "type": "json"
+    },
+    "delivery_date": {
+      "type": "string"
+    },
+    "queues": {
+      "type": "component",
+      "component": "shared.queue",
+      "repeatable": true
+    },
+    "photos": {
+      "type": "json"
+    },
+    "matkapital": {
+      "type": "boolean",
+      "default": false,
+      "description": "Застройщик принимает материнский капитал — включает бейдж «Маткапитал принимается» на странице ЖК"
+    },
+    "apartments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::apartment.apartment",
+      "mappedBy": "project"
+    }
+  }
+}

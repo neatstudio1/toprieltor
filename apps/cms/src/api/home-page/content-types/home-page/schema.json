@@ -1,0 +1,67 @@
+{
+  "kind": "singleType",
+  "collectionName": "home_pages",
+  "info": {
+    "singularName": "home-page",
+    "pluralName": "home-pages",
+    "displayName": "Главная страница",
+    "description": "Тексты и блоки главной страницы сайта (заголовок, статистика, этапы работы, команда, кейсы, FAQ и т.д.). Изменения применяются на сайте в течение часа (кэш обновляется автоматически)."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "hero_eyebrow": { "type": "string", "description": "Маленькая надпись над главным заголовком (первый экран)" },
+    "hero_title": { "type": "string", "description": "Главный заголовок первого экрана" },
+    "hero_subtitle": { "type": "text", "description": "Подзаголовок под главным заголовком" },
+    "hero_stats": {
+      "type": "json",
+      "description": "Цифры статистики в блоке заголовка. Массив объектов: [{ \"value\": 60, \"suffix\": \"+\", \"label\": \"ЖК в подборке\" }]"
+    },
+    "partners_developers": { "type": "json", "description": "Список названий застройщиков-партнёров (массив строк)" },
+    "partners_materials": { "type": "json", "description": "Список названий партнёров по материалам/банкам (массив строк)" },
+    "ecosystem_eyebrow": { "type": "string", "description": "Маленькая надпись над заголовком блока «этапы работы»" },
+    "ecosystem_title": { "type": "string", "description": "Заголовок блока «этапы работы»" },
+    "ecosystem_lead": { "type": "text", "description": "Вводный текст блока «этапы работы»" },
+    "stages": {
+      "type": "json",
+      "description": "Карточки этапов работы. Массив объектов: [{ \"n\": \"01\", \"title\": \"...\", \"desc\": \"...\", \"fact\": \"...\" }]"
+    },
+    "why_free_title": { "type": "string", "description": "Заголовок блока «почему бесплатно»" },
+    "why_free_steps": {
+      "type": "json",
+      "description": "Пункты блока «почему бесплатно». Массив объектов: [{ \"n\": \"01\", \"title\": \"...\", \"desc\": \"...\" }]"
+    },
+    "how_it_works_title": { "type": "string", "description": "Заголовок блока «как это работает»" },
+    "steps": {
+      "type": "json",
+      "description": "Шаги блока «как это работает». Массив объектов: [{ \"n\": \"01\", \"tag\": \"...\", \"title\": \"...\", \"desc\": \"...\" }]"
+    },
+    "team_title": { "type": "string", "description": "Заголовок блока «команда»" },
+    "team": {
+      "type": "json",
+      "description": "Карточки сотрудников. Массив объектов: [{ \"role\": \"...\", \"name\": \"...\", \"exp\": \"...\", \"fact\": \"...\" }]"
+    },
+    "featured_project_slugs": {
+      "type": "json",
+      "description": "Slug'и (адреса) ЖК, которые показываются на главной как рекомендованные — берутся из раздела «ЖК (проекты)», поле slug. Массив строк, напр. [\"aston-dvizhenie\", \"traektoriya\"]"
+    },
+    "mortgage_title": { "type": "string", "description": "Заголовок блока с примерами ипотечных платежей" },
+    "mortgage_scenarios": {
+      "type": "json",
+      "description": "Примеры расчёта платежа. Массив объектов: [{ \"label\": \"...\", \"payment\": 45000, \"down\": \"...\", \"rate\": \"...\" }]"
+    },
+    "banks": { "type": "json", "description": "Список названий банков-партнёров (массив строк)" },
+    "cases_title": { "type": "string", "description": "Заголовок блока «кейсы клиентов»" },
+    "cases": {
+      "type": "json",
+      "description": "Карточки кейсов. Массив объектов: [{ \"tag\": \"...\", \"situation\": \"...\", \"r1label\": \"...\", \"r1\": \"...\", \"r2label\": \"...\", \"r2\": \"...\" }]"
+    },
+    "faq_title": { "type": "string", "description": "Заголовок блока «часто задаваемые вопросы»" },
+    "faq": {
+      "type": "json",
+      "description": "Вопросы и ответы FAQ. Массив объектов: [{ \"q\": \"Вопрос?\", \"a\": \"Ответ.\" }]"
+    }
+  }
+}

@@ -1,0 +1,146 @@
+.section {
+  padding: 56px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 22px;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 48px;
+  align-items: start;
+  margin-bottom: 40px;
+}
+
+.concept {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--ink2);
+  margin: 0;
+}
+
+.projectLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  padding: 18px 20px;
+  color: var(--ink);
+}
+
+.projectLinkTitle {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.projectLinkSubtitle {
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.projectLinkArrow {
+  font-family: var(--mono);
+  font-size: 20px;
+  color: var(--accent);
+}
+
+.infraEyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 18px;
+}
+
+.infraGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.infraCard {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  padding: 20px;
+}
+
+.infraCardHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.infraCardTitle {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.infraCardCount {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.infraItems {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.infraItem {
+  font-size: 13.5px;
+  color: var(--ink2);
+  line-height: 1.35;
+}
+
+.showMore {
+  margin-top: 2px;
+}
+
+.showMoreSummary {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  cursor: pointer;
+  list-style: none;
+}
+
+.showMoreSummary::-webkit-details-marker {
+  display: none;
+}
+
+.showMoreItems {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 9px;
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 40px 0;
+  }
+
+  .top {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "kind": "collectionType",
+  "collectionName": "leads",
+  "info": {
+    "singularName": "lead",
+    "pluralName": "leads",
+    "displayName": "Заявки с сайта",
+    "description": "Заявки с формы «Записаться на просмотр». Новые заявки — со статусом «Новая» — берите в работу и меняйте статус на «В работе», после звонка — на «Завершена». Явный спам можно пометить статусом «Спам»."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "description": "Имя, указанное клиентом в форме"
+    },
+    "phone": {
+      "type": "string",
+      "required": true,
+      "description": "Телефон клиента в формате +7XXXXXXXXXX"
+    },
+    "comment": {
+      "type": "text",
+      "description": "Комментарий клиента из формы (необязательное поле формы)"
+    },
+    "source_path": {
+      "type": "string",
+      "description": "Путь страницы, с которой отправлена заявка, напр. /zhk/aston-dvizhenie — так видно, какой именно объект интересует клиента"
+    },
+    "source_title": {
+      "type": "string",
+      "description": "Заголовок страницы на момент отправки заявки"
+    },
+    "lead_status": {
+      "type": "enumeration",
+      "enum": ["new", "in_progress", "done", "spam"],
+      "default": "new",
+      "description": "Статус обработки: new — новая (только пришла), in_progress — в работе, done — завершена (созвонились/встретились), spam — явный спам"
+    },
+    "lead_source": {
+      "type": "enumeration",
+      "enum": ["viewing", "quiz"],
+      "default": "viewing",
+      "description": "Откуда пришла заявка: viewing — форма «Записаться на просмотр», quiz — квиз подбора квартиры"
+    },
+    "quiz_answers": {
+      "type": "json",
+      "description": "Ответы анкеты квиза (только для заявок из квиза): цель покупки, комнатность, бюджет, маткапитал, первоначальный взнос, срок покупки"
+    }
+  }
+}

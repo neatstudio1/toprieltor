@@ -1,0 +1,163 @@
+.section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 110px 32px;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 44px;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+
+.title {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-size: clamp(30px, 3.2vw, 48px);
+  margin: 0;
+  max-width: 760px;
+}
+
+.allLink {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--card);
+  color: var(--ink);
+}
+
+.photo {
+  height: 340px;
+  overflow: hidden;
+  position: relative;
+  background: var(--dark2);
+}
+
+.badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(9, 9, 11, 0.62);
+  backdrop-filter: blur(6px);
+  padding: 7px 11px;
+  border-radius: 8px;
+}
+
+.body {
+  padding: 26px 26px 28px;
+}
+
+.head2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.name {
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.dev {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.meta {
+  font-size: 14.5px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.factsRow {
+  display: flex;
+  font-family: var(--mono);
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
+.fact {
+  flex: 1;
+}
+
+.factBordered {
+  flex: 1;
+  border-left: 1px solid var(--line);
+  padding-left: 18px;
+}
+
+.factLabel {
+  font-size: 11px;
+  color: var(--faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 5px;
+}
+
+.factValue {
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.factValueAccent {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 56px 18px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .photo {
+    height: 220px;
+  }
+
+  .name {
+    font-size: 20px;
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "kind": "singleType",
+  "collectionName": "mortgage_configs",
+  "info": {
+    "singularName": "mortgage-config",
+    "pluralName": "mortgage-configs",
+    "displayName": "Настройки ипотеки",
+    "description": "Общие для всего сайта параметры ипотечного калькулятора. Изменения сразу влияют на все расчёты платежа на сайте — редактировать аккуратно."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "rates": {
+      "type": "component",
+      "component": "shared.rate",
+      "repeatable": true,
+      "description": "Ипотечные программы и ставки — вкладки в калькуляторе на сайте (например «Льготная», «Военная», «Рыночная»)"
+    },
+    "matkap_sum_default": {
+      "type": "decimal",
+      "default": 963243,
+      "description": "Первая сумма материнского капитала, которую может выбрать пользователь в калькуляторе"
+    },
+    "matkap_sum_family": {
+      "type": "decimal",
+      "default": 728921.9,
+      "description": "Вторая сумма материнского капитала (например, для семей с несколькими детьми) — выбор рядом с первой суммой в калькуляторе"
+    },
+    "loan_term_years": {
+      "type": "integer",
+      "default": 20,
+      "description": "Срок ипотеки в годах, используется во всех расчётах платежа на сайте"
+    },
+    "down_min": {
+      "type": "integer",
+      "default": 0,
+      "description": "Минимальное значение ползунка первоначального взноса в калькуляторе"
+    },
+    "down_max": {
+      "type": "integer",
+      "default": 2500000,
+      "description": "Максимальное значение ползунка первоначального взноса в калькуляторе"
+    },
+    "down_step": {
+      "type": "integer",
+      "default": 50000,
+      "description": "Шаг ползунка первоначального взноса в калькуляторе"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_shared_queues",
+  "info": {
+    "displayName": "Queue",
+    "description": "Очередь строительства ЖК"
+  },
+  "options": {},
+  "attributes": {
+    "number": {
+      "type": "integer",
+      "required": true
+    },
+    "building": {
+      "type": "string"
+    },
+    "delivery": {
+      "type": "string"
+    }
+  }
+}
