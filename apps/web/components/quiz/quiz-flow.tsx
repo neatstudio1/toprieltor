@@ -126,6 +126,7 @@ export function QuizFlow({ config }: { config: MortgageConfig }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [website, setWebsite] = useState("");
+  const [consent, setConsent] = useState(false);
   const [done, setDone] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -173,7 +174,7 @@ export function QuizFlow({ config }: { config: MortgageConfig }) {
   }
 
   async function submit() {
-    if (!name.trim() || phone.trim().length < 4) return;
+    if (!name.trim() || phone.trim().length < 4 || !consent) return;
     setSubmitStatus("submitting");
     setErrorMessage("");
     const result = await submitLead({
@@ -201,11 +202,12 @@ export function QuizFlow({ config }: { config: MortgageConfig }) {
     setBudget(6_000_000);
     setName("");
     setPhone("");
+    setConsent(false);
     setDone(false);
     setSubmitStatus("idle");
   }
 
-  const nameReady = name.trim().length > 0 && phone.trim().length >= 4;
+  const nameReady = name.trim().length > 0 && phone.trim().length >= 4 && consent;
   const summary = [
     { k: "Цель", v: answers.goal || "—" },
     { k: "Комнат", v: answers.rooms || "—" },
@@ -342,6 +344,20 @@ export function QuizFlow({ config }: { config: MortgageConfig }) {
                   aria-hidden="true"
                 />
               </div>
+              <label className={styles.consentRow}>
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  className={styles.consentCheckbox}
+                />
+                <span>
+                  Согласен(на) с{" "}
+                  <Link href="/privacy" target="_blank" className={styles.consentLink}>
+                    политикой конфиденциальности и обработки персональных данных
+                  </Link>
+                </span>
+              </label>
               {submitStatus === "error" ? <div className={styles.errorText}>{errorMessage}</div> : null}
               <button
                 type="button"
@@ -352,9 +368,6 @@ export function QuizFlow({ config }: { config: MortgageConfig }) {
               >
                 {submitStatus === "submitting" ? "Отправляем…" : "Получить подборку"}
               </button>
-              <p className={styles.legalNote}>
-                Нажимая кнопку, вы соглашаетесь на обработку данных. Мы не передаём контакты третьим лицам.
-              </p>
             </div>
           ) : null}
 

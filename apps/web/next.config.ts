@@ -13,6 +13,7 @@ const DEVELOPER_IMAGE_HOSTS = [
   "api.atomstroy.net",
   "cdn.brusnika.ru",
   "www.scm-d.ru",
+  "images.unsplash.com",
 ];
 
 const nextConfig: NextConfig = {

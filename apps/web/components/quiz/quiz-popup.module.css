@@ -372,6 +372,31 @@
   margin-top: 10px;
 }
 
+.consentRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.consentCheckbox {
+  margin-top: 2px;
+  width: 15px;
+  height: 15px;
+  flex: none;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.consentLink {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
 .doneWrap {
   animation: qpIn 0.35s ease both;
   text-align: center;

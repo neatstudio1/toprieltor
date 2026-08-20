@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { submitLead } from "@/lib/cms/leads";
 import styles from "./lead-modal.module.css";
 
@@ -27,6 +28,7 @@ export function LeadModal({ onClose }: { onClose: () => void }) {
   const [phone, setPhone] = useState("");
   const [comment, setComment] = useState("");
   const [website, setWebsite] = useState("");
+  const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -46,7 +48,7 @@ export function LeadModal({ onClose }: { onClose: () => void }) {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (status === "submitting") return;
+    if (status === "submitting" || !consent) return;
     setStatus("submitting");
     setErrorMessage("");
 
@@ -158,12 +160,28 @@ export function LeadModal({ onClose }: { onClose: () => void }) {
               aria-hidden="true"
             />
 
+            <label className={styles.consentRow}>
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+                required
+                className={styles.consentCheckbox}
+              />
+              <span>
+                Согласен(на) с{" "}
+                <Link href="/privacy" target="_blank" className={styles.consentLink}>
+                  политикой конфиденциальности и обработки персональных данных
+                </Link>
+              </span>
+            </label>
+
             {status === "error" ? <div className={styles.errorText}>{errorMessage}</div> : null}
 
             <button
               type="submit"
               className={`tpl-btn-prim ${styles.submitButton}`}
-              disabled={status === "submitting"}
+              disabled={status === "submitting" || !consent}
             >
               {status === "submitting" ? "Отправляем…" : "Отправить заявку"}
             </button>

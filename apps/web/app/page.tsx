@@ -15,7 +15,6 @@ import { PartnersSection } from "@/components/home/partners-section";
 import { EcosystemSection } from "@/components/home/ecosystem-section";
 import { WhyFreeFlow } from "@/components/home/why-free-flow";
 import { HowItWorksSection } from "@/components/home/how-it-works-section";
-import { TeamSection } from "@/components/home/team-section";
 import { PopularZhkSection, type PopularZhkCard } from "@/components/home/popular-zhk-section";
 import { MortgageSection } from "@/components/home/mortgage-section";
 import { BanksSection } from "@/components/home/banks-section";
@@ -89,7 +88,6 @@ export default async function HomePage() {
       />
       <WhyFreeFlow eyebrow="Прозрачная модель" title={home.why_free_title} steps={home.why_free_steps} />
       <HowItWorksSection title={home.how_it_works_title} steps={home.steps} />
-      <TeamSection title={home.team_title} team={home.team} />
       <PopularZhkSection
         title="Новостройки, которые чаще всего выбирают через наш квиз"
         cards={popularCards}

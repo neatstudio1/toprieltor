@@ -337,6 +337,31 @@
   line-height: 1.5;
 }
 
+.consentRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.consentCheckbox {
+  margin-top: 2px;
+  width: 17px;
+  height: 17px;
+  flex: none;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.consentLink {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
 .doneIcon {
   width: 64px;
   height: 64px;

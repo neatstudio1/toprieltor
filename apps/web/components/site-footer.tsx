@@ -33,9 +33,6 @@ export function SiteFooter() {
             <Link href="/blog" className={styles.columnLink}>
               Блог
             </Link>
-            <Link href="/#team" className={styles.columnLink}>
-              Эксперты
-            </Link>
           </div>
           <div className={styles.column}>
             <div className={styles.columnLabel}>Контакты</div>
@@ -49,7 +46,12 @@ export function SiteFooter() {
         </div>
       </div>
       <div className={styles.bottomBar}>
-        <div className={styles.bottomInner}>© TOPиелтор 2026</div>
+        <div className={styles.bottomInner}>
+          <span>© TOPиелтор 2026</span>
+          <Link href="/privacy" className={styles.columnLink}>
+            Политика конфиденциальности
+          </Link>
+        </div>
       </div>
     </footer>
   );

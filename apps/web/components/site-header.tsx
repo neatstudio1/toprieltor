@@ -59,9 +59,6 @@ export function SiteHeader({ active, cta = "quiz" }: SiteHeaderProps) {
           >
             Блог
           </Link>
-          <Link data-navlink="" href="/#team">
-            Эксперты
-          </Link>
         </nav>
         <div className={styles.actions}>
           <a href={TELEGRAM_URL} className={styles.telegramLink}>
@@ -108,9 +105,6 @@ export function SiteHeader({ active, cta = "quiz" }: SiteHeaderProps) {
       </Link>
       <Link data-navlink="" href="/blog" className={styles.menuLink} onClick={() => setMenuOpen(false)}>
         Блог
-      </Link>
-      <Link data-navlink="" href="/#team" className={styles.menuLink} onClick={() => setMenuOpen(false)}>
-        Эксперты
       </Link>
       {cta === "viewing" ? (
         <ViewingCtaButton className={`tpl-btn-prim ${styles.menuCta}`} onClick={() => setMenuOpen(false)} />

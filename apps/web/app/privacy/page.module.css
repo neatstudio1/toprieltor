@@ -1,0 +1,37 @@
+.head {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 32px 0;
+}
+
+.title {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  font-size: clamp(30px, 3.4vw, 48px);
+  margin: 0 0 12px;
+}
+
+.updated {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 26px;
+}
+
+.body {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 32px 96px;
+}
+
+@media (max-width: 640px) {
+  .head {
+    padding: 26px 18px 0;
+  }
+
+  .body {
+    padding: 28px 18px 56px;
+  }
+}
