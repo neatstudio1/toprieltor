@@ -1,0 +1,681 @@
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+
+.section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 104px 32px;
+}
+
+.sectionTight {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 56px 32px 104px;
+}
+
+.sectionTitle {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  font-size: clamp(28px, 3vw, 44px);
+  margin: 0 0 40px;
+  max-width: 720px;
+}
+
+/* calculator layout (mortgage + yield) */
+
+.calcGrid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.calcCard {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--card);
+  padding: 34px 34px 38px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.fieldRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+
+.fieldLabel {
+  font-size: 15px;
+  color: var(--ink2);
+  font-weight: 500;
+}
+
+.fieldValue {
+  font-family: var(--mono);
+  font-size: 17px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.range {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--line);
+  outline: none;
+}
+
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 10px -2px rgba(79, 70, 229, 0.7);
+}
+
+.range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 3px solid #fff;
+}
+
+.presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.chip {
+  height: 34px;
+  padding: 0 15px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink2);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.chip:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.chipOn,
+.chipOn:hover {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+.calcResult {
+  border: 1px solid var(--dark-line);
+  border-radius: 18px;
+  background: var(--dark);
+  color: var(--dark-text);
+  padding: 34px;
+}
+
+.resultKicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #818cf8;
+  margin-bottom: 16px;
+}
+
+.resultBig {
+  font-family: var(--mono);
+  font-size: 44px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 30px;
+}
+
+.resultRows {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--dark-line);
+  border: 1px solid var(--dark-line);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 26px;
+}
+
+.resultRow {
+  background: var(--dark2);
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.resultRow span:first-child {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--dark-muted);
+}
+
+.resultCta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  border-radius: 13px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 15.5px;
+  margin-bottom: 16px;
+}
+
+.resultNote {
+  font-size: 12px;
+  line-height: 1.55;
+  color: #52525b;
+  margin: 0;
+}
+
+.yieldSplit {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.yieldSplitLabel {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 8px;
+}
+
+.yieldSplitValue {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* legal checklist */
+
+.checklistGrid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.checklistList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.checklistItem {
+  background: var(--card);
+  padding: 26px 24px 28px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.checkIcon {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--accent-weak);
+  display: grid;
+  place-items: center;
+}
+
+.checklistTitle {
+  font-size: 16.5px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin-bottom: 6px;
+}
+
+.checklistDesc {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.darkCard {
+  border: 1px solid var(--dark-line);
+  border-radius: 18px;
+  background: var(--dark);
+  color: var(--dark-text);
+  padding: 34px;
+}
+
+.darkKicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #818cf8;
+  margin-bottom: 18px;
+}
+
+.darkTitle {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin-bottom: 14px;
+}
+
+.darkText {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--dark-muted);
+  margin: 0 0 26px;
+}
+
+.darkRows {
+  font-family: var(--mono);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-top: 1px solid var(--dark-line);
+  padding-top: 20px;
+  margin-bottom: 26px;
+}
+
+.darkRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+}
+
+.darkRow span:first-child {
+  color: var(--dark-muted);
+}
+
+.darkRowAccent {
+  color: #818cf8;
+}
+
+.darkCta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  border-radius: 13px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 15.5px;
+}
+
+/* defects */
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.defectsCard {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--card);
+  overflow: hidden;
+}
+
+.defectsHead {
+  padding: 26px 26px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.defectsKicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 10px;
+}
+
+.defectsTitle {
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.defectRow {
+  padding: 17px 26px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.defectN {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--faint);
+  min-width: 26px;
+}
+
+.defectTitle {
+  flex: 1;
+  font-size: 15.5px;
+  color: var(--ink2);
+}
+
+.defectFreq {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.defectsFoot {
+  padding: 20px 26px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* design styles */
+
+.stylesHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.stylesNote {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--muted);
+  max-width: 260px;
+  line-height: 1.6;
+}
+
+.stylesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.styleCard {
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--card);
+  font-family: var(--sans);
+}
+
+.styleCardOn {
+  border-color: var(--accent);
+  box-shadow: 0 18px 54px -30px rgba(79, 70, 229, 0.5);
+}
+
+.stylePhoto {
+  height: 190px;
+  background: var(--dark2);
+  position: relative;
+}
+
+.styleDot {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: grid;
+  place-items: center;
+}
+
+.styleBody {
+  padding: 20px 20px 24px;
+}
+
+.styleName {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 7px;
+  color: var(--ink);
+}
+
+.styleDesc {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.stylePrice {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--accent);
+  border-top: 1px solid var(--line);
+  padding-top: 13px;
+}
+
+/* before / after */
+
+.baTabs {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.baCard {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--card);
+}
+
+.baPhoto {
+  position: relative;
+  height: 520px;
+  background: var(--dark2);
+}
+
+.baLayer {
+  position: absolute;
+  inset: 0;
+}
+
+.baLayerClip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.baDivider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #fff;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.baLabelLeft,
+.baLabelRight {
+  position: absolute;
+  top: 18px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
+  padding: 7px 11px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.baLabelLeft {
+  left: 18px;
+  color: #fff;
+  background: rgba(9, 9, 11, 0.62);
+}
+
+.baLabelRight {
+  right: 18px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.baRange {
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  bottom: 22px;
+  width: 94%;
+  background: rgba(255, 255, 255, 0.35);
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 99px;
+  outline: none;
+}
+
+.baRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 10px -2px rgba(79, 70, 229, 0.7);
+}
+
+.baFoot {
+  padding: 24px 26px 28px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--line);
+}
+
+.baFootBody {
+  max-width: 560px;
+}
+
+.baFootTitle {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.baFootDesc {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.baFootFact {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--accent);
+  white-space: nowrap;
+  align-self: center;
+}
+
+/* responsive */
+
+@media (max-width: 1024px) {
+  .calcGrid,
+  .checklistGrid,
+  .twoCol {
+    grid-template-columns: 1fr;
+  }
+
+  .checklistList {
+    grid-template-columns: 1fr;
+  }
+
+  .stylesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .section,
+  .sectionTight {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .calcCard,
+  .calcResult,
+  .darkCard {
+    padding: 24px 20px;
+  }
+
+  .baPhoto {
+    height: 340px;
+  }
+
+  .stylesGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -15,6 +15,18 @@ export function formatRubPrecise(value: number): string {
   return kopecks > 0 ? `${rublesStr},${String(kopecks).padStart(2, "0")}` : rublesStr;
 }
 
+const ROOM_TYPE_ORDER = ["студия", "1к", "2к", "3к", "4к", "5к"];
+
+export function roomTypesText(types: string[]): string {
+  const unique = Array.from(new Set(types));
+  unique.sort((a, b) => {
+    const ai = ROOM_TYPE_ORDER.indexOf(a);
+    const bi = ROOM_TYPE_ORDER.indexOf(b);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+  return unique.join(", ") || "уточняется";
+}
+
 export function pluralizeRu(
   n: number,
   one: string,

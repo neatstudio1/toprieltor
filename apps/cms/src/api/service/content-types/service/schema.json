@@ -1,0 +1,76 @@
+{
+  "kind": "collectionType",
+  "collectionName": "services",
+  "info": {
+    "singularName": "service",
+    "pluralName": "services",
+    "displayName": "Услуги",
+    "description": "Карточки услуг для страницы «Услуги» (ипотека, юрпроверка, приёмка, ремонт, аренда). Виджет-калькулятор под услугой выбирается полем «block»."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "slug": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "tab_label": {
+      "type": "string",
+      "required": true,
+      "description": "Подпись на переключателе услуг, напр. «Ипотека»"
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "sort_order": {
+      "type": "integer",
+      "default": 0,
+      "description": "Порядок вкладок слева направо"
+    },
+    "block": {
+      "type": "enumeration",
+      "enum": ["calc", "checklist", "priemka", "remont", "yield"],
+      "required": true,
+      "description": "Какой уникальный виджет показать: calc — ипотечный калькулятор, checklist — чек-лист юрпроверки, priemka — до/после + дефекты приёмки, remont — до/после + стили дизайна, yield — калькулятор доходности аренды"
+    },
+    "kicker": { "type": "string" },
+    "h1": { "type": "string", "required": true },
+    "pitch": { "type": "text" },
+    "hero_stats": {
+      "type": "json",
+      "description": "Массив объектов: [{ \"v\": 25, \"suffix\": \"+\", \"text\": \"25+\", \"label\": \"банков-партнёров\" }]"
+    },
+    "how_title": { "type": "string" },
+    "how_lead": { "type": "text" },
+    "how_badge": { "type": "string" },
+    "steps": {
+      "type": "json",
+      "description": "Шаги «как это работает». Массив объектов: [{ \"n\": \"01\", \"title\": \"...\", \"desc\": \"...\", \"fact\": \"...\" }]"
+    },
+    "trust_kicker": { "type": "string" },
+    "trust_title": { "type": "string" },
+    "trust_note": { "type": "string" },
+    "trust_items": {
+      "type": "json",
+      "description": "Массив объектов: [{ \"v\": \"25+\", \"label\": \"...\" }]"
+    },
+    "ba_kicker": { "type": "string", "description": "Только для block=priemka/remont" },
+    "ba_title": { "type": "string", "description": "Только для block=priemka/remont" },
+    "faq_title": { "type": "string" },
+    "faq": {
+      "type": "json",
+      "description": "Массив объектов: [{ \"q\": \"...\", \"a\": \"...\" }]"
+    },
+    "catalog_title": { "type": "string" },
+    "featured_project_slugs": {
+      "type": "json",
+      "description": "Slug'и ЖК для витрины под услугой (обычно 3). Массив строк."
+    },
+    "cta_title": { "type": "string" },
+    "cta_text": { "type": "text" }
+  }
+}

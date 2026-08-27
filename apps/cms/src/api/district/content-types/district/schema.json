@@ -1,0 +1,87 @@
+{
+  "kind": "collectionType",
+  "collectionName": "districts",
+  "info": {
+    "singularName": "district",
+    "pluralName": "districts",
+    "displayName": "Районы",
+    "description": "Гиды по районам Екатеринбурга для страницы «Район». ЖК подтягиваются автоматически по совпадению с полем «Район» у ЖК — здесь только текст и цифры."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "slug": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "description": "Название района — должно совпадать с полем «Район» у ЖК, чтобы каталог подтягивался автоматически, напр. «Академический»"
+    },
+    "tab_label": {
+      "type": "string",
+      "description": "Короткая подпись на переключателе районов, если отличается от названия"
+    },
+    "lead": {
+      "type": "text"
+    },
+    "traits": {
+      "type": "json",
+      "description": "Строки-характеристики под заголовком. Массив объектов: [{ \"k\": \"Кому подходит\", \"v\": \"...\" }]"
+    },
+    "hero_photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "hero_caption": {
+      "type": "string"
+    },
+    "stats": {
+      "type": "json",
+      "description": "Крупные цифры блока. Массив объектов: [{ \"label\": \"ЖК в продаже\", \"v\": \"14\", \"note\": \"...\" }]"
+    },
+    "jk_title": {
+      "type": "string",
+      "description": "Заголовок блока «Новостройки района»"
+    },
+    "infra_title": {
+      "type": "string"
+    },
+    "infra_note": {
+      "type": "string"
+    },
+    "infra": {
+      "type": "json",
+      "description": "Карточки инфраструктуры. Массив объектов: [{ \"icon\": \"school\", \"count\": \"6\", \"title\": \"Школ\", \"desc\": \"...\" }]. Допустимые icon: school, kinder, park, transport, mall, clinic, sport"
+    },
+    "transport": {
+      "type": "text"
+    },
+    "routes": {
+      "type": "json",
+      "description": "Строки транспорта. Массив объектов: [{ \"k\": \"Трамвай до центра\", \"v\": \"12 мин\" }]"
+    },
+    "ecology": {
+      "type": "text"
+    },
+    "eco": {
+      "type": "json",
+      "description": "Строки экологии. Массив объектов: [{ \"k\": \"Лесопарк\", \"v\": \"0,8 км\" }]"
+    },
+    "faq_title": {
+      "type": "string"
+    },
+    "faq": {
+      "type": "json",
+      "description": "Массив объектов: [{ \"q\": \"...\", \"a\": \"...\" }]"
+    },
+    "cta_title": {
+      "type": "string"
+    }
+  }
+}

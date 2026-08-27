@@ -8,7 +8,7 @@ import styles from "./site-header.module.css";
 const TELEGRAM_URL = "https://t.me/Yana_Chekulova";
 
 export interface SiteHeaderProps {
-  active?: "catalog" | "blog";
+  active?: "catalog" | "blog" | "services" | "districts" | "developers";
   cta?: "quiz" | "viewing";
 }
 
@@ -51,6 +51,27 @@ export function SiteHeader({ active, cta = "quiz" }: SiteHeaderProps) {
           </Link>
           <Link data-navlink="" href="/#calc">
             Калькулятор
+          </Link>
+          <Link
+            data-navlink=""
+            href="/uslugi"
+            style={active === "services" ? { color: "var(--ink)" } : undefined}
+          >
+            Услуги
+          </Link>
+          <Link
+            data-navlink=""
+            href="/rayon"
+            style={active === "districts" ? { color: "var(--ink)" } : undefined}
+          >
+            Районы
+          </Link>
+          <Link
+            data-navlink=""
+            href="/zastroyshchik"
+            style={active === "developers" ? { color: "var(--ink)" } : undefined}
+          >
+            Застройщики
           </Link>
           <Link
             data-navlink=""
@@ -102,6 +123,15 @@ export function SiteHeader({ active, cta = "quiz" }: SiteHeaderProps) {
       </Link>
       <Link data-navlink="" href="/#calc" className={styles.menuLink} onClick={() => setMenuOpen(false)}>
         Калькулятор
+      </Link>
+      <Link data-navlink="" href="/uslugi" className={styles.menuLink} onClick={() => setMenuOpen(false)}>
+        Услуги
+      </Link>
+      <Link data-navlink="" href="/rayon" className={styles.menuLink} onClick={() => setMenuOpen(false)}>
+        Районы
+      </Link>
+      <Link data-navlink="" href="/zastroyshchik" className={styles.menuLink} onClick={() => setMenuOpen(false)}>
+        Застройщики
       </Link>
       <Link data-navlink="" href="/blog" className={styles.menuLink} onClick={() => setMenuOpen(false)}>
         Блог

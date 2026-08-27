@@ -586,9 +586,16 @@ export interface ApiDeveloperDeveloper extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    city: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    cta_title: Schema.Attribute.String;
+    dossier: Schema.Attribute.JSON;
+    faq: Schema.Attribute.JSON;
+    faq_title: Schema.Attribute.String;
+    is_partner: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    lead: Schema.Attribute.Text;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -597,12 +604,63 @@ export interface ApiDeveloperDeveloper extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     logo: Schema.Attribute.Media<'images'>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    note: Schema.Attribute.Text;
     projects: Schema.Attribute.Relation<'oneToMany', 'api::project.project'>;
     publishedAt: Schema.Attribute.DateTime;
     site_url: Schema.Attribute.String;
     slug: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
+    stats: Schema.Attribute.JSON;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiDistrictDistrict extends Struct.CollectionTypeSchema {
+  collectionName: 'districts';
+  info: {
+    description: '\u0413\u0438\u0434\u044B \u043F\u043E \u0440\u0430\u0439\u043E\u043D\u0430\u043C \u0415\u043A\u0430\u0442\u0435\u0440\u0438\u043D\u0431\u0443\u0440\u0433\u0430 \u0434\u043B\u044F \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u00AB\u0420\u0430\u0439\u043E\u043D\u00BB. \u0416\u041A \u043F\u043E\u0434\u0442\u044F\u0433\u0438\u0432\u0430\u044E\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u043F\u043E \u0441\u043E\u0432\u043F\u0430\u0434\u0435\u043D\u0438\u044E \u0441 \u043F\u043E\u043B\u0435\u043C \u00AB\u0420\u0430\u0439\u043E\u043D\u00BB \u0443 \u0416\u041A \u2014 \u0437\u0434\u0435\u0441\u044C \u0442\u043E\u043B\u044C\u043A\u043E \u0442\u0435\u043A\u0441\u0442 \u0438 \u0446\u0438\u0444\u0440\u044B.';
+    displayName: '\u0420\u0430\u0439\u043E\u043D\u044B';
+    pluralName: 'districts';
+    singularName: 'district';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    cta_title: Schema.Attribute.String;
+    eco: Schema.Attribute.JSON;
+    ecology: Schema.Attribute.Text;
+    faq: Schema.Attribute.JSON;
+    faq_title: Schema.Attribute.String;
+    hero_caption: Schema.Attribute.String;
+    hero_photo: Schema.Attribute.Media<'images'>;
+    infra: Schema.Attribute.JSON;
+    infra_note: Schema.Attribute.String;
+    infra_title: Schema.Attribute.String;
+    jk_title: Schema.Attribute.String;
+    lead: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::district.district'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    routes: Schema.Attribute.JSON;
+    slug: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    stats: Schema.Attribute.JSON;
+    tab_label: Schema.Attribute.String;
+    traits: Schema.Attribute.JSON;
+    transport: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -785,6 +843,64 @@ export interface ApiProjectProject extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     url: Schema.Attribute.String;
+  };
+}
+
+export interface ApiServiceService extends Struct.CollectionTypeSchema {
+  collectionName: 'services';
+  info: {
+    description: '\u041A\u0430\u0440\u0442\u043E\u0447\u043A\u0438 \u0443\u0441\u043B\u0443\u0433 \u0434\u043B\u044F \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u00AB\u0423\u0441\u043B\u0443\u0433\u0438\u00BB (\u0438\u043F\u043E\u0442\u0435\u043A\u0430, \u044E\u0440\u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0430, \u043F\u0440\u0438\u0451\u043C\u043A\u0430, \u0440\u0435\u043C\u043E\u043D\u0442, \u0430\u0440\u0435\u043D\u0434\u0430). \u0412\u0438\u0434\u0436\u0435\u0442-\u043A\u0430\u043B\u044C\u043A\u0443\u043B\u044F\u0442\u043E\u0440 \u043F\u043E\u0434 \u0443\u0441\u043B\u0443\u0433\u043E\u0439 \u0432\u044B\u0431\u0438\u0440\u0430\u0435\u0442\u0441\u044F \u043F\u043E\u043B\u0435\u043C \u00ABblock\u00BB.';
+    displayName: '\u0423\u0441\u043B\u0443\u0433\u0438';
+    pluralName: 'services';
+    singularName: 'service';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    ba_kicker: Schema.Attribute.String;
+    ba_title: Schema.Attribute.String;
+    block: Schema.Attribute.Enumeration<
+      ['calc', 'checklist', 'priemka', 'remont', 'yield']
+    > &
+      Schema.Attribute.Required;
+    catalog_title: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    cta_text: Schema.Attribute.Text;
+    cta_title: Schema.Attribute.String;
+    faq: Schema.Attribute.JSON;
+    faq_title: Schema.Attribute.String;
+    featured_project_slugs: Schema.Attribute.JSON;
+    h1: Schema.Attribute.String & Schema.Attribute.Required;
+    hero_stats: Schema.Attribute.JSON;
+    how_badge: Schema.Attribute.String;
+    how_lead: Schema.Attribute.Text;
+    how_title: Schema.Attribute.String;
+    kicker: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::service.service'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    pitch: Schema.Attribute.Text;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    sort_order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    steps: Schema.Attribute.JSON;
+    tab_label: Schema.Attribute.String & Schema.Attribute.Required;
+    trust_items: Schema.Attribute.JSON;
+    trust_kicker: Schema.Attribute.String;
+    trust_note: Schema.Attribute.String;
+    trust_title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1303,10 +1419,12 @@ declare module '@strapi/strapi' {
       'api::article.article': ApiArticleArticle;
       'api::comment.comment': ApiCommentComment;
       'api::developer.developer': ApiDeveloperDeveloper;
+      'api::district.district': ApiDistrictDistrict;
       'api::home-page.home-page': ApiHomePageHomePage;
       'api::lead.lead': ApiLeadLead;
       'api::mortgage-config.mortgage-config': ApiMortgageConfigMortgageConfig;
       'api::project.project': ApiProjectProject;
+      'api::service.service': ApiServiceService;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

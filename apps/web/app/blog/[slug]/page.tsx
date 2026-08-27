@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAllArticleSlugs, getArticleBySlug, getArticles, strapiMediaUrl } from "@/lib/cms/client";
+import { getAllArticleSlugs, getArticleBySlug, getArticles, pickRelatedArticles, strapiMediaUrl } from "@/lib/cms/client";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ArticleCover } from "@/components/blog/article-cover";
@@ -52,7 +52,8 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
   if (!article) notFound();
 
   const all = await getArticles();
-  const related = all.filter((a) => a.slug !== slug).slice(0, 3);
+  const keywords = [...(article.category?.split("·") ?? []), ...(article.tags ?? [])].map((k) => k.trim());
+  const related = pickRelatedArticles(all, keywords, 3, slug);
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)" }}>

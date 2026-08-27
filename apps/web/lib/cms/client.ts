@@ -13,12 +13,121 @@ export interface Rate {
   text: string;
 }
 
+export interface KeyValue {
+  k: string;
+  v: string;
+}
+
+export interface StatItem {
+  v: string;
+  label: string;
+}
+
 export interface Developer {
   id: number;
   documentId: string;
   slug: string;
   name: string;
   site_url: string | null;
+  logo: StrapiMedia | null;
+  is_partner: boolean | null;
+  city: string | null;
+  lead: string | null;
+  dossier: KeyValue[] | null;
+  note: string | null;
+  stats: StatItem[] | null;
+  faq_title: string | null;
+  faq: FaqItem[] | null;
+  cta_title: string | null;
+  projects?: Project[];
+}
+
+export interface DistrictStat {
+  label: string;
+  v: string;
+  note: string;
+}
+
+export interface InfraCard {
+  icon: string;
+  count: string;
+  title: string;
+  desc: string;
+}
+
+export interface District {
+  id: number;
+  documentId: string;
+  slug: string;
+  name: string;
+  tab_label: string | null;
+  lead: string | null;
+  traits: KeyValue[] | null;
+  hero_photo: StrapiMedia | null;
+  hero_caption: string | null;
+  stats: DistrictStat[] | null;
+  jk_title: string | null;
+  infra_title: string | null;
+  infra_note: string | null;
+  infra: InfraCard[] | null;
+  transport: string | null;
+  routes: KeyValue[] | null;
+  ecology: string | null;
+  eco: KeyValue[] | null;
+  faq_title: string | null;
+  faq: FaqItem[] | null;
+  cta_title: string | null;
+}
+
+export interface ServiceHeroStat {
+  v: number;
+  suffix: string;
+  text: string;
+  label: string;
+}
+
+export interface ServiceStep {
+  n: string;
+  title: string;
+  desc: string;
+  fact: string;
+}
+
+export interface ServiceTrustItem {
+  v: string;
+  label: string;
+}
+
+export type ServiceBlock = "calc" | "checklist" | "priemka" | "remont" | "yield";
+
+export interface Service {
+  id: number;
+  documentId: string;
+  slug: string;
+  tab_label: string;
+  name: string;
+  sort_order: number;
+  block: ServiceBlock;
+  kicker: string | null;
+  h1: string;
+  pitch: string | null;
+  hero_stats: ServiceHeroStat[] | null;
+  how_title: string | null;
+  how_lead: string | null;
+  how_badge: string | null;
+  steps: ServiceStep[] | null;
+  trust_kicker: string | null;
+  trust_title: string | null;
+  trust_note: string | null;
+  trust_items: ServiceTrustItem[] | null;
+  ba_kicker: string | null;
+  ba_title: string | null;
+  faq_title: string | null;
+  faq: FaqItem[] | null;
+  catalog_title: string | null;
+  featured_project_slugs: string[] | null;
+  cta_title: string | null;
+  cta_text: string | null;
 }
 
 export interface Project {
@@ -487,4 +596,93 @@ export async function getAllArticleSlugs(): Promise<string[]> {
     `/articles?${qs.toString()}`,
   );
   return body.data.map((a) => a.slug);
+}
+
+// ───────────────────────── developer page ─────────────────────────
+
+/** Only developers with page content filled in (lead != null) show up in the «Застройщик» switcher. */
+export async function getEnrichedDevelopers(): Promise<Developer[]> {
+  const qs = new URLSearchParams();
+  qs.set("filters[lead][$notNull]", "true");
+  qs.set("populate[logo]", "true");
+  qs.set("populate[projects][fields][0]", "slug");
+  const body = await strapiGet<StrapiListResponse<Developer>>(`/developers?${qs.toString()}`);
+  return body.data;
+}
+
+export async function getDeveloperBySlug(slug: string): Promise<Developer | null> {
+  const qs = new URLSearchParams();
+  qs.set("filters[slug][$eq]", slug);
+  qs.set("populate[logo]", "true");
+  qs.set("populate[projects][fields][0]", "slug");
+  const body = await strapiGet<StrapiListResponse<Developer>>(`/developers?${qs.toString()}`);
+  return body.data[0] ?? null;
+}
+
+// ───────────────────────── district page ─────────────────────────
+
+export async function getDistricts(): Promise<District[]> {
+  const body = await strapiGet<StrapiListResponse<District>>("/districts?populate=hero_photo&sort=name:asc");
+  return body.data;
+}
+
+export async function getDistrictBySlug(slug: string): Promise<District | null> {
+  const qs = new URLSearchParams();
+  qs.set("filters[slug][$eq]", slug);
+  qs.set("populate", "hero_photo");
+  const body = await strapiGet<StrapiListResponse<District>>(`/districts?${qs.toString()}`);
+  return body.data[0] ?? null;
+}
+
+// ───────────────────────── service page ─────────────────────────
+
+export async function getServices(): Promise<Service[]> {
+  const body = await strapiGet<StrapiListResponse<Service>>("/services?sort=sort_order:asc&pagination[limit]=20");
+  return body.data;
+}
+
+export async function getServiceBySlug(slug: string): Promise<Service | null> {
+  const qs = new URLSearchParams();
+  qs.set("filters[slug][$eq]", slug);
+  const body = await strapiGet<StrapiListResponse<Service>>(`/services?${qs.toString()}`);
+  return body.data[0] ?? null;
+}
+
+// ───────────────────────── shared jk showcase ─────────────────────────
+
+export function pickCatalogCardsBySlug(cards: CatalogCard[], slugs: string[]): CatalogCard[] {
+  const bySlug = new Map(cards.map((c) => [c.slug, c] as const));
+  return slugs.map((s) => bySlug.get(s)).filter((c): c is CatalogCard => Boolean(c));
+}
+
+export function catalogCardsInDistrict(cards: CatalogCard[], keyword: string): CatalogCard[] {
+  const needle = keyword.toLowerCase();
+  return cards.filter((c) => (c.district ?? "").toLowerCase().includes(needle));
+}
+
+// ───────────────────────── related articles ─────────────────────────
+
+/**
+ * Ranks articles by how many of `keywords` appear in their category/tags/title,
+ * so "read next" blocks on service/district/developer/article pages point to
+ * topically relevant posts instead of just the newest ones. Falls back to
+ * recency (articles are pre-sorted by published_date:desc) when nothing matches.
+ */
+export function pickRelatedArticles(
+  articles: Article[],
+  keywords: string[],
+  limit = 3,
+  excludeSlug?: string,
+): Article[] {
+  const needles = keywords.map((k) => k.toLowerCase()).filter(Boolean);
+  const pool = excludeSlug ? articles.filter((a) => a.slug !== excludeSlug) : articles;
+  if (!needles.length) return pool.slice(0, limit);
+
+  const scored = pool.map((a) => {
+    const haystack = `${a.category ?? ""} ${(a.tags ?? []).join(" ")} ${a.title}`.toLowerCase();
+    const score = needles.reduce((n, k) => n + (haystack.includes(k) ? 1 : 0), 0);
+    return { a, score };
+  });
+  scored.sort((x, y) => y.score - x.score);
+  return scored.slice(0, limit).map((s) => s.a);
 }

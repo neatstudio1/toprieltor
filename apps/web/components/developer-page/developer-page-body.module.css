@@ -1,0 +1,504 @@
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* hero */
+
+.hero {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 26px 32px 0;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--faint);
+  margin-bottom: 34px;
+}
+
+.breadcrumbs a {
+  color: var(--faint);
+}
+
+.breadcrumbCurrent {
+  color: var(--ink2);
+}
+
+.heroBanner {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 28px;
+  background: var(--dark2);
+}
+
+.heroTop {
+  display: flex;
+  align-items: flex-start;
+  gap: 26px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  width: 96px;
+  height: 96px;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--card);
+  position: relative;
+}
+
+.heroMain {
+  flex: 1;
+  min-width: 320px;
+}
+
+.heroTopRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.partnerBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 99px;
+  background: var(--accent-weak);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.partnerDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.title {
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  font-size: clamp(38px, 4.4vw, 62px);
+  margin: 0 0 18px;
+}
+
+.lead {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 720px;
+  margin: 0;
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.dossier {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.dossierRow {
+  background: var(--card);
+  padding: 20px 22px;
+  display: flex;
+  gap: 22px;
+  align-items: baseline;
+}
+
+.dossierK {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  min-width: 150px;
+}
+
+.dossierV {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink2);
+  flex: 1;
+}
+
+.noteCard {
+  border: 1px solid var(--dark-line);
+  border-radius: 16px;
+  background: var(--dark);
+  color: var(--dark-text);
+  padding: 30px 28px;
+}
+
+.noteKicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #818cf8;
+  margin-bottom: 18px;
+}
+
+.noteText {
+  font-size: 15.5px;
+  line-height: 1.6;
+  margin: 0 0 22px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--dark-line);
+  border: 1px solid var(--dark-line);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.statCell {
+  background: var(--dark2);
+  padding: 18px 16px;
+}
+
+.statValue {
+  font-family: var(--mono);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 7px;
+}
+
+.statLabel {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--dark-muted);
+}
+
+.noteCta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  border-radius: 13px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 15.5px;
+}
+
+/* section shared */
+
+.sectionHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+
+.sectionTitle {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  font-size: clamp(26px, 2.8vw, 42px);
+  margin: 16px 0 0;
+  max-width: 720px;
+}
+
+.sectionNote {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--muted);
+  max-width: 280px;
+  line-height: 1.6;
+}
+
+.allLink {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* terms */
+
+.termsSection {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 96px 32px 0;
+}
+
+.termsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.termCard {
+  background: var(--card);
+  padding: 28px 24px 32px;
+}
+
+.termIcon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--accent-weak);
+  margin-bottom: 18px;
+}
+
+.termTitle {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.termDesc {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* jk */
+
+.jkSection {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 96px 32px;
+}
+
+/* faq */
+
+.faqSection {
+  background: var(--card);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.faqInner {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 100px 32px;
+}
+
+.faqTitle {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-size: clamp(28px, 3.2vw, 46px);
+  margin: 18px 0 40px;
+}
+
+.faqList {
+  border-top: 1px solid var(--line);
+}
+
+.faqItem {
+  border-bottom: 1px solid var(--line);
+}
+
+.faqSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 4px;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  list-style: none;
+  cursor: pointer;
+}
+
+.faqSummary::-webkit-details-marker {
+  display: none;
+}
+
+.faqPlus {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.faqItem[open] .faqPlus {
+  transform: rotate(45deg);
+}
+
+.faqPlusH,
+.faqPlusV {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: var(--ink2);
+  transform: translateY(-50%);
+}
+
+.faqPlusV {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  right: auto;
+  width: 1.5px;
+  height: auto;
+  transform: translateX(-50%);
+}
+
+.faqAnswer {
+  padding: 0 4px 26px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 720px;
+}
+
+/* final cta */
+
+.finalCta {
+  background: var(--dark);
+  color: var(--dark-text);
+}
+
+.finalCtaInner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 120px 32px;
+  text-align: center;
+}
+
+.finalCtaEyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #818cf8;
+  margin-bottom: 26px;
+}
+
+.finalCtaTitle {
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  font-size: clamp(38px, 5.4vw, 76px);
+  margin: 0 0 24px;
+}
+
+.finalCtaLead {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--dark-muted);
+  max-width: 620px;
+  margin: 0 auto 40px;
+}
+
+.finalCtaActions {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.finalCtaBtn {
+  display: inline-flex;
+  align-items: center;
+  height: 60px;
+  padding: 0 40px;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.finalCtaTg {
+  font-size: 15px;
+  color: var(--dark-muted);
+}
+
+/* responsive */
+
+@media (max-width: 1024px) {
+  .heroGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .termsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero,
+  .termsSection,
+  .jkSection {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .faqInner {
+    padding: 56px 18px;
+  }
+
+  .finalCtaInner {
+    padding: 72px 18px;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .dossierRow {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dossierK {
+    min-width: 0;
+  }
+}

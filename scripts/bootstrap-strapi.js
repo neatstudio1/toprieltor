@@ -25,7 +25,9 @@ const COLLECTION_TYPES = [
   'api::developer.developer',
   'api::project.project',
   'api::apartment.apartment',
-  'api::article.article'
+  'api::article.article',
+  'api::district.district',
+  'api::service.service'
 ]
 const SINGLE_TYPES = ['api::mortgage-config.mortgage-config', 'api::home-page.home-page']
 const CONTENT_TYPES = [...COLLECTION_TYPES, ...SINGLE_TYPES]
