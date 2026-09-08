@@ -383,6 +383,89 @@ export async function getAllApartmentRouteParams(): Promise<
   return params;
 }
 
+// ───────────────── apartment indexing (SEO) ─────────────────
+
+export interface ApartmentBrief {
+  slug: string;
+  type: string;
+  area_m2: number;
+  price_from: number;
+}
+
+/**
+ * Every apartment of one project, minimal fields. One cached request per
+ * project — used to decide which apartment pages stay indexable.
+ */
+export async function getProjectApartmentsBrief(
+  projectSlug: string,
+): Promise<ApartmentBrief[]> {
+  const qs = new URLSearchParams();
+  qs.set("filters[project][slug][$eq]", projectSlug);
+  qs.set("fields[0]", "slug");
+  qs.set("fields[1]", "type");
+  qs.set("fields[2]", "area_m2");
+  qs.set("fields[3]", "price_from");
+  qs.set("pagination[pageSize]", "500");
+  const body = await strapiGet<StrapiListResponse<ApartmentBrief>>(
+    `/apartments?${qs.toString()}`,
+  );
+  return body.data;
+}
+
+/**
+ * One representative apartment per room type — the cheapest, then the smallest,
+ * then alphabetically first. The site has ~2700 near-identical apartment pages
+ * on a young domain, which burns crawl budget and gets them dropped as thin
+ * duplicates; keeping one per type per project preserves "студия в ЖК Х"-style
+ * queries while cutting the indexable set by ~93%.
+ *
+ * The ordering is deterministic on purpose: the same apartments must stay
+ * indexed between builds, otherwise the indexed set churns on every deploy.
+ */
+export function pickRepresentativeSlugs(apartments: ApartmentBrief[]): Set<string> {
+  const bestByType = new Map<string, ApartmentBrief>();
+
+  for (const apt of apartments) {
+    const current = bestByType.get(apt.type);
+    if (!current || isBetterRepresentative(apt, current)) {
+      bestByType.set(apt.type, apt);
+    }
+  }
+
+  return new Set(Array.from(bestByType.values(), (apt) => apt.slug));
+}
+
+function isBetterRepresentative(candidate: ApartmentBrief, current: ApartmentBrief): boolean {
+  // price_from/area_m2 are 0 on listings where the source site published no
+  // value — treat those as "unknown" so they never win over a real number.
+  const candidatePrice = candidate.price_from || Infinity;
+  const currentPrice = current.price_from || Infinity;
+  if (candidatePrice !== currentPrice) return candidatePrice < currentPrice;
+
+  const candidateArea = candidate.area_m2 || Infinity;
+  const currentArea = current.area_m2 || Infinity;
+  if (candidateArea !== currentArea) return candidateArea < currentArea;
+
+  return candidate.slug < current.slug;
+}
+
+/** Route params for the apartment pages that stay in the sitemap and the index. */
+export async function getIndexableApartmentRouteParams(): Promise<
+  ApartmentRouteParams[]
+> {
+  const projectSlugs = await getAllProjectSlugs();
+  const params: ApartmentRouteParams[] = [];
+
+  for (const projectSlug of projectSlugs) {
+    const apartments = await getProjectApartmentsBrief(projectSlug);
+    for (const slug of pickRepresentativeSlugs(apartments)) {
+      params.push({ projectSlug, slug });
+    }
+  }
+
+  return params;
+}
+
 async function fetchAllPages<T>(
   path: string,
   buildQuery: (page: number) => URLSearchParams,

@@ -4,7 +4,9 @@ import {
   getAllApartmentRouteParams,
   getApartmentBySlug,
   getMortgageConfig,
+  getProjectApartmentsBrief,
   getSimilarApartments,
+  pickRepresentativeSlugs,
 } from "@/lib/cms/client";
 import { formatRub } from "@/lib/format";
 import { SiteHeader } from "@/components/site-header";
@@ -59,12 +61,21 @@ export async function generateMetadata({
   const description = `${typeShort(apartment.type)}, ${areaLabel} м² в ЖК «${apartment.project!.name}» (${apartment.project!.district}). Цена от ${formatRub(apartment.price_from)} ₽. Подбор и сопровождение сделки бесплатно.`;
   const photo = apartment.photo_urls?.[0];
 
-  return pageMetadata({
-    title,
-    description,
-    path: `/zhk/${resolved.projectSlug}/apartments/${resolved.slug}`,
-    image: photo,
-  });
+  // Only one apartment per room type stays indexable — the rest are near-identical
+  // and were being dropped by Google as thin duplicates anyway (see
+  // pickRepresentativeSlugs). `follow` keeps link equity flowing to the ЖК page.
+  const siblings = await getProjectApartmentsBrief(resolved.projectSlug);
+  const isIndexable = pickRepresentativeSlugs(siblings).has(resolved.slug);
+
+  return {
+    ...pageMetadata({
+      title,
+      description,
+      path: `/zhk/${resolved.projectSlug}/apartments/${resolved.slug}`,
+      image: photo,
+    }),
+    ...(isIndexable ? {} : { robots: { index: false, follow: true } }),
+  };
 }
 
 export default async function ApartmentPage({
