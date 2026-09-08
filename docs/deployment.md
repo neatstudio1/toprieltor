@@ -293,6 +293,30 @@ certbot --nginx -d toprieltor.ru -d www.toprieltor.ru -d cms.toprieltor.ru
 
 Certbot сам пропишет HTTPS-редиректы в конфиг и настроит автопродление сертификата.
 
+### 6.2. Обязательно: редирект www → без www
+
+Certbot оставляет `www` и основной домен в одном `server`-блоке, и оба отвечают `200`. Google это переваривает по `rel="canonical"`, а Яндекс считает их **разными зеркалами** и не может выбрать главное — сайт может месяцами висеть без индексации. Уберите `www` из основного блока (`server_name toprieltor.ru;`) и добавьте отдельный:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name www.toprieltor.ru;
+
+    ssl_certificate /etc/letsencrypt/live/toprieltor.ru/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/toprieltor.ru/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    return 301 https://toprieltor.ru$request_uri;
+}
+```
+
+Проверка — `https://www.<домен>/` должен отдавать `301` на версию без `www`, а не `200`:
+
+```bash
+curl -s -o /dev/null -w "%{http_code} %{redirect_url}\n" https://www.toprieltor.ru/
+```
+
 ## 7. Обновление сайта после первого деплоя
 
 Скрипт `deploy.sh` в корне репозитория для последующих обновлений:
