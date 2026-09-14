@@ -10,7 +10,9 @@ import { ViewTracker } from "@/components/blog/view-tracker";
 import { CommentSection } from "@/components/blog/comment-section";
 import { pageMetadata } from "@/lib/site";
 import { JsonLd } from "@/components/json-ld";
-import { articleSchema, breadcrumbListSchema } from "@/lib/json-ld";
+import { articleSchema, breadcrumbListSchema, faqPageSchema } from "@/lib/json-ld";
+import { extractFaqFromMarkdown } from "@/lib/article-faq";
+import { matchServiceForArticle } from "@/lib/article-service";
 import styles from "./page.module.css";
 
 export const revalidate = 3600;
@@ -54,6 +56,8 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
   const all = await getArticles();
   const keywords = [...(article.category?.split("·") ?? []), ...(article.tags ?? [])].map((k) => k.trim());
   const related = pickRelatedArticles(all, keywords, 3, slug);
+  const faq = extractFaqFromMarkdown(article.content);
+  const service = matchServiceForArticle(article);
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
@@ -65,6 +69,7 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
         ])}
       />
       <JsonLd data={articleSchema(article, `/blog/${slug}`)} />
+      {faq.length ? <JsonLd data={faqPageSchema(faq)} /> : null}
       <SiteHeader active="blog" cta="quiz" />
 
       <article>
@@ -113,13 +118,27 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
 
         <div className={styles.inlineCtaWrap}>
           <div className={styles.inlineCta}>
-            <div>
-              <div className={styles.inlineCtaTitle}>Посчитаем ваш платёж бесплатно</div>
-              <div className={styles.inlineCtaLead}>Без давления. Ответим в Telegram.</div>
-            </div>
-            <Link href="/quiz" className={`tpl-btn-prim ${styles.inlineCtaBtn}`}>
-              Пройти квиз
-            </Link>
+            {service ? (
+              <>
+                <div>
+                  <div className={styles.inlineCtaTitle}>{service.title}</div>
+                  <div className={styles.inlineCtaLead}>{service.cta}</div>
+                </div>
+                <Link href={`/uslugi/${service.slug}`} className={`tpl-btn-prim ${styles.inlineCtaBtn}`}>
+                  Подробнее об услуге
+                </Link>
+              </>
+            ) : (
+              <>
+                <div>
+                  <div className={styles.inlineCtaTitle}>Посчитаем ваш платёж бесплатно</div>
+                  <div className={styles.inlineCtaLead}>Без давления. Ответим в Telegram.</div>
+                </div>
+                <Link href="/quiz" className={`tpl-btn-prim ${styles.inlineCtaBtn}`}>
+                  Пройти квиз
+                </Link>
+              </>
+            )}
           </div>
         </div>
 

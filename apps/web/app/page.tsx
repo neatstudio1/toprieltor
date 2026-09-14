@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import {
+  getArticles,
   getCheapestApartmentByProjectSlug,
   getHomePage,
   getProjectsBySlugsMap,
 } from "@/lib/cms/client";
+import { RelatedPosts } from "@/components/blog/related-posts";
 import { formatRub } from "@/lib/format";
 import { pageMetadata } from "@/lib/site";
 import { JsonLd } from "@/components/json-ld";
@@ -67,6 +69,9 @@ export default async function HomePage() {
     home.mortgage_scenarios[0]?.rate ?? "",
   );
   const popularCards = await buildPopularZhkCards(home.featured_project_slugs, minRate);
+  // Articles are what actually rank for long-tail queries — link them from the
+  // strongest page on the site instead of leaving them reachable only via /blog.
+  const latestArticles = (await getArticles()).slice(0, 3);
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
@@ -95,6 +100,11 @@ export default async function HomePage() {
       <MortgageSection title={home.mortgage_title} scenarios={home.mortgage_scenarios} />
       <BanksSection banks={home.banks} />
       <CasesSection title={home.cases_title} cases={home.cases} />
+      <RelatedPosts
+        eyebrow="Блог"
+        title="Разбираем покупку новостройки по шагам"
+        posts={latestArticles}
+      />
       <FaqSection title={home.faq_title} faq={home.faq} />
       <FinalCtaSection />
       <SiteFooter />
