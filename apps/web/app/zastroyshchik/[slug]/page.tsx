@@ -6,7 +6,6 @@ import {
   getDeveloperBySlug,
   getEnrichedDevelopers,
   getMortgageConfig,
-  pickRelatedArticles,
 } from "@/lib/cms/client";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -14,6 +13,7 @@ import { DeveloperPageBody } from "@/components/developer-page/developer-page-bo
 import { pageMetadata } from "@/lib/site";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbListSchema, faqPageSchema } from "@/lib/json-ld";
+import { articlesAbout } from "@/lib/article-service";
 
 export const revalidate = 3600;
 
@@ -60,7 +60,7 @@ export default async function DeveloperDetailPage({ params }: { params: Promise<
   const rateText = `${(minRate * 100).toFixed(2).replace(/0$/, "").replace(".", ",")}%`;
 
   const tabs = developers.map((d) => ({ key: d.slug, label: d.name, href: `/zastroyshchik/${d.slug}` }));
-  const related = pickRelatedArticles(articles, [dev.name], 3);
+  const related = articlesAbout(articles, dev.name);
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)" }}>

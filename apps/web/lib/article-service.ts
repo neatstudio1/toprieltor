@@ -53,3 +53,33 @@ export function matchServiceForArticle(article: Article): ArticleService | null 
   if (!found) return null;
   return { slug: found.slug, title: found.title, cta: found.cta };
 }
+
+/**
+ * Every article belonging to a service — the hub → spoke half of the internal
+ * linking. Google ranks topical authority, not single pages, so a service page
+ * should link out to all of its articles, not just three.
+ */
+export function articlesForService(articles: Article[], serviceSlug: string, limit = 9): Article[] {
+  return articles
+    .filter((article) => matchServiceForArticle(article)?.slug === serviceSlug)
+    .slice(0, limit);
+}
+
+/**
+ * Articles that genuinely mention `term` (a district or developer name).
+ * Deliberately has no recency fallback: a district page listing unrelated
+ * articles is worse than showing no block at all.
+ */
+export function articlesAbout(articles: Article[], term: string, limit = 6): Article[] {
+  const needle = term.toLowerCase();
+  const stem = needle.length > 5 ? needle.slice(0, -2) : needle;
+
+  return articles
+    .filter((article) => {
+      const haystack = [article.title, article.excerpt ?? "", article.category ?? "", (article.tags ?? []).join(" ")]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(stem);
+    })
+    .slice(0, limit);
+}

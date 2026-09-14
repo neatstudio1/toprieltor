@@ -6,7 +6,6 @@ import {
   getMortgageConfig,
   getServiceBySlug,
   getServices,
-  pickRelatedArticles,
 } from "@/lib/cms/client";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -14,6 +13,7 @@ import { ServicePageBody } from "@/components/service-page/service-page-body";
 import { pageMetadata } from "@/lib/site";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbListSchema, faqPageSchema } from "@/lib/json-ld";
+import { articlesForService } from "@/lib/article-service";
 
 export const revalidate = 3600;
 
@@ -60,7 +60,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<Ro
   const rateText = `${(minRate * 100).toFixed(2).replace(/0$/, "").replace(".", ",")}%`;
 
   const tabs = services.map((s) => ({ key: s.slug, label: s.tab_label, href: `/uslugi/${s.slug}` }));
-  const related = pickRelatedArticles(articles, [svc.tab_label, svc.name], 3);
+  const related = articlesForService(articles, svc.slug);
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
