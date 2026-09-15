@@ -31,7 +31,7 @@ export function RelatedPosts({
       </div>
       <div className={styles.grid}>
         {posts.map((p) => (
-          <Link key={p.slug} data-post="" href={`/blog/${p.slug}`} className={styles.card}>
+          <Link key={`/blog/${p.slug}`} data-post="" href={`/blog/${p.slug}`} className={styles.card}>
             <div className={styles.photo}>
               <ArticleCover cover={p.cover} alt={p.title} fallbackLabel={p.category ?? "Статья"} sizes="(min-width: 1280px) 400px, 90vw" />
             </div>

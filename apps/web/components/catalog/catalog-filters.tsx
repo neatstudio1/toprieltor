@@ -215,7 +215,7 @@ export function CatalogFilters({
         ) : (
           <div className={styles.grid}>
             {visible.map((c) => (
-              <Link key={c.slug} data-jk="" href={`/zhk/${c.slug}`} className={styles.card}>
+              <Link key={`/zhk/${c.slug}`} data-jk="" href={`/zhk/${c.slug}`} className={styles.card}>
                 <div className={styles.photo}>
                   {c.photo ? (
                     <Image

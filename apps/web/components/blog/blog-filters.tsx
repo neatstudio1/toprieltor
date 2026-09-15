@@ -58,7 +58,7 @@ export function BlogFilters({ articles }: { articles: Article[] }) {
         ) : (
           <div className={styles.grid}>
             {visible.map((p) => (
-              <Link key={p.slug} data-post="" href={`/blog/${p.slug}`} className={styles.card}>
+              <Link key={`/blog/${p.slug}`} data-post="" href={`/blog/${p.slug}`} className={styles.card}>
                 <div className={styles.photo}>
                   <div data-pimg="" style={{ position: "absolute", inset: 0 }}>
                     <ArticleCover

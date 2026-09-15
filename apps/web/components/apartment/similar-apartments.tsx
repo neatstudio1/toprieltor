@@ -31,7 +31,7 @@ export function SimilarApartments({
               : "—";
           return (
             <Link
-              key={apt.slug}
+              key={`/zhk/${projectSlug}/apartments/${apt.slug}`}
               data-sim=""
               href={`/zhk/${projectSlug}/apartments/${apt.slug}`}
               className={styles.card}

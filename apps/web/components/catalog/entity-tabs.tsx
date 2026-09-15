@@ -22,7 +22,7 @@ export function EntityTabs({
         <span className={styles.label}>{label}</span>
         {tabs.map((t) => (
           <Link
-            key={t.key}
+            key={t.href}
             href={t.href}
             className={`${styles.tab} ${t.key === active ? styles.tabOn : ""}`}
             aria-current={t.key === active ? "page" : undefined}

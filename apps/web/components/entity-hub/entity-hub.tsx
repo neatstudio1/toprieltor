@@ -39,7 +39,7 @@ export function EntityHub({
       <div className={styles.gridWrap}>
         <div className={styles.grid}>
           {items.map((item) => (
-            <Link key={item.slug} href={item.href} className={styles.card}>
+            <Link key={item.href} href={item.href} className={styles.card}>
               {item.meta ? <div className={styles.cardMeta}>{item.meta}</div> : null}
               <h2 className={styles.cardTitle}>{item.title}</h2>
               {item.lead ? <p className={styles.cardLead}>{item.lead}</p> : null}

@@ -150,7 +150,7 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
           <div className={styles.relatedEyebrow}>Читайте также</div>
           <div className={styles.relatedGrid}>
             {related.map((p) => (
-              <Link key={p.slug} data-post="" href={`/blog/${p.slug}`} className={styles.relatedCard}>
+              <Link key={`/blog/${p.slug}`} data-post="" href={`/blog/${p.slug}`} className={styles.relatedCard}>
                 <div className={styles.relatedPhoto}>
                   <ArticleCover
                     cover={p.cover}

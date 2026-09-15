@@ -19,7 +19,7 @@ export function SimilarProjects({ projects }: { projects: SimilarProjectCard[] }
       <div className={styles.eyebrow}>Похожие проекты · тот же бюджет</div>
       <div className={styles.grid}>
         {projects.map((p) => (
-          <Link key={p.slug} data-sim="" href={`/zhk/${p.slug}`} className={styles.card}>
+          <Link key={`/zhk/${p.slug}`} data-sim="" href={`/zhk/${p.slug}`} className={styles.card}>
             <div className={styles.photo}>
               {p.photo ? (
                 <Image

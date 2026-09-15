@@ -16,7 +16,7 @@ export function JkShowcaseGrid({ cards, rateText }: { cards: CatalogCard[]; rate
         const isReady = c.termYear !== null && c.termYear <= now.getFullYear();
         const badge = isReady ? "Есть готовые" : c.termYear ? `Сдача ${c.termYear}` : "Уточняется";
         return (
-          <Link key={c.slug} data-jk="" href={`/zhk/${c.slug}`} className={styles.card}>
+          <Link key={`/zhk/${c.slug}`} data-jk="" href={`/zhk/${c.slug}`} className={styles.card}>
             <div className={styles.photo}>
               {c.photo ? (
                 <div className={styles.photoImg}>

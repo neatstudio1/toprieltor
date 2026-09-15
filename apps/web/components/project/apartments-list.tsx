@@ -193,7 +193,7 @@ export function ApartmentsList({
               termMonths: 240,
             });
             return (
-              <Link key={a.slug} data-apt="" href={`/zhk/${projectSlug}/apartments/${a.slug}`} className={styles.card}>
+              <Link key={`/zhk/${projectSlug}/apartments/${a.slug}`} data-apt="" href={`/zhk/${projectSlug}/apartments/${a.slug}`} className={styles.card}>
                 <div className={styles.planWrap}>
                   {a.floor_plan_url ? (
                     <Image src={a.floor_plan_url} alt="Планировка" fill sizes="150px" style={{ objectFit: "contain" }} />

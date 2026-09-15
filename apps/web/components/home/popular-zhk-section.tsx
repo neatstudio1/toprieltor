@@ -36,7 +36,7 @@ export function PopularZhkSection({
       </div>
       <div className={styles.grid}>
         {cards.map((c) => (
-          <Link key={c.slug} data-jk="" href={`/zhk/${c.slug}`} className={styles.card}>
+          <Link key={`/zhk/${c.slug}`} data-jk="" href={`/zhk/${c.slug}`} className={styles.card}>
             <div className={styles.photo}>
               {c.photo ? (
                 <Image
