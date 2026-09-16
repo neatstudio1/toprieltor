@@ -7,6 +7,7 @@ import type { MortgageConfig } from "@/lib/cms/client";
 import { calcMonthlyPayment } from "@/lib/mortgage";
 import { formatRub } from "@/lib/format";
 import { submitLead } from "@/lib/cms/leads";
+import { GOALS, reachGoal, trafficSource } from "@/lib/analytics";
 import { TELEGRAM_URL } from "@/lib/site";
 import styles from "./quiz-popup.module.css";
 
@@ -112,6 +113,7 @@ export function QuizPopup({ config }: { config: MortgageConfig }) {
 
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mountedAtRef = useRef(Date.now());
+  const startedRef = useRef(false);
 
   useEffect(() => {
     let closed = false;
@@ -171,6 +173,12 @@ export function QuizPopup({ config }: { config: MortgageConfig }) {
   }
 
   function pick(key: string, val: string) {
+    // Попап и страница шлют одну цель с разным `place`: воронка общая, а
+    // сравнить, где люди доходят до конца чаще, всё равно нужно.
+    if (!startedRef.current) {
+      startedRef.current = true;
+      reachGoal(GOALS.quizStart, { place: "popup", campaign: trafficSource().campaign ?? "none" });
+    }
     setAnswers((a) => ({ ...a, [key]: val }));
     if (advanceTimer.current) clearTimeout(advanceTimer.current);
     advanceTimer.current = setTimeout(() => next(), ADVANCE_DELAY_MS);
@@ -203,6 +211,12 @@ export function QuizPopup({ config }: { config: MortgageConfig }) {
     if (result.ok) {
       setSubmitStatus("idle");
       setDone(true);
+      const src = trafficSource();
+      reachGoal(GOALS.quizSubmit, {
+        place: "popup",
+        campaign: src.campaign ?? "none",
+        medium: src.medium ?? "none",
+      });
       try {
         sessionStorage.setItem(DONE_STORAGE_KEY, "1");
       } catch {

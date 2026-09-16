@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { submitLead } from "@/lib/cms/leads";
+import { GOALS, reachGoal, trafficSource } from "@/lib/analytics";
 import styles from "./lead-modal.module.css";
 
 function formatPhoneInput(raw: string): string {
@@ -64,6 +65,8 @@ export function LeadModal({ onClose }: { onClose: () => void }) {
 
     if (result.ok) {
       setStatus("success");
+      const src = trafficSource();
+      reachGoal(GOALS.leadSubmit, { campaign: src.campaign ?? "none", medium: src.medium ?? "none" });
     } else {
       setStatus("error");
       setErrorMessage(result.message);

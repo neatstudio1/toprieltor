@@ -5,9 +5,9 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { LeadModalProvider } from "@/components/lead-modal/lead-modal-provider";
 import { QuizPopup } from "@/components/quiz/quiz-popup";
 import { getMortgageConfig } from "@/lib/cms/client";
+// ID счётчика и цели живут в одном месте — lib/analytics.ts
+import { YANDEX_METRIKA_ID } from "@/lib/analytics";
 import "./globals.css";
-
-const YANDEX_METRIKA_ID = "111869737";
 
 const inter = Inter({
   variable: "--font-inter",

@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { MortgageConfig } from "@/lib/cms/client";
 import { calcMonthlyPayment } from "@/lib/mortgage";
 import { formatRub } from "@/lib/format";
 import { submitLead } from "@/lib/cms/leads";
 import { TELEGRAM_URL } from "@/lib/site";
+import { GOALS, reachGoal, trafficSource } from "@/lib/analytics";
+import { campaignCopy } from "@/lib/campaigns";
 import styles from "./quiz-flow.module.css";
 
 interface OptionDef {
@@ -132,6 +134,17 @@ export function QuizFlow({ config }: { config: MortgageConfig }) {
   const [errorMessage, setErrorMessage] = useState("");
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mountedAtRef = useRef(Date.now());
+  const startedRef = useRef(false);
+  const contactSeenRef = useRef(false);
+
+  // Откуда пришёл человек. Читаем после монтирования: страница статическая,
+  // а параметр не влияет ни на отрисовку сервером, ни на индексацию.
+  const [source, setSource] = useState<{ campaign: string | null; medium: string | null }>({
+    campaign: null,
+    medium: null,
+  });
+  useEffect(() => setSource(trafficSource()), []);
+  const copy = campaignCopy(source.campaign);
 
   const total = steps.length;
   const current = steps[step];
@@ -140,6 +153,15 @@ export function QuizFlow({ config }: { config: MortgageConfig }) {
   const isContact = !done && current?.type === "contact";
   const shownNum = Math.min(step + 1, total);
   const progressPct = Math.round(((done ? total : step) / total) * 100);
+
+  // Шаг с телефоном — главная точка отвала, поэтому меряем вход в него
+  // отдельно от отправки: разница между целями и есть цена формы.
+  useEffect(() => {
+    if (isContact && !contactSeenRef.current) {
+      contactSeenRef.current = true;
+      reachGoal(GOALS.quizContact, { place: "page", campaign: source.campaign ?? "none" });
+    }
+  }, [isContact, source.campaign]);
 
   function payFor(price: number): number {
     return calcMonthlyPayment({ price, down: price * 0.15, annualRate: rate, termMonths: TERM_MONTHS });
@@ -158,6 +180,10 @@ export function QuizFlow({ config }: { config: MortgageConfig }) {
   }
 
   function pick(key: string, val: string) {
+    if (!startedRef.current) {
+      startedRef.current = true;
+      reachGoal(GOALS.quizStart, { place: "page", campaign: source.campaign ?? "none" });
+    }
     setAnswers((a) => ({ ...a, [key]: val }));
     if (advanceTimer.current) clearTimeout(advanceTimer.current);
     advanceTimer.current = setTimeout(() => next(), ADVANCE_DELAY_MS);
@@ -182,14 +208,19 @@ export function QuizFlow({ config }: { config: MortgageConfig }) {
       phone,
       comment: "",
       website,
-      sourcePath: "/quiz",
-      sourceTitle: "Квиз подбора квартиры",
+      sourcePath: source.campaign ? `/quiz?utm_campaign=${source.campaign}` : "/quiz",
+      sourceTitle: copy.label ? `Квиз подбора квартиры · ролик «${copy.label}»` : "Квиз подбора квартиры",
       elapsedMs: Date.now() - mountedAtRef.current,
       quizAnswers: { ...answers, budget },
     });
     if (result.ok) {
       setSubmitStatus("idle");
       setDone(true);
+      reachGoal(GOALS.quizSubmit, {
+        place: "page",
+        campaign: source.campaign ?? "none",
+        medium: source.medium ?? "none",
+      });
     } else {
       setSubmitStatus("error");
       setErrorMessage(result.message);
@@ -228,8 +259,8 @@ export function QuizFlow({ config }: { config: MortgageConfig }) {
           <span className={styles.logoText}>TOPиелтор</span>
         </Link>
         <div className={styles.sidebarBottom}>
-          <div className={styles.sidebarEyebrow}>Подбор за 2 минуты</div>
-          <h1 className={styles.sidebarTitle}>Найдём новостройку под ваш бюджет и капитал</h1>
+          <div className={styles.sidebarEyebrow}>{copy.eyebrow}</div>
+          <h1 className={styles.sidebarTitle}>{copy.title}</h1>
           <div className={styles.sidebarPoints}>
             <div className={styles.sidebarPoint}>
               <span className={styles.sidebarArrow}>→</span> Подбор и покупка — бесплатно для вас
