@@ -46,7 +46,8 @@ export async function generateMetadata({
   const { projectSlug } = await params;
   const project = await getProjectBySlug(projectSlug);
   if (!project) return {};
-  const title = `ЖК «${project.name}» — ${project.developer?.name ?? ""}`;
+  const developerSuffix = project.developer?.name ? ` — ${project.developer.name}` : "";
+  const title = `ЖК ${project.name}${developerSuffix}, Екатеринбург`;
   const description = project.concept
     ? project.concept.slice(0, 160)
     : `Квартиры в ЖК «${project.name}» в Екатеринбурге. Подбор и сопровождение сделки бесплатно.`;

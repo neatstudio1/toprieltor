@@ -46,7 +46,7 @@ export async function generateMetadata({
   const d = await getDistrictBySlug(slug);
   if (!d) return {};
   return pageMetadata({
-    title: `Район ${d.name} — новостройки, инфраструктура, транспорт`,
+    title: `${d.name} в Екатеринбурге: новостройки и цены`,
     description: d.lead ?? `Гид по району «${d.name}» в Екатеринбурге: новостройки, инфраструктура, транспорт, экология.`,
     path: `/rayon/${slug}`,
   });

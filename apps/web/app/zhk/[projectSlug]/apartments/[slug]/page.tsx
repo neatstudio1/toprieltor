@@ -57,7 +57,10 @@ export async function generateMetadata({
   if (!apartment) return {};
 
   const areaLabel = apartment.area_m2.toFixed(2).replace(".", ",");
-  const title = `${typeShort(apartment.type)} ${areaLabel} м² в ЖК «${apartment.project!.name}» — от ${formatRub(apartment.price_from)} ₽`;
+  const priceLabel = apartment.price_from
+    ? ` — ${(apartment.price_from / 1_000_000).toFixed(2).replace(".", ",")} млн ₽`
+    : "";
+  const title = `${typeShort(apartment.type)} ${areaLabel} м² в ЖК ${apartment.project!.name}${priceLabel}`;
   const description = `${typeShort(apartment.type)}, ${areaLabel} м² в ЖК «${apartment.project!.name}» (${apartment.project!.district}). Цена от ${formatRub(apartment.price_from)} ₽. Подбор и сопровождение сделки бесплатно.`;
   const photo = apartment.photo_urls?.[0];
 

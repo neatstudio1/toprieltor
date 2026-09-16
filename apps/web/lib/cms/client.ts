@@ -128,6 +128,8 @@ export interface Service {
   featured_project_slugs: string[] | null;
   cta_title: string | null;
   cta_text: string | null;
+  seo_title: string | null;
+  seo_description: string | null;
 }
 
 export interface Project {
@@ -301,14 +303,39 @@ interface StrapiOneResponse<T> {
   data: T | null;
 }
 
-async function strapiGet<T>(path: string): Promise<T> {
-  const res = await fetch(`${STRAPI_URL}/api${path}`, {
-    next: { revalidate: REVALIDATE_SECONDS },
-  });
-  if (!res.ok) {
-    throw new Error(`Strapi GET ${path} -> HTTP ${res.status}`);
+/**
+ * Strapi — один Node-процесс на небольшом сервере, а сборка генерирует 2800+
+ * страниц в несколько воркеров. Очередь входящих соединений переполняется, и
+ * отдельные запросы падают по таймауту подключения, роняя весь билд. Повтор с
+ * нарастающей паузой закрывает эти разрывы.
+ */
+async function strapiGet<T>(path: string, attempt = 1): Promise<T> {
+  const MAX_ATTEMPTS = 4;
+  try {
+    const res = await fetch(`${STRAPI_URL}/api${path}`, {
+      next: { revalidate: REVALIDATE_SECONDS },
+    });
+    if (!res.ok) {
+      // 5xx — сервер перегружен, имеет смысл повторить; 4xx повторять бессмысленно.
+      if (res.status >= 500 && attempt < MAX_ATTEMPTS) {
+        await delay(attempt);
+        return strapiGet<T>(path, attempt + 1);
+      }
+      throw new Error(`Strapi GET ${path} -> HTTP ${res.status}`);
+    }
+    return res.json();
+  } catch (error) {
+    const isNetworkError = error instanceof TypeError || (error as { cause?: unknown })?.cause !== undefined;
+    if (isNetworkError && attempt < MAX_ATTEMPTS) {
+      await delay(attempt);
+      return strapiGet<T>(path, attempt + 1);
+    }
+    throw error;
   }
-  return res.json();
+}
+
+function delay(attempt: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, attempt * 1500));
 }
 
 const APARTMENT_WITH_PROJECT_POPULATE =

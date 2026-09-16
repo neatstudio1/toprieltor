@@ -35,8 +35,9 @@ export async function generateMetadata({
   const svc = await getServiceBySlug(slug);
   if (!svc) return {};
   return pageMetadata({
-    title: svc.h1,
-    description: svc.pitch ?? svc.h1,
+    // h1 написан под страницу и в выдаче обрезается — для поиска отдельное поле
+    title: svc.seo_title ?? svc.h1,
+    description: svc.seo_description ?? svc.pitch ?? svc.h1,
     path: `/uslugi/${slug}`,
   });
 }
