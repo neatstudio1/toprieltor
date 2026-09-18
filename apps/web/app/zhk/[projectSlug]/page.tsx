@@ -152,6 +152,17 @@ export default async function ProjectPage({ params }: { params: Promise<RoutePar
 
   const galleryPhotos = project.photos.length ? project.photos : pricedApartments[0]?.photo_urls ?? [];
 
+  // Досье застройщика есть только там, где заполнен lead: /zastroyshchik/[slug]
+  // иначе отдаёт 404, и ссылка из каталога вела бы в никуда.
+  const developer = project.developer;
+  const developerLabel = developer?.lead ? (
+    <Link href={`/zastroyshchik/${developer.slug}`} className={styles.sublineLink}>
+      {developer.name}
+    </Link>
+  ) : (
+    developer?.name ?? ""
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
       <JsonLd
@@ -179,7 +190,7 @@ export default async function ProjectPage({ params }: { params: Promise<RoutePar
           <div className={styles.header}>
             <h1 className={styles.title}>ЖК «{project.name}»</h1>
             <div className={styles.subline}>
-              {project.developer?.name ?? ""} · {project.district ?? "Екатеринбург"} · сдача {deliveryRangeText(project)}
+              {developerLabel} · {project.district ?? "Екатеринбург"} · сдача {deliveryRangeText(project)}
             </div>
             <div className={styles.facts}>
               <div className={styles.fact}>

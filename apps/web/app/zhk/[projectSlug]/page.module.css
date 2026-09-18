@@ -31,6 +31,18 @@
   margin-bottom: 26px;
 }
 
+.sublineLink {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 3px;
+}
+
+.sublineLink:hover {
+  color: var(--ink);
+  text-decoration-color: currentColor;
+}
+
 .facts {
   display: flex;
   flex-wrap: wrap;

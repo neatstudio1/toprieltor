@@ -426,17 +426,21 @@ export interface ApartmentBrief {
 export async function getProjectApartmentsBrief(
   projectSlug: string,
 ): Promise<ApartmentBrief[]> {
-  const qs = new URLSearchParams();
-  qs.set("filters[project][slug][$eq]", projectSlug);
-  qs.set("fields[0]", "slug");
-  qs.set("fields[1]", "type");
-  qs.set("fields[2]", "area_m2");
-  qs.set("fields[3]", "price_from");
-  qs.set("pagination[pageSize]", "500");
-  const body = await strapiGet<StrapiListResponse<ApartmentBrief>>(
-    `/apartments?${qs.toString()}`,
-  );
-  return body.data;
+  // Must be every apartment, not the first page: Strapi caps pageSize at 100
+  // regardless of what we ask for, and the room types that fall outside that
+  // first page (4к, 5к, sometimes студия in the big projects) would silently
+  // lose their representative page. The explicit sort is what makes paging
+  // safe — without an ORDER BY, Postgres may repeat or skip rows across pages.
+  return fetchAllPages<ApartmentBrief>("/apartments", () => {
+    const qs = new URLSearchParams();
+    qs.set("filters[project][slug][$eq]", projectSlug);
+    qs.set("fields[0]", "slug");
+    qs.set("fields[1]", "type");
+    qs.set("fields[2]", "area_m2");
+    qs.set("fields[3]", "price_from");
+    qs.set("sort", "id:asc");
+    return qs;
+  });
 }
 
 /**
