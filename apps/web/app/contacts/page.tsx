@@ -7,8 +7,9 @@ import { breadcrumbListSchema } from "@/lib/json-ld";
 import {
   AGENT_NAME,
   AGENT_PHOTO,
-  CONTACT_TELEGRAM_HANDLE,
-  CONTACT_TELEGRAM_URL,
+  AGENT_PHOTO_SM,
+  TELEGRAM_HANDLE,
+  TELEGRAM_URL,
   MANAGER_NAME,
   MAX_DISPLAY,
   PHONE_DISPLAY,
@@ -20,7 +21,7 @@ import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: `Контакты ${SITE_NAME} — риелтор по новостройкам в Екатеринбурге`,
-  description: `Связаться с агентством ${SITE_NAME}: телефон ${PHONE_DISPLAY}, Telegram ${CONTACT_TELEGRAM_HANDLE}, MAX. Подбор новостроек в Екатеринбурге бесплатно для покупателя.`,
+  description: `Связаться с агентством ${SITE_NAME}: телефон ${PHONE_DISPLAY}, Telegram ${TELEGRAM_HANDLE}, MAX. Подбор новостроек в Екатеринбурге бесплатно для покупателя.`,
   alternates: { canonical: "/contacts" },
 };
 
@@ -33,7 +34,7 @@ function contactSchema() {
     image: `${SITE_URL}${AGENT_PHOTO}`,
     telephone: PHONE_TEL,
     areaServed: { "@type": "City", name: "Екатеринбург" },
-    sameAs: [CONTACT_TELEGRAM_URL],
+    sameAs: [TELEGRAM_URL],
     founder: {
       "@type": "Person",
       name: AGENT_NAME,
@@ -79,9 +80,9 @@ export default function ContactsPage() {
             <span className={styles.channelNote}>Звонок — самый быстрый способ</span>
           </a>
 
-          <a href={CONTACT_TELEGRAM_URL} className={styles.channel}>
+          <a href={TELEGRAM_URL} className={styles.channel}>
             <span className={styles.channelLabel}>Telegram</span>
-            <span className={styles.channelValue}>{CONTACT_TELEGRAM_HANDLE}</span>
+            <span className={styles.channelValue}>{TELEGRAM_HANDLE}</span>
             <span className={styles.channelNote}>Скинем подборку прямо в чат</span>
           </a>
 
@@ -97,7 +98,7 @@ export default function ContactsPage() {
 
           <Link href="/o-nas" className={styles.person}>
             <img
-              src={AGENT_PHOTO}
+              src={AGENT_PHOTO_SM}
               alt={AGENT_NAME}
               width={56}
               height={56}

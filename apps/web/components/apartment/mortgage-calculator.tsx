@@ -5,10 +5,10 @@ import type { MortgageConfig } from "@/lib/cms/client";
 import { calcMonthlyPayment } from "@/lib/mortgage";
 import { formatRub, formatRubPrecise } from "@/lib/format";
 import styles from "./mortgage-calculator.module.css";
+import { TELEGRAM_URL } from "@/lib/site";
 
 type MatkapChoice = "none" | "default" | "family";
 
-const TELEGRAM_URL = "https://t.me/Yana_Chekulova";
 
 export function MortgageCalculator({
   price,

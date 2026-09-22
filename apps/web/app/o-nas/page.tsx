@@ -7,8 +7,8 @@ import { breadcrumbListSchema } from "@/lib/json-ld";
 import {
   AGENT_NAME,
   AGENT_PHOTO,
-  CONTACT_TELEGRAM_HANDLE,
-  CONTACT_TELEGRAM_URL,
+  TELEGRAM_HANDLE,
+  TELEGRAM_URL,
   MANAGER_NAME,
   PHONE_DISPLAY,
   PHONE_TEL,
@@ -40,7 +40,7 @@ function personSchema() {
     image: `${SITE_URL}${AGENT_PHOTO}`,
     url: `${SITE_URL}/o-nas`,
     telephone: PHONE_TEL,
-    sameAs: [CONTACT_TELEGRAM_URL],
+    sameAs: [TELEGRAM_URL],
     knowsAbout: [
       "Новостройки Екатеринбурга",
       "Ипотека",
@@ -191,8 +191,8 @@ export default function AboutPage() {
             <a href={`tel:${PHONE_TEL}`} className="tpl-btn-prim">
               {PHONE_DISPLAY}
             </a>
-            <a href={CONTACT_TELEGRAM_URL} className="tpl-btn-sec">
-              Telegram {CONTACT_TELEGRAM_HANDLE}
+            <a href={TELEGRAM_URL} className="tpl-btn-sec">
+              Telegram {TELEGRAM_HANDLE}
             </a>
             <Link href="/quiz" className="tpl-btn-sec">
               Пройти квиз

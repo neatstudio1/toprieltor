@@ -1,7 +1,7 @@
 import Link from "next/link";
 import styles from "./final-cta-section.module.css";
+import { TELEGRAM_URL, TELEGRAM_HANDLE } from "@/lib/site";
 
-const TELEGRAM_URL = "https://t.me/Yana_Chekulova";
 
 export function FinalCtaSection() {
   return (
@@ -17,7 +17,7 @@ export function FinalCtaSection() {
             </Link>
           </div>
           <a href={TELEGRAM_URL} className={styles.telegram}>
-            или напишите в Telegram @Yana_Chekulova
+            или напишите в Telegram {TELEGRAM_HANDLE}
           </a>
         </div>
       </div>

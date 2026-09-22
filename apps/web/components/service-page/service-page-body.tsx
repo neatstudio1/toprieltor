@@ -13,8 +13,8 @@ import {
   YieldCalcWidget,
 } from "./service-widgets";
 import styles from "./service-page-body.module.css";
+import { TELEGRAM_URL, TELEGRAM_HANDLE } from "@/lib/site";
 
-const TELEGRAM_URL = "https://t.me/Yana_Chekulova";
 
 export function ServicePageBody({
   svc,
@@ -183,7 +183,7 @@ export function ServicePageBody({
               Подобрать под ключ
             </Link>
             <a href={TELEGRAM_URL} className={styles.finalCtaTg}>
-              или напишите в Telegram @Yana_Chekulova
+              или напишите в Telegram {TELEGRAM_HANDLE}
             </a>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
-  CONTACT_TELEGRAM_HANDLE,
-  CONTACT_TELEGRAM_URL,
+  TELEGRAM_HANDLE,
+  TELEGRAM_URL,
   PHONE_DISPLAY,
   PHONE_TEL,
 } from "@/lib/site";
@@ -46,8 +46,8 @@ export function SiteFooter() {
             <a href={`tel:${PHONE_TEL}`} className={styles.columnLink}>
               {PHONE_DISPLAY}
             </a>
-            <a href={CONTACT_TELEGRAM_URL} className={styles.columnLink}>
-              Telegram {CONTACT_TELEGRAM_HANDLE}
+            <a href={TELEGRAM_URL} className={styles.columnLink}>
+              Telegram {TELEGRAM_HANDLE}
             </a>
             <Link href="/contacts" className={styles.columnLink}>
               Все контакты

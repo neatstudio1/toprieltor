@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ViewingCtaButton } from "@/components/lead-modal/viewing-cta-button";
 import styles from "./site-header.module.css";
+import { TELEGRAM_URL } from "@/lib/site";
 
-const TELEGRAM_URL = "https://t.me/Yana_Chekulova";
 
 export interface SiteHeaderProps {
   active?: "catalog" | "blog" | "services" | "districts" | "developers";

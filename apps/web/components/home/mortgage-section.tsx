@@ -1,6 +1,7 @@
 import type { MortgageScenario } from "@/lib/cms/client";
 import { MortgageWidget } from "./mortgage-widget";
 import styles from "./mortgage-section.module.css";
+import { TELEGRAM_URL } from "@/lib/site";
 
 const PERKS = [
   "Маткапитал — как первоначальный взнос",
@@ -30,7 +31,7 @@ export function MortgageSection({
                 </div>
               ))}
             </div>
-            <a href="https://t.me/Yana_Chekulova" className={`tpl-btn-prim ${styles.cta}`}>
+            <a href={TELEGRAM_URL} className={`tpl-btn-prim ${styles.cta}`}>
               Получить консультацию
             </a>
           </div>

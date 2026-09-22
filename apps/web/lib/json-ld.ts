@@ -1,12 +1,5 @@
 import { strapiMediaUrl, type Apartment, type Article, type FaqItem, type Project } from "@/lib/cms/client";
-import {
-  AGENT_NAME,
-  CONTACT_TELEGRAM_URL,
-  PHONE_TEL,
-  SITE_NAME,
-  SITE_URL,
-  TELEGRAM_URL,
-} from "@/lib/site";
+import { AGENT_NAME, TELEGRAM_URL, PHONE_TEL, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export function realEstateAgentSchema() {
   return {
@@ -17,7 +10,7 @@ export function realEstateAgentSchema() {
     image: `${SITE_URL}/hero-poster.webp`,
     telephone: PHONE_TEL,
     areaServed: { "@type": "City", name: "Екатеринбург" },
-    sameAs: [CONTACT_TELEGRAM_URL, TELEGRAM_URL],
+    sameAs: [TELEGRAM_URL],
     founder: {
       "@type": "Person",
       name: AGENT_NAME,

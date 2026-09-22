@@ -8,8 +8,8 @@ import { JkShowcaseGrid } from "@/components/catalog/jk-showcase-grid";
 import { RelatedPosts } from "@/components/blog/related-posts";
 import { INFRA_ICON_PATHS } from "./infra-icons";
 import styles from "./district-page-body.module.css";
+import { TELEGRAM_URL, TELEGRAM_HANDLE } from "@/lib/site";
 
-const TELEGRAM_URL = "https://t.me/Yana_Chekulova";
 
 export function DistrictPageBody({
   d,
@@ -188,7 +188,7 @@ export function DistrictPageBody({
               Пройти квиз за 2 минуты
             </Link>
             <a href={TELEGRAM_URL} className={styles.finalCtaTg}>
-              или напишите в Telegram @Yana_Chekulova
+              или напишите в Telegram {TELEGRAM_HANDLE}
             </a>
           </div>
         </div>
