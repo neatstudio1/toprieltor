@@ -27,6 +27,8 @@ export async function GET() {
     { path: "/uslugi", changeFrequency: "monthly", priority: 0.8 },
     { path: "/rayon", changeFrequency: "monthly", priority: 0.7 },
     { path: "/zastroyshchik", changeFrequency: "monthly", priority: 0.7 },
+    { path: "/o-nas", changeFrequency: "monthly", priority: 0.7 },
+    { path: "/contacts", changeFrequency: "monthly", priority: 0.7 },
     { path: "/privacy", changeFrequency: "yearly", priority: 0.1 },
     ...services.map((s) => ({
       path: `/uslugi/${s.slug}`,

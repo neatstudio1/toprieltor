@@ -1,7 +1,11 @@
 import Link from "next/link";
+import {
+  CONTACT_TELEGRAM_HANDLE,
+  CONTACT_TELEGRAM_URL,
+  PHONE_DISPLAY,
+  PHONE_TEL,
+} from "@/lib/site";
 import styles from "./site-footer.module.css";
-
-const TELEGRAM_URL = "https://t.me/Yana_Chekulova";
 
 export function SiteFooter() {
   return (
@@ -33,12 +37,21 @@ export function SiteFooter() {
             <Link href="/blog" className={styles.columnLink}>
               Блог
             </Link>
+            <Link href="/o-nas" className={styles.columnLink}>
+              О нас
+            </Link>
           </div>
           <div className={styles.column}>
             <div className={styles.columnLabel}>Контакты</div>
-            <a href={TELEGRAM_URL} className={styles.columnLink}>
-              Telegram @Yana_Chekulova
+            <a href={`tel:${PHONE_TEL}`} className={styles.columnLink}>
+              {PHONE_DISPLAY}
             </a>
+            <a href={CONTACT_TELEGRAM_URL} className={styles.columnLink}>
+              Telegram {CONTACT_TELEGRAM_HANDLE}
+            </a>
+            <Link href="/contacts" className={styles.columnLink}>
+              Все контакты
+            </Link>
             <Link href="/quiz" className={styles.columnLink}>
               Пройти квиз
             </Link>

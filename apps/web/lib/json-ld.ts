@@ -1,15 +1,28 @@
 import { strapiMediaUrl, type Apartment, type Article, type FaqItem, type Project } from "@/lib/cms/client";
-import { SITE_NAME, SITE_URL, TELEGRAM_URL } from "@/lib/site";
+import {
+  AGENT_NAME,
+  CONTACT_TELEGRAM_URL,
+  PHONE_TEL,
+  SITE_NAME,
+  SITE_URL,
+  TELEGRAM_URL,
+} from "@/lib/site";
 
 export function realEstateAgentSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
-    name: `${SITE_NAME} — Яна Чекулова`,
+    name: `${SITE_NAME} — ${AGENT_NAME}`,
     url: `${SITE_URL}/`,
     image: `${SITE_URL}/hero-poster.webp`,
+    telephone: PHONE_TEL,
     areaServed: { "@type": "City", name: "Екатеринбург" },
-    sameAs: [TELEGRAM_URL],
+    sameAs: [CONTACT_TELEGRAM_URL, TELEGRAM_URL],
+    founder: {
+      "@type": "Person",
+      name: AGENT_NAME,
+      url: `${SITE_URL}/o-nas`,
+    },
   };
 }
 
