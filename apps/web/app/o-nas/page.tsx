@@ -188,16 +188,16 @@ export default function AboutPage() {
             разговора, пройдите короткий квиз, и я подготовлю подборку заранее.
           </p>
           <div className={styles.contactLinks}>
-            <a href={`tel:${PHONE_TEL}`} className="tpl-btn-prim">
+            <a href={`tel:${PHONE_TEL}`} className="btn-prim">
               {PHONE_DISPLAY}
             </a>
-            <a href={TELEGRAM_URL} className="tpl-btn-sec">
+            <a href={TELEGRAM_URL} className="btn-sec">
               Telegram {TELEGRAM_HANDLE}
             </a>
-            <Link href="/quiz" className="tpl-btn-sec">
+            <Link href="/quiz" className="btn-sec">
               Пройти квиз
             </Link>
-            <Link href="/contacts" className="tpl-btn-sec">
+            <Link href="/contacts" className="btn-sec">
               Все контакты
             </Link>
           </div>

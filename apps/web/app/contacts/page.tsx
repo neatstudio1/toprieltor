@@ -139,13 +139,13 @@ export default function ContactsPage() {
         </div>
 
         <div className={styles.ctaRow}>
-          <a href={`tel:${PHONE_TEL}`} className="tpl-btn-prim">
+          <a href={`tel:${PHONE_TEL}`} className="btn-prim">
             Позвонить
           </a>
-          <Link href="/quiz" className="tpl-btn-sec">
+          <Link href="/quiz" className="btn-sec">
             Пройти квиз за 2 минуты
           </Link>
-          <Link href="/catalog" className="tpl-btn-sec">
+          <Link href="/catalog" className="btn-sec">
             Смотреть каталог ЖК
           </Link>
         </div>

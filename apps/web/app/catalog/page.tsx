@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getCatalogCards, getMortgageConfig } from "@/lib/cms/client";
+import { getCatalogCards, getIndexableDistrictListings, getMortgageConfig } from "@/lib/cms/client";
+import { DISTRICTS, ROOM_TYPES } from "@/lib/districts";
+import { pluralizeRu } from "@/lib/format";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CatalogFilters } from "@/components/catalog/catalog-filters";
@@ -19,7 +21,23 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function CatalogPage() {
-  const [cards, mortgageConfig] = await Promise.all([getCatalogCards(), getMortgageConfig()]);
+  const [cards, mortgageConfig, districtListings] = await Promise.all([
+    getCatalogCards(),
+    getMortgageConfig(),
+    getIndexableDistrictListings(),
+  ]);
+
+  // Подборки по району и комнатности: отдельные адреса под запросы вида
+  // «купить двухкомнатную в Ботаническом» — фильтры каталога живут в состоянии
+  // компонента и своего URL не имеют, садиться таким запросам было некуда.
+  const byDistrict = DISTRICTS.map((district) => ({
+    district,
+    items: districtListings
+      .filter((l) => l.districtSlug === district.slug)
+      .map((l) => ({ listing: l, type: ROOM_TYPES.find((t) => t.slug === l.roomTypeSlug)! }))
+      .filter((x) => x.type)
+      .sort((a, b) => ROOM_TYPES.indexOf(a.type) - ROOM_TYPES.indexOf(b.type)),
+  })).filter((g) => g.items.length > 0);
 
   const districts = Array.from(new Set(cards.map((c) => c.district).filter((d): d is string => Boolean(d)))).sort(
     (a, b) => a.localeCompare(b, "ru"),
@@ -51,6 +69,36 @@ export default async function CatalogPage() {
       </div>
 
       <CatalogFilters cards={cards} districts={districts} developers={developers} terms={terms} rateText={rateText} />
+
+      {byDistrict.length > 0 ? (
+        <section className={styles.picksSection}>
+          <h2 className={styles.picksTitle}>Подборки по районам</h2>
+          <p className={styles.picksLead}>
+            Готовые срезы каталога — только те, где действительно есть выбор.
+          </p>
+          <div className={styles.picksGrid}>
+            {byDistrict.map(({ district, items }) => (
+              <div key={district.slug} className={styles.picksGroup}>
+                <div className={styles.picksDistrict}>{district.name}</div>
+                <div className={styles.picksLinks}>
+                  {items.map(({ listing, type }) => (
+                    <Link
+                      key={`${listing.districtSlug}/${listing.roomTypeSlug}`}
+                      href={`/catalog/${listing.districtSlug}/${listing.roomTypeSlug}`}
+                      className={styles.picksLink}
+                    >
+                      {type.plural.toLowerCase()}
+                      <span className={styles.picksCount}>
+                        {listing.count} {pluralizeRu(listing.count, "вариант", "варианта", "вариантов")}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className={styles.ctaSection}>
         <div className={styles.ctaInner}>

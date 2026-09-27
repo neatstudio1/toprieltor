@@ -3,6 +3,7 @@ import {
   getAllProjectSlugs,
   getDistricts,
   getEnrichedDevelopers,
+  getIndexableDistrictListings,
   getServices,
 } from "@/lib/cms/client";
 import { SITE_URL } from "@/lib/site";
@@ -11,13 +12,15 @@ import { SITEMAP_HEADERS, urlsetXml, type SitemapUrl } from "@/lib/sitemap-xml";
 export const revalidate = 3600;
 
 export async function GET() {
-  const [projectSlugs, articleSlugs, services, districts, developers] = await Promise.all([
-    getAllProjectSlugs(),
-    getAllArticleSlugs(),
-    getServices(),
-    getDistricts(),
-    getEnrichedDevelopers(),
-  ]);
+  const [projectSlugs, articleSlugs, services, districts, developers, districtListings] =
+    await Promise.all([
+      getAllProjectSlugs(),
+      getAllArticleSlugs(),
+      getServices(),
+      getDistricts(),
+      getEnrichedDevelopers(),
+      getIndexableDistrictListings(),
+    ]);
 
   const urls: SitemapUrl[] = [
     { path: "/", changeFrequency: "daily", priority: 1 },
@@ -44,6 +47,11 @@ export async function GET() {
       path: `/zastroyshchik/${d.slug}`,
       changeFrequency: "monthly" as const,
       priority: 0.7,
+    })),
+    ...districtListings.map((l) => ({
+      path: `/catalog/${l.districtSlug}/${l.roomTypeSlug}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
     })),
     ...projectSlugs.map((slug) => ({
       path: `/zhk/${slug}`,

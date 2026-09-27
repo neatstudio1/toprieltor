@@ -1,3 +1,9 @@
+import {
+  MIN_APARTMENTS_FOR_LANDING,
+  MIN_PROJECTS_FOR_LANDING,
+  ROOM_TYPES,
+  normalizeDistrict,
+} from "@/lib/districts";
 const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
 const REVALIDATE_SECONDS = 3600;
 
@@ -799,4 +805,112 @@ export function pickRelatedArticles(
   });
   scored.sort((x, y) => y.score - x.score);
   return scored.slice(0, limit).map((s) => s.a);
+}
+
+// ───────────────────────── посадочные страницы каталога ─────────────────────────
+
+export interface DistrictTypeListing {
+  districtSlug: string;
+  roomTypeSlug: string;
+  count: number;
+  priceMin: number;
+  priceMax: number;
+  areaMin: number;
+  areaMax: number;
+  /** Медианная цена квадратного метра по срезу. */
+  pricePerM2: number;
+  /** Слаги ЖК, где есть квартиры этого типа, от дешёвого к дорогому. */
+  projectSlugs: string[];
+}
+
+interface ApartmentWithProject extends ApartmentBrief {
+  project: { slug: string } | null;
+}
+
+/**
+ * Все квартиры разом, минимальными полями. Страниц-посадок три десятка, и каждой
+ * нужен срез по всей базе — поэтому один общий запрос, который переиспользуется
+ * через кэш fetch, а не по запросу на страницу.
+ */
+async function getAllApartmentsWithProject(): Promise<ApartmentWithProject[]> {
+  return fetchAllPages<ApartmentWithProject>("/apartments", () => {
+    const qs = new URLSearchParams();
+    qs.set("fields[0]", "slug");
+    qs.set("fields[1]", "type");
+    qs.set("fields[2]", "area_m2");
+    qs.set("fields[3]", "price_from");
+    qs.set("populate[project][fields][0]", "slug");
+    qs.set("sort", "id:asc");
+    return qs;
+  });
+}
+
+/** Срезы «район × комнатность» по всей базе, включая те, что не дотягивают до порога. */
+export async function getDistrictTypeListings(): Promise<DistrictTypeListing[]> {
+  const [apartments, cards] = await Promise.all([
+    getAllApartmentsWithProject(),
+    getCatalogCards(),
+  ]);
+
+  const districtByProject = new Map<string, string>();
+  for (const card of cards) {
+    const district = normalizeDistrict(card.district);
+    if (district) districtByProject.set(card.slug, district.slug);
+  }
+
+  const buckets = new Map<string, { apts: ApartmentWithProject[]; projects: Map<string, number> }>();
+  for (const apt of apartments) {
+    const projectSlug = apt.project?.slug;
+    if (!projectSlug || !apt.price_from) continue;
+    const districtSlug = districtByProject.get(projectSlug);
+    const roomType = ROOM_TYPES.find((t) => t.value === apt.type);
+    if (!districtSlug || !roomType) continue;
+
+    const key = `${districtSlug}/${roomType.slug}`;
+    let bucket = buckets.get(key);
+    if (!bucket) {
+      bucket = { apts: [], projects: new Map() };
+      buckets.set(key, bucket);
+    }
+    bucket.apts.push(apt);
+    const cheapest = bucket.projects.get(projectSlug);
+    if (cheapest === undefined || apt.price_from < cheapest) {
+      bucket.projects.set(projectSlug, apt.price_from);
+    }
+  }
+
+  return Array.from(buckets.entries()).map(([key, { apts, projects }]) => {
+    const [districtSlug, roomTypeSlug] = key.split("/");
+    const prices = apts.map((a) => a.price_from);
+    const areas = apts.map((a) => a.area_m2).filter((a) => a > 0);
+    // Медиана, а не min/max: делить самую дешёвую цену на самую большую площадь
+    // дало бы метр, которого нет ни в одной реальной квартире.
+    const perM2 = apts
+      .filter((a) => a.area_m2 > 0)
+      .map((a) => a.price_from / a.area_m2)
+      .sort((x, y) => x - y);
+    return {
+      districtSlug,
+      roomTypeSlug,
+      count: apts.length,
+      priceMin: Math.min(...prices),
+      priceMax: Math.max(...prices),
+      areaMin: areas.length ? Math.min(...areas) : 0,
+      areaMax: areas.length ? Math.max(...areas) : 0,
+      pricePerM2: perM2.length ? perM2[Math.floor(perM2.length / 2)] : 0,
+      projectSlugs: Array.from(projects.entries())
+        .sort((a, b) => a[1] - b[1])
+        .map(([slug]) => slug),
+    };
+  });
+}
+
+/** Только те срезы, под которые есть смысл заводить отдельный URL. */
+export async function getIndexableDistrictListings(): Promise<DistrictTypeListing[]> {
+  const all = await getDistrictTypeListings();
+  return all.filter(
+    (l) =>
+      l.count >= MIN_APARTMENTS_FOR_LANDING &&
+      l.projectSlugs.length >= MIN_PROJECTS_FOR_LANDING,
+  );
 }
