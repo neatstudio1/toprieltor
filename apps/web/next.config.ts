@@ -17,6 +17,12 @@ const DEVELOPER_IMAGE_HOSTS = [
 ];
 
 const nextConfig: NextConfig = {
+  // Strapi на проде однопоточный, а генерация статики запускает воркер на ядро.
+  // На восьми ядрах он отвечает таймаутами и сборка падает в середине — поэтому
+  // ограничиваем параллелизм. Сборка идёт дольше, но доходит до конца.
+  experimental: {
+    cpus: 2,
+  },
   images: {
     // Strapi runs on localhost in dev — the private-IP SSRF guard only needs
     // bypassing there; a real deployment points STRAPI_URL at a public host.

@@ -4,9 +4,8 @@ import {
   getAllApartmentRouteParams,
   getApartmentBySlug,
   getMortgageConfig,
-  getProjectApartmentsBrief,
+  getIndexableApartmentSlugs,
   getSimilarApartments,
-  pickRepresentativeSlugs,
 } from "@/lib/cms/client";
 import { formatRub } from "@/lib/format";
 import { SiteHeader } from "@/components/site-header";
@@ -67,8 +66,8 @@ export async function generateMetadata({
   // Only one apartment per room type stays indexable — the rest are near-identical
   // and were being dropped by Google as thin duplicates anyway (see
   // pickRepresentativeSlugs). `follow` keeps link equity flowing to the ЖК page.
-  const siblings = await getProjectApartmentsBrief(resolved.projectSlug);
-  const isIndexable = pickRepresentativeSlugs(siblings).has(resolved.slug);
+  const indexable = await getIndexableApartmentSlugs();
+  const isIndexable = indexable.has(`${resolved.projectSlug}/${resolved.slug}`);
 
   return {
     ...pageMetadata({

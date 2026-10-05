@@ -316,7 +316,7 @@ interface StrapiOneResponse<T> {
  * нарастающей паузой закрывает эти разрывы.
  */
 async function strapiGet<T>(path: string, attempt = 1): Promise<T> {
-  const MAX_ATTEMPTS = 4;
+  const MAX_ATTEMPTS = 6;
   try {
     const res = await fetch(`${STRAPI_URL}/api${path}`, {
       next: { revalidate: REVALIDATE_SECONDS },
@@ -341,7 +341,10 @@ async function strapiGet<T>(path: string, attempt = 1): Promise<T> {
 }
 
 function delay(attempt: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, attempt * 1500));
+  // Экспоненциально, с потолком: при перегрузке CMS короткие паузы только
+  // добавляют ей нагрузки, а сборке нужно дождаться, а не упасть.
+  const ms = Math.min(1500 * 2 ** (attempt - 1), 20_000);
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 const APARTMENT_WITH_PROJECT_POPULATE =
@@ -490,17 +493,11 @@ function isBetterRepresentative(candidate: ApartmentBrief, current: ApartmentBri
 export async function getIndexableApartmentRouteParams(): Promise<
   ApartmentRouteParams[]
 > {
-  const projectSlugs = await getAllProjectSlugs();
-  const params: ApartmentRouteParams[] = [];
-
-  for (const projectSlug of projectSlugs) {
-    const apartments = await getProjectApartmentsBrief(projectSlug);
-    for (const slug of pickRepresentativeSlugs(apartments)) {
-      params.push({ projectSlug, slug });
-    }
-  }
-
-  return params;
+  const indexable = await getIndexableApartmentSlugs();
+  return Array.from(indexable, (key) => {
+    const [projectSlug, slug] = key.split("/");
+    return { projectSlug, slug };
+  });
 }
 
 async function fetchAllPages<T>(
@@ -913,4 +910,33 @@ export async function getIndexableDistrictListings(): Promise<DistrictTypeListin
       l.count >= MIN_APARTMENTS_FOR_LANDING &&
       l.projectSlugs.length >= MIN_PROJECTS_FOR_LANDING,
   );
+}
+
+/**
+ * Слаги квартир, которые остаются в индексе — одним множеством на всю базу.
+ *
+ * Раньше страница квартиры выясняла это через getProjectApartmentsBrief, то есть
+ * делала запрос по своему ЖК на каждую из 2700 карточек. После перевода выборки
+ * на постраничную это превратилось в пару запросов на карточку, и сборка начала
+ * стабильно ронять Strapi таймаутами. Здесь вся база забирается один раз.
+ */
+export async function getIndexableApartmentSlugs(): Promise<Set<string>> {
+  const apartments = await getAllApartmentsWithProject();
+
+  const byProject = new Map<string, ApartmentBrief[]>();
+  for (const apt of apartments) {
+    const projectSlug = apt.project?.slug;
+    if (!projectSlug) continue;
+    const list = byProject.get(projectSlug);
+    if (list) list.push(apt);
+    else byProject.set(projectSlug, [apt]);
+  }
+
+  const indexable = new Set<string>();
+  for (const [projectSlug, list] of byProject) {
+    for (const slug of pickRepresentativeSlugs(list)) {
+      indexable.add(`${projectSlug}/${slug}`);
+    }
+  }
+  return indexable;
 }

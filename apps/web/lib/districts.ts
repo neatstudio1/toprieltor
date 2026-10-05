@@ -16,6 +16,13 @@ export interface District {
   name: string;
   /** Предложный падеж целиком, включая предлог: «в Ботаническом», «на Уралмаше». */
   inPhrase: string;
+  /**
+   * То же, но с городом. Без него Яндекс показывал посадки по запросам
+   * «3 комнатная квартира в Челябинске», «в Смоленске», «в Твери»: названия
+   * «центр», «Чкаловский район», «Ботанический» есть в десятках городов,
+   * и страница без Екатеринбурга подходит под любой из них.
+   */
+  inCityPhrase: string;
   /** Сырые значения district из базы, которые сюда сводятся. */
   raw: string[];
   /** Есть ли редакционный гид /rayon/[slug]. */
@@ -27,6 +34,7 @@ export const DISTRICTS: District[] = [
     slug: "akademicheskiy",
     name: "Академический",
     inPhrase: "в Академическом",
+    inCityPhrase: "в Академическом районе Екатеринбурга",
     raw: ["Академический"],
     hasGuide: true,
   },
@@ -34,6 +42,7 @@ export const DISTRICTS: District[] = [
     slug: "botanicheskiy",
     name: "Ботанический",
     inPhrase: "в Ботаническом",
+    inCityPhrase: "в Ботаническом районе Екатеринбурга",
     raw: ["м. Ботаническая", "Южная Ботаника"],
     hasGuide: true,
   },
@@ -41,6 +50,7 @@ export const DISTRICTS: District[] = [
     slug: "sortirovka",
     name: "Сортировка",
     inPhrase: "на Сортировке",
+    inCityPhrase: "на Сортировке в Екатеринбурге",
     raw: ["Сортировка", "Новая Сортировка"],
     hasGuide: true,
   },
@@ -48,6 +58,7 @@ export const DISTRICTS: District[] = [
     slug: "centr",
     name: "Центр",
     inPhrase: "в центре",
+    inCityPhrase: "в центре Екатеринбурга",
     raw: ["Центр", "Юг-Центр", "Центральный стадион"],
     hasGuide: false,
   },
@@ -55,6 +66,7 @@ export const DISTRICTS: District[] = [
     slug: "chkalovskiy",
     name: "Чкаловский район",
     inPhrase: "в Чкаловском районе",
+    inCityPhrase: "в Чкаловском районе Екатеринбурга",
     raw: ["м. Чкаловская", "Чкаловский район"],
     hasGuide: false,
   },
@@ -62,6 +74,7 @@ export const DISTRICTS: District[] = [
     slug: "elmash",
     name: "Эльмаш",
     inPhrase: "на Эльмаше",
+    inCityPhrase: "на Эльмаше в Екатеринбурге",
     raw: ["Эльмаш"],
     hasGuide: false,
   },
@@ -69,6 +82,7 @@ export const DISTRICTS: District[] = [
     slug: "uktus",
     name: "Уктус",
     inPhrase: "на Уктусе",
+    inCityPhrase: "на Уктусе в Екатеринбурге",
     raw: ["Уктус"],
     hasGuide: false,
   },
@@ -76,6 +90,7 @@ export const DISTRICTS: District[] = [
     slug: "vtuzgorodok",
     name: "Втузгородок",
     inPhrase: "во Втузгородке",
+    inCityPhrase: "во Втузгородке в Екатеринбурге",
     raw: ["Втузгородок"],
     hasGuide: false,
   },
@@ -83,6 +98,7 @@ export const DISTRICTS: District[] = [
     slug: "viz",
     name: "ВИЗ",
     inPhrase: "на ВИЗе",
+    inCityPhrase: "на ВИЗе в Екатеринбурге",
     raw: ["ВИЗ", "Верх-Исетский район"],
     hasGuide: true,
   },
@@ -90,6 +106,7 @@ export const DISTRICTS: District[] = [
     slug: "uralmash",
     name: "Уралмаш",
     inPhrase: "на Уралмаше",
+    inCityPhrase: "на Уралмаше в Екатеринбурге",
     raw: ["Уралмаш"],
     hasGuide: true,
   },

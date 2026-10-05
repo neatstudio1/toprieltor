@@ -76,10 +76,10 @@ export async function generateMetadata({
 
   return pageMetadata({
     title:
-      `${roomType.plural} ${district.inPhrase}: ${listing.count} ` +
+      `${roomType.plural} ${district.inCityPhrase}: ${listing.count} ` +
       `${pluralizeRu(listing.count, "вариант", "варианта", "вариантов")} от ${millions(listing.priceMin)} ₽`,
     description:
-      `${roomType.plural} в новостройках ${district.inPhrase} — ${listing.count} ` +
+      `${roomType.plural} в новостройках ${district.inCityPhrase} — ${listing.count} ` +
       `${pluralizeRu(listing.count, "квартира", "квартиры", "квартир")} в ${listing.projectSlugs.length} ЖК, ` +
       `цены от ${formatRub(listing.priceMin)} ₽. Подбор и сопровождение сделки бесплатно.`,
     path: `/catalog/${district.slug}/${roomType.slug}`,
@@ -150,7 +150,10 @@ export default async function DistrictTypePage({ params }: { params: Promise<Rou
         data={breadcrumbListSchema([
           { name: "Главная", path: "/" },
           { name: "Каталог ЖК", path: "/catalog" },
-          { name: `${roomType.plural} ${district.inPhrase}`, path: `/catalog/${district.slug}/${roomType.slug}` },
+          {
+            name: `${roomType.plural} ${district.inCityPhrase}`,
+            path: `/catalog/${district.slug}/${roomType.slug}`,
+          },
         ])}
       />
       <JsonLd data={catalogItemListSchema(projects)} />
@@ -163,7 +166,7 @@ export default async function DistrictTypePage({ params }: { params: Promise<Rou
         </div>
 
         <h1 className={styles.title}>
-          {roomType.plural} {district.inPhrase}
+          {roomType.plural} {district.inCityPhrase}
         </h1>
 
         <p className={styles.lead}>
