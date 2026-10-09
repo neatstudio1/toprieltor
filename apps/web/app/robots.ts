@@ -1,7 +1,19 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 
-const AI_BOTS = ["GPTBot", "ClaudeBot", "PerplexityBot", "Google-Extended"];
+// YandexAdditionalBot собирает ответы для Алисы и Нейро, OAI-SearchBot и
+// ChatGPT-User — поиск ChatGPT; без явного правила часть из них ведёт себя
+// осторожнее, чем с общим «*».
+const AI_BOTS = [
+  "YandexAdditionalBot",
+  "GPTBot",
+  "OAI-SearchBot",
+  "ChatGPT-User",
+  "ClaudeBot",
+  "Claude-SearchBot",
+  "PerplexityBot",
+  "Google-Extended",
+];
 
 export default function robots(): MetadataRoute.Robots {
   return {

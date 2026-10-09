@@ -4,6 +4,7 @@ import {
   ROOM_TYPES,
   normalizeDistrict,
 } from "@/lib/districts";
+import { isMergedArticle } from "@/lib/article-redirects";
 const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
 const REVALIDATE_SECONDS = 3600;
 
@@ -692,7 +693,7 @@ export async function getArticles(): Promise<Article[]> {
   const body = await strapiGet<StrapiListResponse<Article>>(
     `/articles?${qs.toString()}`,
   );
-  return body.data;
+  return body.data.filter((a) => !isMergedArticle(a.slug));
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
@@ -712,7 +713,7 @@ export async function getAllArticleSlugs(): Promise<string[]> {
   const body = await strapiGet<StrapiListResponse<Article>>(
     `/articles?${qs.toString()}`,
   );
-  return body.data.map((a) => a.slug);
+  return body.data.map((a) => a.slug).filter((slug) => !isMergedArticle(slug));
 }
 
 // ───────────────────────── developer page ─────────────────────────

@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { MERGED_ARTICLES } from "./lib/article-redirects";
 
 const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
 const strapiUrl = new URL(STRAPI_URL);
@@ -22,6 +23,14 @@ const nextConfig: NextConfig = {
   // ограничиваем параллелизм. Сборка идёт дольше, но доходит до конца.
   experimental: {
     cpus: 2,
+  },
+  async redirects() {
+    return Object.entries(MERGED_ARTICLES).map(([from, to]) => ({
+      source: `/blog/${from}`,
+      destination: `/blog/${to}`,
+      // permanent: true даёт 308, а Яндекс склейку надёжно делает по 301.
+      statusCode: 301 as const,
+    }));
   },
   images: {
     // Strapi runs on localhost in dev — the private-IP SSRF guard only needs
