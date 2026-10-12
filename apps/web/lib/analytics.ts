@@ -28,6 +28,12 @@ export const GOALS = {
   quizSubmit: "quiz_submit",
   /** Заявка из модального окна (кнопки «записаться на просмотр» и т.п.). */
   leadSubmit: "lead_submit",
+  /** Посадочные /lp: клик по любой кнопке, открывающей форму. */
+  lpCtaClick: "lp_cta_click",
+  /** Посадочные /lp: заявка принята сервером — главная цель для оптимизации Директа. */
+  lpLead: "lp_lead",
+  lpTgClick: "lp_tg_click",
+  lpPhoneClick: "lp_phone_click",
 } as const;
 
 export type GoalName = (typeof GOALS)[keyof typeof GOALS];
@@ -87,4 +93,47 @@ export function trafficSource(): { campaign: string | null; medium: string | nul
   } catch {
     return { campaign: null, medium: null };
   }
+}
+
+/** Метки рекламы, которые мы вообще готовы хранить и отправлять вместе с заявкой. */
+export const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "yclid"] as const;
+export type UtmParams = Partial<Record<(typeof UTM_KEYS)[number], string>>;
+
+const UTM_STORAGE_KEY = "lp_utm";
+
+/**
+ * Метки из адреса, сохранённые в sessionStorage при первом заходе: после
+ * перезагрузки страницы или перехода по якорю они уже не в ссылке, а в заявку
+ * должны попасть. Значения обрезаются, ключи — только из белого списка.
+ */
+export function captureUtm(): UtmParams {
+  if (typeof window === "undefined") return {};
+  let stored: UtmParams = {};
+  try {
+    stored = JSON.parse(window.sessionStorage.getItem(UTM_STORAGE_KEY) ?? "{}") as UtmParams;
+  } catch {
+    stored = {};
+  }
+  let fromUrl: UtmParams = {};
+  try {
+    const q = new URLSearchParams(window.location.search);
+    for (const key of UTM_KEYS) {
+      const value = q.get(key);
+      if (value && value.trim()) fromUrl = { ...fromUrl, [key]: value.trim().slice(0, 200) };
+    }
+  } catch {
+    fromUrl = {};
+  }
+  if (Object.keys(fromUrl).length === 0) return stored;
+  try {
+    window.sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(fromUrl));
+  } catch {
+    /* приватный режим — живём без хранилища */
+  }
+  return fromUrl;
+}
+
+/** Цель посадочной: во всех целях есть landing и utm_term, чтобы в Метрике резать по варианту и запросу. */
+export function lpGoal(goal: GoalName, landing: string, params?: Record<string, unknown>): void {
+  reachGoal(goal, { landing, utm_term: captureUtm().utm_term ?? "none", ...params });
 }

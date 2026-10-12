@@ -234,7 +234,7 @@ export function QuizPopup({ config }: { config: MortgageConfig }) {
 
   const nameReady = name.trim().length > 0 && phone.trim().length >= 4 && consent;
 
-  if (!visible || pathname?.startsWith("/quiz")) return null;
+  if (!visible || pathname?.startsWith("/quiz") || pathname?.startsWith("/lp/")) return null;
 
   const hasStickyBar = pathname?.startsWith("/zhk/") ?? false;
 

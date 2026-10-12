@@ -1,7 +1,8 @@
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
 
 export interface LeadInput {
-  name: string;
+  /** У заявок с посадочных можно не спрашивать имя — бэкенд требует его только вне landing. */
+  name?: string;
   phone: string;
   comment: string;
   sourcePath: string;
@@ -12,6 +13,10 @@ export interface LeadInput {
   elapsedMs: number;
   /** Present only for quiz submissions — the backend auto-tags lead_source: "quiz" when this is set. */
   quizAnswers?: Record<string, unknown>;
+  /** Посадочные /lp: вариант страницы («kvartiry/2k»), канал связи и метки рекламы. */
+  landing?: string;
+  messenger?: "telegram" | "max" | "call";
+  utm?: Record<string, string>;
 }
 
 export type LeadResult = { ok: true } | { ok: false; message: string };
@@ -23,12 +28,15 @@ export async function submitLead(input: LeadInput): Promise<LeadResult> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         data: {
-          name: input.name,
+          name: input.name || null,
           phone: input.phone,
           comment: input.comment || null,
           source_path: input.sourcePath,
           source_title: input.sourceTitle,
           ...(input.quizAnswers ? { quiz_answers: input.quizAnswers } : {}),
+          ...(input.landing ? { landing: input.landing } : {}),
+          ...(input.messenger ? { messenger: input.messenger } : {}),
+          ...(input.utm && Object.keys(input.utm).length ? { utm: input.utm } : {}),
         },
         website: input.website,
         elapsed_ms: input.elapsedMs,

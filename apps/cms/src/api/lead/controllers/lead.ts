@@ -14,6 +14,20 @@ function normalizeRuPhone(raw: string): string | null {
   return null;
 }
 
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'yclid'] as const;
+const MESSENGERS = ['telegram', 'max', 'call'];
+
+/** Берём только известные метки и обрезаем значения: всё остальное из ссылки в базу не попадает. */
+function cleanUtm(raw: unknown): Record<string, string> | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const out: Record<string, string> = {};
+  for (const key of UTM_KEYS) {
+    const value = (raw as Record<string, unknown>)[key];
+    if (typeof value === 'string' && value.trim()) out[key] = value.trim().slice(0, 200);
+  }
+  return Object.keys(out).length ? out : null;
+}
+
 export default factories.createCoreController('api::lead.lead', ({ strapi }) => ({
   async create(ctx) {
     const body = ctx.request.body ?? {};
@@ -38,7 +52,8 @@ export default factories.createCoreController('api::lead.lead', ({ strapi }) => 
       ctx.body = { error: { status: 400, name: 'ValidationError', message: 'Некорректный номер телефона' } };
       return;
     }
-    if (!data.name || !String(data.name).trim()) {
+    const isLanding = typeof data.landing === 'string' && data.landing.trim().length > 0;
+    if (!isLanding && (!data.name || !String(data.name).trim())) {
       ctx.status = 400;
       ctx.body = { error: { status: 400, name: 'ValidationError', message: 'Укажите имя' } };
       return;
@@ -48,14 +63,17 @@ export default factories.createCoreController('api::lead.lead', ({ strapi }) => 
 
     ctx.request.body = {
       data: {
-        name: String(data.name).trim().slice(0, 200),
+        name: data.name ? String(data.name).trim().slice(0, 200) : null,
         phone,
         comment: data.comment ? String(data.comment).trim().slice(0, 2000) : null,
         source_path: data.source_path ? String(data.source_path).slice(0, 300) : null,
         source_title: data.source_title ? String(data.source_title).slice(0, 300) : null,
         lead_status: 'new',
-        lead_source: hasQuizAnswers ? 'quiz' : 'viewing',
+        lead_source: isLanding ? 'landing' : hasQuizAnswers ? 'quiz' : 'viewing',
         quiz_answers: hasQuizAnswers ? data.quiz_answers : null,
+        landing: isLanding ? String(data.landing).trim().slice(0, 100) : null,
+        messenger: isLanding && MESSENGERS.includes(data.messenger) ? data.messenger : null,
+        utm: isLanding ? cleanUtm(data.utm) : null,
       },
     };
 

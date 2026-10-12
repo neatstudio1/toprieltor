@@ -843,6 +843,20 @@ async function getAllApartmentsWithProject(): Promise<ApartmentWithProject[]> {
   });
 }
 
+/** Ниже этой цены в базе стоит мусор (парсер не нашёл цену и записал обрезок). */
+const MIN_SANE_APARTMENT_PRICE = 1_500_000;
+
+/** Минимальная цена по каждому типу квартир («студия», «1к» …) — для цен на посадочных /lp. */
+export async function getMinPriceByType(): Promise<Record<string, number>> {
+  const apartments = await getAllApartmentsWithProject();
+  const min: Record<string, number> = {};
+  for (const apt of apartments) {
+    if (!apt.price_from || apt.price_from < MIN_SANE_APARTMENT_PRICE) continue;
+    if (min[apt.type] === undefined || apt.price_from < min[apt.type]) min[apt.type] = apt.price_from;
+  }
+  return min;
+}
+
 /** Срезы «район × комнатность» по всей базе, включая те, что не дотягивают до порога. */
 export async function getDistrictTypeListings(): Promise<DistrictTypeListing[]> {
   const [apartments, cards] = await Promise.all([
