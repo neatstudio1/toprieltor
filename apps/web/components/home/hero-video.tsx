@@ -13,7 +13,7 @@ import { DeferredVideo } from "@/components/deferred-video";
 export function HeroVideo({ className }: { className?: string }) {
   return (
     <>
-      <Image src="/hero-poster.webp" alt="" fill priority sizes="100vw" className={className} />
+      <Image src="/hero-bg.webp" alt="" fill priority sizes="100vw" className={className} />
       <DeferredVideo src="/hero.mp4" className={className} />
     </>
   );

@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
     // не immutable, а неделя: замена файла доедет до всех максимум за 7 дней.
     return [
       {
-        source: "/:file(hero\\.mp4|hero-poster\\.webp|yana-chekulova\\.webp|yana-chekulova-sm\\.webp)",
+        source: "/:file(hero\\.mp4|hero-poster\\.webp|hero-bg\\.webp|yana-chekulova\\.webp|yana-chekulova-sm\\.webp)",
         headers: [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=86400" }],
       },
       // Только папки с картинками: /lp/[variant] — это страницы лендингов, им кеш на неделю нельзя.
