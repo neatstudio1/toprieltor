@@ -1,0 +1,70 @@
+.page {
+  min-height: calc(100vh - 64px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 440px;
+  gap: 56px;
+  align-items: center;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 64px 32px 96px;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+
+.title {
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 28px;
+}
+
+.points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+  font-size: 17px;
+  color: var(--ink-2, #3f3f46);
+}
+
+.points li {
+  position: relative;
+  padding-left: 30px;
+}
+
+.points li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.card {
+  background: var(--card, #fff);
+  border: 1px solid var(--line, #e4e4e7);
+  border-radius: 20px;
+  padding: 32px;
+}
+
+@media (max-width: 860px) {
+  .page {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 32px 16px 64px;
+  }
+
+  .card {
+    padding: 24px 20px;
+  }
+}

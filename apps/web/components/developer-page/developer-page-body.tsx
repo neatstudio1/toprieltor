@@ -8,6 +8,7 @@ import { JkShowcaseGrid } from "@/components/catalog/jk-showcase-grid";
 import { RelatedPosts } from "@/components/blog/related-posts";
 import styles from "./developer-page-body.module.css";
 import { TELEGRAM_URL, TELEGRAM_HANDLE } from "@/lib/site";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 
 const PARTNER_TERMS = [
@@ -112,9 +113,9 @@ export function DeveloperPageBody({
                 </div>
               ))}
             </div>
-            <Link href="/quiz" className={`tpl-btn-prim ${styles.noteCta}`}>
+            <LeadCtaButton className={`tpl-btn-prim ${styles.noteCta}`}>
               Подобрать квартиру у застройщика
-            </Link>
+            </LeadCtaButton>
           </div>
         </div>
       </section>
@@ -193,13 +194,13 @@ export function DeveloperPageBody({
           <div className={styles.finalCtaEyebrow}>Первый шаг</div>
           <h2 className={styles.finalCtaTitle}>{dev.cta_title ?? `Подберём квартиру у ${dev.name}`}</h2>
           <p className={styles.finalCtaLead}>
-            Пройдите квиз за 2 минуты — покажем объекты застройщика под ваш бюджет, сравним с альтернативами и
+            Оставьте заявку — покажем объекты застройщика под ваш бюджет, сравним с альтернативами и
             проверим договор.
           </p>
           <div className={styles.finalCtaActions}>
-            <Link href="/quiz" className={`tpl-btn-prim ${styles.finalCtaBtn}`}>
-              Пройти квиз за 2 минуты
-            </Link>
+            <LeadCtaButton className={`tpl-btn-prim ${styles.finalCtaBtn}`}>
+              Подобрать квартиру
+            </LeadCtaButton>
             <a href={TELEGRAM_URL} className={styles.finalCtaTg}>
               или напишите в Telegram {TELEGRAM_HANDLE}
             </a>

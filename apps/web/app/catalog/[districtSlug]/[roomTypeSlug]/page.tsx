@@ -25,6 +25,7 @@ import { breadcrumbListSchema, catalogItemListSchema } from "@/lib/json-ld";
 import { pageMetadata } from "@/lib/site";
 import { formatRub, pluralizeRu } from "@/lib/format";
 import styles from "./page.module.css";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 export const revalidate = 3600;
 
@@ -220,7 +221,7 @@ export default async function DistrictTypePage({ params }: { params: Promise<Rou
             ) : (
               <>
                 Подобрать вариант под бюджет и льготную программу поможем бесплатно —{" "}
-                <Link href="/quiz">пройдите короткий квиз</Link>.
+                <LeadCtaButton style={{ background: "none", padding: 0, color: "inherit", font: "inherit", textDecoration: "underline" }}>оставьте заявку</LeadCtaButton>.
               </>
             )}
           </p>
@@ -257,9 +258,9 @@ export default async function DistrictTypePage({ params }: { params: Promise<Rou
             подберём за пару дней, бесплатно.
           </p>
           <div className={styles.ctaRow}>
-            <Link href="/quiz" className="btn-prim">
-              Пройти квиз за 2 минуты
-            </Link>
+            <LeadCtaButton className="btn-prim">
+              Подобрать квартиру
+            </LeadCtaButton>
             <Link href="/catalog" className="btn-sec">
               Весь каталог новостроек
             </Link>

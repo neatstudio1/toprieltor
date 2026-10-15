@@ -6,6 +6,7 @@ import {
   PHONE_TEL,
 } from "@/lib/site";
 import styles from "./site-footer.module.css";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 export function SiteFooter() {
   return (
@@ -52,9 +53,9 @@ export function SiteFooter() {
             <Link href="/contacts" className={styles.columnLink}>
               Все контакты
             </Link>
-            <Link href="/quiz" className={styles.columnLink}>
-              Пройти квиз
-            </Link>
+            <LeadCtaButton className={styles.columnLink}>
+              Подобрать квартиру
+            </LeadCtaButton>
           </div>
         </div>
       </div>

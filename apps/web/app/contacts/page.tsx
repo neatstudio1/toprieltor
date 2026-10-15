@@ -18,6 +18,7 @@ import {
   SITE_URL,
 } from "@/lib/site";
 import styles from "./page.module.css";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 export const metadata: Metadata = {
   title: `Контакты ${SITE_NAME} — риелтор по новостройкам в Екатеринбурге`,
@@ -142,9 +143,9 @@ export default function ContactsPage() {
           <a href={`tel:${PHONE_TEL}`} className="btn-prim">
             Позвонить
           </a>
-          <Link href="/quiz" className="btn-sec">
-            Пройти квиз за 2 минуты
-          </Link>
+          <LeadCtaButton className="btn-sec">
+            Подобрать квартиру
+          </LeadCtaButton>
           <Link href="/catalog" className="btn-sec">
             Смотреть каталог ЖК
           </Link>

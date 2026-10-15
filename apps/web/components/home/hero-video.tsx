@@ -1,36 +1,20 @@
-"use client";
-
-import { useEffect, useRef } from "react";
+import Image from "next/image";
+import { DeferredVideo } from "@/components/deferred-video";
 
 /**
- * Plain `<video autoPlay muted>` is unreliable after SSR/hydration — React
- * doesn't always sync the `muted` JSX attribute to the actual DOM property,
- * and browsers check that property (not the attribute) before allowing
- * autoplay. Setting it imperatively on mount is the reliable fix.
+ * Фон первого экрана: картинка сразу, видео поверх — потом и только на ПК.
+ *
+ * Раньше здесь был `<video poster preload="auto">` с первого байта: телефон
+ * качал 1,4 МБ ролика, а LCP на мобильном был 7,9 с. Картинка идёт через
+ * next/image с priority — телефон получает версию под свою ширину вместо
+ * 190 КБ оригинала, и она же становится крупнейшим элементом экрана.
+ * Ролик подключает DeferredVideo после загрузки страницы.
  */
 export function HeroVideo({ className }: { className?: string }) {
-  const ref = useRef<HTMLVideoElement | null>(null);
-
-  useEffect(() => {
-    const video = ref.current;
-    if (!video) return;
-    video.muted = true;
-    video.play().catch(() => {
-      // Autoplay blocked (e.g. low-power mode) — poster stays visible, that's fine.
-    });
-  }, []);
-
   return (
-    <video
-      ref={ref}
-      className={className}
-      poster="/hero-poster.webp"
-      src="/hero.mp4"
-      autoPlay
-      muted
-      loop
-      playsInline
-      preload="auto"
-    />
+    <>
+      <Image src="/hero-poster.webp" alt="" fill priority sizes="100vw" className={className} />
+      <DeferredVideo src="/hero.mp4" className={className} />
+    </>
   );
 }

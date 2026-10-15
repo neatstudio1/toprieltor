@@ -14,6 +14,7 @@ import {
 } from "./service-widgets";
 import styles from "./service-page-body.module.css";
 import { TELEGRAM_URL, TELEGRAM_HANDLE } from "@/lib/site";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 
 export function ServicePageBody({
@@ -52,9 +53,9 @@ export function ServicePageBody({
             <h1 className={styles.h1}>{svc.h1}</h1>
             {svc.pitch ? <p className={styles.pitch}>{svc.pitch}</p> : null}
             <div className={styles.heroActions}>
-              <Link href="/quiz" className={`tpl-btn-prim ${styles.heroBtnPrim}`}>
+              <LeadCtaButton className={`tpl-btn-prim ${styles.heroBtnPrim}`}>
                 Подобрать под ключ
-              </Link>
+              </LeadCtaButton>
               <a href="#how" className={styles.heroBtnSec}>
                 Как это работает
               </a>
@@ -179,9 +180,9 @@ export function ServicePageBody({
           <h2 className={styles.finalCtaTitle}>{svc.cta_title}</h2>
           {svc.cta_text ? <p className={styles.finalCtaLead}>{svc.cta_text}</p> : null}
           <div className={styles.finalCtaActions}>
-            <Link href="/quiz" className={`tpl-btn-prim ${styles.finalCtaBtn}`}>
+            <LeadCtaButton className={`tpl-btn-prim ${styles.finalCtaBtn}`}>
               Подобрать под ключ
-            </Link>
+            </LeadCtaButton>
             <a href={TELEGRAM_URL} className={styles.finalCtaTg}>
               или напишите в Telegram {TELEGRAM_HANDLE}
             </a>

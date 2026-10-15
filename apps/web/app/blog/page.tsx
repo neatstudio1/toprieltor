@@ -9,6 +9,7 @@ import { pageMetadata } from "@/lib/site";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbListSchema } from "@/lib/json-ld";
 import styles from "./page.module.css";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 export const revalidate = 3600;
 
@@ -82,12 +83,12 @@ export default async function BlogPage() {
           <div>
             <h2 className={styles.ctaTitle}>Разберём вашу ситуацию лично</h2>
             <p className={styles.ctaLead}>
-              Пройдите квиз за 2 минуты — подскажем программу ипотеки и подберём новостройку под ваш капитал.
+              Оставьте заявку — подскажем программу ипотеки и подберём новостройку под ваш капитал.
             </p>
           </div>
-          <Link href="/quiz" className={`tpl-btn-prim ${styles.ctaBtn}`}>
-            Пройти квиз
-          </Link>
+          <LeadCtaButton className={`tpl-btn-prim ${styles.ctaBtn}`}>
+            Подобрать квартиру
+          </LeadCtaButton>
         </div>
       </section>
 

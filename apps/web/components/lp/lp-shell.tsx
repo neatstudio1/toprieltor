@@ -3,7 +3,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { LpModal } from "./lp-modal";
 import { StickyBar } from "./sticky-bar";
-import { QuizBubble } from "./quiz-bubble";
 import { GOALS, captureUtm, lpGoal } from "@/lib/analytics";
 import type { LpMessenger } from "./use-lead-submit";
 import s from "./lp.module.css";
@@ -33,11 +32,11 @@ const BAR_SCROLL_THRESHOLD = 640;
 
 export function LpShell({
   children,
-  roomHints,
   landing,
 }: {
   children: ReactNode;
-  roomHints: string[];
+  /** Подсказки для бывшего мини-квиза; квиз убран, проп оставлен до чистки страницы. */
+  roomHints?: string[];
   landing: LandingMeta;
 }) {
   const [formOpen, setFormOpen] = useState(false);
@@ -100,7 +99,6 @@ export function LpShell({
       <div className={s.overlays}>
         <StickyBar visible={showBar && !formOpen} onOpen={() => openForm("sticky")} />
         {formOpen ? <LpModal step={formStep} messenger={thanksMessenger} onClose={closeForm} /> : null}
-        <QuizBubble hidden={formOpen} raised={showBar} roomHints={roomHints} />
       </div>
     </LpContext.Provider>
   );

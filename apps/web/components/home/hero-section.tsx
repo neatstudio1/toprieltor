@@ -1,8 +1,8 @@
-import Link from "next/link";
 import type { HeroStat } from "@/lib/cms/client";
 import { CountUp } from "@/components/count-up";
 import { HeroVideo } from "./hero-video";
 import styles from "./hero-section.module.css";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 export function HeroSection({
   eyebrow,
@@ -34,9 +34,9 @@ export function HeroSection({
           </h1>
           <p className={styles.subtitle}>{subtitle}</p>
           <div className={styles.ctaRow}>
-            <Link href="/quiz" className={`tpl-btn-prim ${styles.ctaPrimary}`}>
-              Начать подбор за 2 минуты
-            </Link>
+            <LeadCtaButton className={`tpl-btn-prim ${styles.ctaPrimary}`}>
+              Подобрать квартиру бесплатно
+            </LeadCtaButton>
             <a href="#how" className={styles.ctaSecondary}>
               Как это работает
             </a>

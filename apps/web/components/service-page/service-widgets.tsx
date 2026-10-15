@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { calcMonthlyPayment } from "@/lib/mortgage";
 import { formatRub } from "@/lib/format";
 import { PhotoPlaceholder } from "@/components/photo-placeholder";
@@ -15,6 +14,7 @@ import {
   type BaItem,
 } from "./service-widget-data";
 import styles from "./service-widgets.module.css";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 function rateText(v: number): string {
   return v.toFixed(2).replace(/0$/, "").replace(/\.$/, "").replace(".", ",") + "%";
@@ -96,9 +96,9 @@ export function MortgageCalcWidget() {
               <span>{formatRub(pay * term * 12 - loan)} ₽</span>
             </div>
           </div>
-          <Link href="/quiz" className={`tpl-btn-prim ${styles.resultCta}`}>
+          <LeadCtaButton className={`tpl-btn-prim ${styles.resultCta}`}>
             Проверить одобрение в 25+ банках
-          </Link>
+          </LeadCtaButton>
           <p className={styles.resultNote}>Расчёт предварительный: точные условия и ставку подтверждает банк после скоринга.</p>
         </div>
       </div>
@@ -145,9 +145,9 @@ export function LegalChecklistWidget() {
               <span>обязателен</span>
             </div>
           </div>
-          <Link href="/quiz" className={`tpl-btn-prim ${styles.darkCta}`}>
+          <LeadCtaButton className={`tpl-btn-prim ${styles.darkCta}`}>
             Отдать объект на проверку
-          </Link>
+          </LeadCtaButton>
         </div>
       </div>
     </section>
@@ -190,9 +190,9 @@ export function DefectsWidget() {
               <span>20–45 дней</span>
             </div>
           </div>
-          <Link href="/quiz" className={`tpl-btn-prim ${styles.darkCta}`}>
+          <LeadCtaButton className={`tpl-btn-prim ${styles.darkCta}`}>
             Записаться на приёмку
-          </Link>
+          </LeadCtaButton>
         </div>
       </div>
     </section>
@@ -367,9 +367,9 @@ export function YieldCalcWidget() {
               <span>{mode === "short" ? "~11 недель" : "~3 недели"}</span>
             </div>
           </div>
-          <Link href="/quiz" className={`tpl-btn-prim ${styles.resultCta}`}>
+          <LeadCtaButton className={`tpl-btn-prim ${styles.resultCta}`}>
             Подобрать объект под доход
-          </Link>
+          </LeadCtaButton>
           <p className={styles.resultNote}>Расчёт по средним ставкам аренды Екатеринбурга за 2026 год, без учёта налогов и роста стоимости объекта.</p>
         </div>
       </div>

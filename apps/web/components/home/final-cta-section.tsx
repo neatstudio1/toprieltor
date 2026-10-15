@@ -1,6 +1,6 @@
-import Link from "next/link";
 import styles from "./final-cta-section.module.css";
 import { TELEGRAM_URL, TELEGRAM_HANDLE } from "@/lib/site";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 
 export function FinalCtaSection() {
@@ -12,9 +12,9 @@ export function FinalCtaSection() {
         <div className={styles.stack}>
           <div className={styles.beamWrap}>
             <span className={`beam-ring ${styles.beamRing}`} />
-            <Link href="/quiz" className={`tpl-btn-prim ${styles.cta}`}>
-              Пройдите квиз за 2 минуты
-            </Link>
+            <LeadCtaButton className={`tpl-btn-prim ${styles.cta}`}>
+              Оставить заявку на подбор
+            </LeadCtaButton>
           </div>
           <a href={TELEGRAM_URL} className={styles.telegram}>
             или напишите в Telegram {TELEGRAM_HANDLE}

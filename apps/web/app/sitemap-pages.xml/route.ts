@@ -25,7 +25,6 @@ export async function GET() {
   const urls: SitemapUrl[] = [
     { path: "/", changeFrequency: "daily", priority: 1 },
     { path: "/catalog", changeFrequency: "daily", priority: 0.9 },
-    { path: "/quiz", changeFrequency: "monthly", priority: 0.8 },
     { path: "/blog", changeFrequency: "daily", priority: 0.7 },
     { path: "/uslugi", changeFrequency: "monthly", priority: 0.8 },
     { path: "/rayon", changeFrequency: "monthly", priority: 0.7 },

@@ -3,8 +3,7 @@ import Script from "next/script";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { LeadModalProvider } from "@/components/lead-modal/lead-modal-provider";
-import { QuizPopup } from "@/components/quiz/quiz-popup";
-import { getMortgageConfig } from "@/lib/cms/client";
+import { FloatingLeadButton } from "@/components/lead-modal/floating-lead-button";
 // ID счётчика и цели живут в одном месте — lib/analytics.ts
 import { YANDEX_METRIKA_ID } from "@/lib/analytics";
 import "./globals.css";
@@ -52,7 +51,6 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const mortgageConfig = await getMortgageConfig();
   return (
     <html lang="ru" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body>
@@ -77,8 +75,10 @@ export default async function RootLayout({
             />
           </div>
         </noscript>
-        <LeadModalProvider>{children}</LeadModalProvider>
-        <QuizPopup config={mortgageConfig} />
+        <LeadModalProvider>
+          {children}
+          <FloatingLeadButton />
+        </LeadModalProvider>
       </body>
     </html>
   );

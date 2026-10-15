@@ -94,7 +94,7 @@ export default async function HomePage() {
       <WhyFreeFlow eyebrow="Прозрачная модель" title={home.why_free_title} steps={home.why_free_steps} />
       <HowItWorksSection title={home.how_it_works_title} steps={home.steps} />
       <PopularZhkSection
-        title="Новостройки, которые чаще всего выбирают через наш квиз"
+        title="Новостройки, которые чаще всего выбирают наши клиенты"
         cards={popularCards}
       />
       <MortgageSection title={home.mortgage_title} scenarios={home.mortgage_scenarios} />

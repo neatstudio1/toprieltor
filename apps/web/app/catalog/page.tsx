@@ -10,6 +10,7 @@ import { pageMetadata } from "@/lib/site";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbListSchema, catalogItemListSchema } from "@/lib/json-ld";
 import styles from "./page.module.css";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 export const revalidate = 3600;
 
@@ -105,13 +106,13 @@ export default async function CatalogPage() {
           <div>
             <h2 className={styles.ctaTitle}>Не нашли подходящий вариант?</h2>
             <p className={styles.ctaLead}>
-              Пройдите квиз за 2 минуты — подберём новостройку под цель, бюджет и маткапитал, в том числе вне
+              Оставьте заявку — подберём новостройку под цель, бюджет и маткапитал, в том числе вне
               каталога.
             </p>
           </div>
-          <Link href="/quiz" className={`tpl-btn-prim ${styles.ctaBtn}`}>
-            Пройти квиз
-          </Link>
+          <LeadCtaButton className={`tpl-btn-prim ${styles.ctaBtn}`}>
+            Подобрать квартиру
+          </LeadCtaButton>
         </div>
       </section>
 

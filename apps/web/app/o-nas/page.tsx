@@ -16,6 +16,7 @@ import {
   SITE_URL,
 } from "@/lib/site";
 import styles from "./page.module.css";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 export const metadata: Metadata = {
   title: `${AGENT_NAME} — риелтор по новостройкам в Екатеринбурге`,
@@ -185,7 +186,7 @@ export default function AboutPage() {
           <h2>Связаться напрямую</h2>
           <p>
             Позвоните или напишите в мессенджер — отвечаю лично. Если удобнее начать с задачи, а не с
-            разговора, пройдите короткий квиз, и я подготовлю подборку заранее.
+            разговора, оставьте заявку, и я подготовлю подборку заранее.
           </p>
           <div className={styles.contactLinks}>
             <a href={`tel:${PHONE_TEL}`} className="btn-prim">
@@ -194,9 +195,9 @@ export default function AboutPage() {
             <a href={TELEGRAM_URL} className="btn-sec">
               Telegram {TELEGRAM_HANDLE}
             </a>
-            <Link href="/quiz" className="btn-sec">
-              Пройти квиз
-            </Link>
+            <LeadCtaButton className="btn-sec">
+              Подобрать квартиру
+            </LeadCtaButton>
             <Link href="/contacts" className="btn-sec">
               Все контакты
             </Link>

@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { DeferredVideo } from "@/components/deferred-video";
 import s from "./lp.module.css";
 
 /**
  * Затемнённое видео на фоне первого экрана — только на десктопе: на телефоне
  * первый экран держится на фото, а гнать видео по мобильному трафику ради
- * фона не нужно. Тег монтируется после проверки ширины, поэтому телефон файл не качает.
+ * фона не нужно. Сам ролик подключается после загрузки страницы
+ * (DeferredVideo): с первого байта он был крупнейшим элементом экрана на ПК
+ * и тянул LCP, хотя под затемнением его почти не видно в первые секунды.
  */
 export function HeroVideo() {
   const [enabled, setEnabled] = useState(false);
-  const ref = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     const wide = window.matchMedia("(min-width: 768px)");
@@ -25,29 +27,11 @@ export function HeroVideo() {
     };
   }, []);
 
-  useEffect(() => {
-    const video = ref.current;
-    if (!video) return;
-    // см. components/home/hero-video.tsx: muted в JSX не всегда доезжает до DOM
-    video.muted = true;
-    video.play().catch(() => {});
-  }, [enabled]);
-
   if (!enabled) return null;
 
   return (
     <div className={s.heroVideoWrap} aria-hidden="true">
-      <video
-        ref={ref}
-        className={s.heroVideo}
-        poster="/hero-poster.webp"
-        src="/hero.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-      />
+      <DeferredVideo src="/hero.mp4" className={s.heroVideo} />
       <div className={s.heroVideoShade} />
     </div>
   );

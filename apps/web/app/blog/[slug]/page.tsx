@@ -14,6 +14,7 @@ import { articleSchema, breadcrumbListSchema, faqPageSchema } from "@/lib/json-l
 import { extractFaqFromMarkdown } from "@/lib/article-faq";
 import { matchServiceForArticle } from "@/lib/article-service";
 import styles from "./page.module.css";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 export const revalidate = 3600;
 
@@ -134,9 +135,9 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
                   <div className={styles.inlineCtaTitle}>Посчитаем ваш платёж бесплатно</div>
                   <div className={styles.inlineCtaLead}>Без давления. Ответим в Telegram.</div>
                 </div>
-                <Link href="/quiz" className={`tpl-btn-prim ${styles.inlineCtaBtn}`}>
-                  Пройти квиз
-                </Link>
+                <LeadCtaButton className={`tpl-btn-prim ${styles.inlineCtaBtn}`}>
+                  Подобрать квартиру
+                </LeadCtaButton>
               </>
             )}
           </div>
@@ -172,9 +173,9 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
       <section className={styles.footerCtaSection}>
         <div className={styles.footerCtaInner}>
           <h2 className={styles.footerCtaTitle}>Подберём новостройку под ваш капитал — бесплатно</h2>
-          <Link href="/quiz" className={`tpl-btn-prim ${styles.footerCtaBtn}`}>
+          <LeadCtaButton className={`tpl-btn-prim ${styles.footerCtaBtn}`}>
             Начать подбор
-          </Link>
+          </LeadCtaButton>
         </div>
       </section>
 

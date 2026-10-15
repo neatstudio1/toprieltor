@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ViewingCtaButton } from "@/components/lead-modal/viewing-cta-button";
 import styles from "./site-header.module.css";
 import { TELEGRAM_URL } from "@/lib/site";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 
 export interface SiteHeaderProps {
@@ -88,9 +89,9 @@ export function SiteHeader({ active, cta = "quiz" }: SiteHeaderProps) {
           {cta === "viewing" ? (
             <ViewingCtaButton className={`tpl-btn-prim ${styles.ctaButton}`} />
           ) : (
-            <Link href="/quiz" className={`tpl-btn-prim ${styles.ctaButton}`}>
+            <LeadCtaButton className={`tpl-btn-prim ${styles.ctaButton}`}>
               Подобрать квартиру
-            </Link>
+            </LeadCtaButton>
           )}
         </div>
         <button
@@ -139,9 +140,9 @@ export function SiteHeader({ active, cta = "quiz" }: SiteHeaderProps) {
       {cta === "viewing" ? (
         <ViewingCtaButton className={`tpl-btn-prim ${styles.menuCta}`} onClick={() => setMenuOpen(false)} />
       ) : (
-        <Link href="/quiz" className={`tpl-btn-prim ${styles.menuCta}`} onClick={() => setMenuOpen(false)}>
+        <LeadCtaButton className={`tpl-btn-prim ${styles.menuCta}`} onClick={() => setMenuOpen(false)}>
           Подобрать квартиру
-        </Link>
+        </LeadCtaButton>
       )}
     </div>
     </>

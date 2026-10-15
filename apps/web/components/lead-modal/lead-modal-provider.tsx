@@ -1,10 +1,10 @@
 "use client";
 
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
-import { LeadModal } from "./lead-modal";
+import { LeadModal, type LeadVariant } from "./lead-modal";
 
 interface LeadModalContextValue {
-  open: () => void;
+  open: (variant?: LeadVariant) => void;
 }
 
 const LeadModalContext = createContext<LeadModalContextValue | null>(null);
@@ -18,15 +18,15 @@ export function useLeadModal(): LeadModalContextValue {
 }
 
 export function LeadModalProvider({ children }: { children: ReactNode }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [variant, setVariant] = useState<LeadVariant | null>(null);
 
-  const open = useCallback(() => setIsOpen(true), []);
-  const close = useCallback(() => setIsOpen(false), []);
+  const open = useCallback((v: LeadVariant = "viewing") => setVariant(v), []);
+  const close = useCallback(() => setVariant(null), []);
 
   return (
     <LeadModalContext.Provider value={{ open }}>
       {children}
-      {isOpen ? <LeadModal onClose={close} /> : null}
+      {variant ? <LeadModal variant={variant} onClose={close} /> : null}
     </LeadModalContext.Provider>
   );
 }

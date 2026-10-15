@@ -245,7 +245,7 @@ export function LandingPage({ variant, heroAccent, prices }: LandingPageProps) {
                       src={c.photo}
                       alt={c.tag}
                       fill
-                      sizes="(max-width: 767px) 300px, 400px"
+                      sizes="(max-width: 767px) 300px, 340px"
                       style={{ objectFit: "cover", objectPosition: c.position }}
                     />
                     <span className={s.caseTag}>{c.tag}</span>

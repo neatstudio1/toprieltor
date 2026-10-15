@@ -9,6 +9,7 @@ import { RelatedPosts } from "@/components/blog/related-posts";
 import { INFRA_ICON_PATHS } from "./infra-icons";
 import styles from "./district-page-body.module.css";
 import { TELEGRAM_URL, TELEGRAM_HANDLE } from "@/lib/site";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 
 export function DistrictPageBody({
@@ -55,9 +56,9 @@ export function DistrictPageBody({
               ))}
             </div>
             <div className={styles.heroActions}>
-              <Link href="/quiz" className={`tpl-btn-prim ${styles.heroBtnPrim}`}>
+              <LeadCtaButton className={`tpl-btn-prim ${styles.heroBtnPrim}`}>
                 Подобрать квартиру в районе
-              </Link>
+              </LeadCtaButton>
               <a href="#jk" className={styles.heroBtnSec}>
                 Смотреть ЖК
               </a>
@@ -181,12 +182,12 @@ export function DistrictPageBody({
           <div className={styles.finalCtaEyebrow}>Первый шаг</div>
           <h2 className={styles.finalCtaTitle}>{d.cta_title ?? `Подберём квартиру в районе «${d.name}»`}</h2>
           <p className={styles.finalCtaLead}>
-            Пройдите квиз за 2 минуты — покажем объекты района под ваш бюджет, маткапитал и сроки заселения.
+            Оставьте заявку — покажем объекты района под ваш бюджет, маткапитал и сроки заселения.
           </p>
           <div className={styles.finalCtaActions}>
-            <Link href="/quiz" className={`tpl-btn-prim ${styles.finalCtaBtn}`}>
-              Пройти квиз за 2 минуты
-            </Link>
+            <LeadCtaButton className={`tpl-btn-prim ${styles.finalCtaBtn}`}>
+              Подобрать квартиру
+            </LeadCtaButton>
             <a href={TELEGRAM_URL} className={styles.finalCtaTg}>
               или напишите в Telegram {TELEGRAM_HANDLE}
             </a>

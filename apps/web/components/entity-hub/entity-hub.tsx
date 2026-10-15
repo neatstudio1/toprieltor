@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 import styles from "./entity-hub.module.css";
 
 export interface HubItem {
@@ -16,8 +17,8 @@ export function EntityHub({
   items,
   ctaTitle,
   ctaLead,
-  ctaHref = "/quiz",
-  ctaText = "Пройти квиз",
+  ctaHref,
+  ctaText = "Подобрать квартиру",
 }: {
   eyebrow: string;
   title: string;
@@ -55,9 +56,11 @@ export function EntityHub({
             <h2 className={styles.ctaTitle}>{ctaTitle}</h2>
             <p className={styles.ctaLead}>{ctaLead}</p>
           </div>
-          <Link href={ctaHref} className={`tpl-btn-prim ${styles.ctaBtn}`}>
-            {ctaText}
-          </Link>
+          {ctaHref ? (
+            <Link href={ctaHref} className={`tpl-btn-prim ${styles.ctaBtn}`}>{ctaText}</Link>
+          ) : (
+            <LeadCtaButton className={`tpl-btn-prim ${styles.ctaBtn}`}>{ctaText}</LeadCtaButton>
+          )}
         </div>
       </section>
     </>
