@@ -5,14 +5,14 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EntityHub, type HubItem } from "@/components/entity-hub/entity-hub";
 import { pageMetadata } from "@/lib/site";
+import { seoCopy } from "@/lib/seo-copy";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbListSchema } from "@/lib/json-ld";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = pageMetadata({
-  title: "Районы Екатеринбурга",
-  description: "Гид по районам Екатеринбурга: транспорт, инфраструктура, экология и новостройки в каждом районе.",
+  ...seoCopy("/rayon")!,
   path: "/rayon",
 });
 
@@ -34,8 +34,8 @@ export default async function DistrictsPage() {
       <SiteHeader active="districts" />
       <EntityHub
         eyebrow="Районы · гид по Екатеринбургу"
-        title="Выберите район — покажем новостройки, инфраструктуру и транспорт"
-        lead="Каждый район отличается инфраструктурой, транспортом и типом застройки. Разбираем по отдельности, чтобы вы выбирали не вслепую."
+        title="Районы Екатеринбурга"
+        lead="Выберите район — покажем новостройки, инфраструктуру и транспорт. Каждый район отличается инфраструктурой, транспортом и типом застройки. Разбираем по отдельности, чтобы вы выбирали не вслепую."
         items={items}
         ctaTitle="Не знаете, какой район выбрать?"
         ctaLead="Оставьте заявку — подберём район и ЖК под ваш образ жизни и бюджет."

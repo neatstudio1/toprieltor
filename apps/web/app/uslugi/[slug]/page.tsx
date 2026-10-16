@@ -11,6 +11,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ServicePageBody } from "@/components/service-page/service-page-body";
 import { pageMetadata } from "@/lib/site";
+import { seoCopy } from "@/lib/seo-copy";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbListSchema, faqPageSchema } from "@/lib/json-ld";
 import { articlesForService } from "@/lib/article-service";
@@ -34,10 +35,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const svc = await getServiceBySlug(slug);
   if (!svc) return {};
+  const copy = seoCopy(`/uslugi/${slug}`);
   return pageMetadata({
     // h1 написан под страницу и в выдаче обрезается — для поиска отдельное поле
-    title: svc.seo_title ?? svc.h1,
-    description: svc.seo_description ?? svc.pitch ?? svc.h1,
+    title: copy?.title ?? svc.seo_title ?? svc.h1,
+    description: copy?.description ?? svc.seo_description ?? svc.pitch ?? svc.h1,
     path: `/uslugi/${slug}`,
   });
 }

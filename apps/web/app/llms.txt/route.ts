@@ -2,11 +2,11 @@ import {
   getArticles,
   getCatalogCards,
   getDistricts,
-  getIndexableDistrictListings,
   getMortgageConfig,
   getServices,
 } from "@/lib/cms/client";
-import { districtBySlug, roomTypeBySlug } from "@/lib/districts";
+import { getIndexablePicks } from "@/lib/catalog-picks";
+import { pickSeo } from "@/lib/seo-templates";
 import { formatRub, pluralizeRu } from "@/lib/format";
 import {
   AGENT_NAME,
@@ -55,7 +55,7 @@ export async function GET() {
     getArticles(),
     getCatalogCards(),
     getDistricts(),
-    getIndexableDistrictListings(),
+    getIndexablePicks(),
     getServices(),
     getMortgageConfig(),
   ]);
@@ -116,15 +116,12 @@ export async function GET() {
   }
 
   if (listings.length) {
-    lines.push("## Квартиры по районам и комнатности", "");
+    lines.push("## Подборки квартир: районы, комнатность, отделка", "");
     for (const l of listings) {
-      const district = districtBySlug(l.districtSlug);
-      const type = roomTypeBySlug(l.roomTypeSlug);
-      if (!district || !type) continue;
       lines.push(
         link(
-          `${type.plural} ${district.inCityPhrase}`,
-          `/catalog/${l.districtSlug}/${l.roomTypeSlug}`,
+          pickSeo(l, []).h1,
+          l.path,
           `${l.count} ${pluralizeRu(l.count, "вариант", "варианта", "вариантов")} в ${l.projectSlugs.length} ЖК, от ${millions(l.priceMin)}`,
         ),
       );

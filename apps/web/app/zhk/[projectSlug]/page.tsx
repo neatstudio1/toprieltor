@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   getAllProjectSlugs,
   getApartmentsByProjectSlug,
+  getCatalogCards,
   getCheapestApartmentByProjectSlug,
   getMortgageConfig,
   getProjectBySlug,
@@ -23,6 +24,9 @@ import { SimilarProjects, type SimilarProjectCard } from "@/components/project/s
 import { ViewingCtaButton } from "@/components/lead-modal/viewing-cta-button";
 import { ProjectStickyBar } from "@/components/project/project-sticky-bar";
 import { pageMetadata } from "@/lib/site";
+import { projectSeo, quotedName } from "@/lib/seo-templates";
+import { getIndexablePicks, pickPath } from "@/lib/catalog-picks";
+import { normalizeDistrict } from "@/lib/districts";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbListSchema, projectRealEstateListingSchema } from "@/lib/json-ld";
 import styles from "./page.module.css";
@@ -46,13 +50,24 @@ export async function generateMetadata({
   const { projectSlug } = await params;
   const project = await getProjectBySlug(projectSlug);
   if (!project) return {};
-  const developerSuffix = project.developer?.name ? ` — ${project.developer.name}` : "";
-  const title = `ЖК ${project.name}${developerSuffix}, Екатеринбург`;
-  const description = project.concept
-    ? project.concept.slice(0, 160)
-    : `Квартиры в ЖК «${project.name}» в Екатеринбурге. Подбор и сопровождение сделки бесплатно.`;
+  const { title, description } = await loadSeo(project);
   const photo = project.photos?.[0];
   return pageMetadata({ title, description, path: `/zhk/${projectSlug}`, image: photo });
+}
+
+type LoadedProject = NonNullable<Awaited<ReturnType<typeof getProjectBySlug>>>;
+
+async function loadSeo(project: LoadedProject) {
+  const [apartments, cards] = await Promise.all([getApartmentsByProjectSlug(project.slug), getCatalogCards()]);
+  const priced = apartments.filter((a) => a.price_from > 0);
+  return projectSeo({
+    name: project.name,
+    developerName: project.developer?.name ?? null,
+    district: normalizeDistrict(project.district)?.name ?? project.district,
+    apartmentsCount: priced.length,
+    priceMin: priced.length ? Math.min(...priced.map((a) => a.price_from)) : null,
+    card: cards.find((c) => c.slug === project.slug) ?? null,
+  });
 }
 
 function deliveryRangeText(project: NonNullable<Awaited<ReturnType<typeof getProjectBySlug>>>): string {
@@ -85,11 +100,16 @@ export default async function ProjectPage({ params }: { params: Promise<RoutePar
   const project = await getProjectBySlug(projectSlug);
   if (!project) notFound();
 
-  const [apartments, mortgageConfig, similarRaw] = await Promise.all([
+  const [apartments, mortgageConfig, similarRaw, seo, picks] = await Promise.all([
     getApartmentsByProjectSlug(projectSlug),
     getMortgageConfig(),
     getSimilarProjects(projectSlug, 3),
+    loadSeo(project),
+    getIndexablePicks(),
   ]);
+  // Ссылка на подборку района — перелинковка ЖК с коммерческими страницами каталога.
+  const district = normalizeDistrict(project.district);
+  const districtPick = district ? picks.find((p) => p.path === pickPath({ district })) : undefined;
 
   const pricedApartments = apartments.filter((a) => a.price_from > 0);
   const minPriceApt = pricedApartments.reduce<typeof pricedApartments[number] | null>(
@@ -169,6 +189,7 @@ export default async function ProjectPage({ params }: { params: Promise<RoutePar
         data={breadcrumbListSchema([
           { name: "Главная", path: "/" },
           { name: "Каталог ЖК", path: "/catalog" },
+          ...(districtPick && district ? [{ name: `Новостройки ${district.inPhrase}`, path: districtPick.path }] : []),
           { name: project.name, path: `/zhk/${project.slug}` },
         ])}
       />
@@ -184,11 +205,26 @@ export default async function ProjectPage({ params }: { params: Promise<RoutePar
             <Link href="/catalog" style={{ color: "var(--muted)" }}>
               Каталог ЖК
             </Link>{" "}
-            / <span style={{ color: "var(--ink)" }}>{project.name}</span>
+            /{" "}
+            {districtPick && district ? (
+              <>
+                <Link href={districtPick.path} style={{ color: "var(--muted)" }}>
+                  Новостройки {district.inPhrase}
+                </Link>{" "}
+                /{" "}
+              </>
+            ) : null}
+            <span style={{ color: "var(--ink)" }}>{project.name}</span>
           </div>
 
           <div className={styles.header}>
-            <h1 className={styles.title}>ЖК «{project.name}»</h1>
+            <h1 className={styles.title}>
+              ЖК {quotedName(project.name)}
+              {/* Хвост H1 из шаблона — мельче, чтобы название ЖК оставалось заголовком. */}
+              {seo.h1.length > `ЖК ${quotedName(project.name)}`.length ? (
+                <span className={styles.titleTail}>{seo.h1.slice(`ЖК ${quotedName(project.name)}`.length)}</span>
+              ) : null}
+            </h1>
             <div className={styles.subline}>
               {developerLabel} · {project.district ?? "Екатеринбург"} · сдача {deliveryRangeText(project)}
             </div>

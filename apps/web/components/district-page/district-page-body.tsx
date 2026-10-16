@@ -16,6 +16,7 @@ export function DistrictPageBody({
   d,
   tabs,
   catalogCards,
+  catalogPath,
   rateText,
   posts,
   keyword,
@@ -23,6 +24,8 @@ export function DistrictPageBody({
   d: District;
   tabs: EntityTab[];
   catalogCards: CatalogCard[];
+  /** Подборка района в каталоге (/catalog/[район]), если прошла порог. */
+  catalogPath?: string | null;
   rateText: string;
   posts: Article[];
   keyword: string;
@@ -45,7 +48,7 @@ export function DistrictPageBody({
         <div className={styles.heroGrid}>
           <div>
             <div className={styles.eyebrow}>Район · Екатеринбург</div>
-            <h1 className={styles.title}>{d.name}</h1>
+            <h1 className={styles.title}>Район {d.name}</h1>
             {d.lead ? <p className={styles.lead}>{d.lead}</p> : null}
             <div className={styles.traits}>
               {(d.traits ?? []).map((t) => (
@@ -93,8 +96,8 @@ export function DistrictPageBody({
             <div className={styles.eyebrow}>Новостройки района</div>
             <h2 className={styles.sectionTitle}>{d.jk_title ?? `Новостройки района «${d.name}»`}</h2>
           </div>
-          <Link href="/catalog" className={styles.allLink}>
-            Все ЖК →
+          <Link href={catalogPath ?? "/catalog"} className={styles.allLink}>
+            {catalogPath ? "Все квартиры в районе →" : "Все ЖК →"}
           </Link>
         </div>
         <JkShowcaseGrid cards={jkCards} rateText={rateText} />

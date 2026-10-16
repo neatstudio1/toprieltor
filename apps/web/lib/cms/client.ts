@@ -1,10 +1,5 @@
-import {
-  MIN_APARTMENTS_FOR_LANDING,
-  MIN_PROJECTS_FOR_LANDING,
-  ROOM_TYPES,
-  normalizeDistrict,
-} from "@/lib/districts";
 import { isMergedArticle } from "@/lib/article-redirects";
+import { deliveryYear, isDeliveredOrDue, isExplicitlyDelivered } from "@/lib/delivery";
 const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
 const REVALIDATE_SECONDS = 3600;
 
@@ -533,6 +528,31 @@ export interface CatalogCard {
   roomTypes: string[];
   photo: string | null;
   matkapital: boolean;
+  /** Хотя бы одна очередь сдана или срок её сдачи уже прошёл — «есть сданные». */
+  hasDelivered: boolean;
+  /** Все очереди с явным статусом «Сдан» — квартиры точно в готовых домах. */
+  allDelivered: boolean;
+  /** Годы сдачи ещё строящихся очередей, по возрастанию. */
+  pendingYears: number[];
+}
+
+function deliveryStatus(project: Project) {
+  const texts = project.queues?.length
+    ? project.queues.map((q) => q.delivery)
+    : [project.delivery_date];
+  const pendingYears = Array.from(
+    new Set(
+      texts
+        .filter((t) => !isDeliveredOrDue(t))
+        .map((t) => deliveryYear(t))
+        .filter((y): y is number => y !== null),
+    ),
+  ).sort((a, b) => a - b);
+  return {
+    hasDelivered: texts.some((t) => isDeliveredOrDue(t)),
+    allDelivered: texts.length > 0 && texts.every((t) => isExplicitlyDelivered(t)),
+    pendingYears,
+  };
 }
 
 function extractYear(deliveryDate: string | null): number | null {
@@ -550,6 +570,7 @@ export async function getCatalogCards(): Promise<CatalogCard[]> {
     qs.set("fields[4]", "photos");
     qs.set("fields[5]", "matkapital");
     qs.set("populate[developer][fields][0]", "name");
+    qs.set("populate[queues][fields][0]", "delivery");
     return qs;
   });
 
@@ -595,6 +616,7 @@ export async function getCatalogCards(): Promise<CatalogCard[]> {
       roomTypes: agg ? Array.from(agg.roomTypes) : [],
       photo: p.photos?.[0] ?? null,
       matkapital: p.matkapital,
+      ...deliveryStatus(p),
     };
   });
 }
@@ -807,21 +829,8 @@ export function pickRelatedArticles(
 
 // ───────────────────────── посадочные страницы каталога ─────────────────────────
 
-export interface DistrictTypeListing {
-  districtSlug: string;
-  roomTypeSlug: string;
-  count: number;
-  priceMin: number;
-  priceMax: number;
-  areaMin: number;
-  areaMax: number;
-  /** Медианная цена квадратного метра по срезу. */
-  pricePerM2: number;
-  /** Слаги ЖК, где есть квартиры этого типа, от дешёвого к дорогому. */
-  projectSlugs: string[];
-}
-
-interface ApartmentWithProject extends ApartmentBrief {
+export interface ApartmentWithProject extends ApartmentBrief {
+  finish: string | null;
   project: { slug: string } | null;
 }
 
@@ -830,13 +839,14 @@ interface ApartmentWithProject extends ApartmentBrief {
  * нужен срез по всей базе — поэтому один общий запрос, который переиспользуется
  * через кэш fetch, а не по запросу на страницу.
  */
-async function getAllApartmentsWithProject(): Promise<ApartmentWithProject[]> {
+export async function getAllApartmentsWithProject(): Promise<ApartmentWithProject[]> {
   return fetchAllPages<ApartmentWithProject>("/apartments", () => {
     const qs = new URLSearchParams();
     qs.set("fields[0]", "slug");
     qs.set("fields[1]", "type");
     qs.set("fields[2]", "area_m2");
     qs.set("fields[3]", "price_from");
+    qs.set("fields[4]", "finish");
     qs.set("populate[project][fields][0]", "slug");
     qs.set("sort", "id:asc");
     return qs;
@@ -855,76 +865,6 @@ export async function getMinPriceByType(): Promise<Record<string, number>> {
     if (min[apt.type] === undefined || apt.price_from < min[apt.type]) min[apt.type] = apt.price_from;
   }
   return min;
-}
-
-/** Срезы «район × комнатность» по всей базе, включая те, что не дотягивают до порога. */
-export async function getDistrictTypeListings(): Promise<DistrictTypeListing[]> {
-  const [apartments, cards] = await Promise.all([
-    getAllApartmentsWithProject(),
-    getCatalogCards(),
-  ]);
-
-  const districtByProject = new Map<string, string>();
-  for (const card of cards) {
-    const district = normalizeDistrict(card.district);
-    if (district) districtByProject.set(card.slug, district.slug);
-  }
-
-  const buckets = new Map<string, { apts: ApartmentWithProject[]; projects: Map<string, number> }>();
-  for (const apt of apartments) {
-    const projectSlug = apt.project?.slug;
-    if (!projectSlug || !apt.price_from) continue;
-    const districtSlug = districtByProject.get(projectSlug);
-    const roomType = ROOM_TYPES.find((t) => t.value === apt.type);
-    if (!districtSlug || !roomType) continue;
-
-    const key = `${districtSlug}/${roomType.slug}`;
-    let bucket = buckets.get(key);
-    if (!bucket) {
-      bucket = { apts: [], projects: new Map() };
-      buckets.set(key, bucket);
-    }
-    bucket.apts.push(apt);
-    const cheapest = bucket.projects.get(projectSlug);
-    if (cheapest === undefined || apt.price_from < cheapest) {
-      bucket.projects.set(projectSlug, apt.price_from);
-    }
-  }
-
-  return Array.from(buckets.entries()).map(([key, { apts, projects }]) => {
-    const [districtSlug, roomTypeSlug] = key.split("/");
-    const prices = apts.map((a) => a.price_from);
-    const areas = apts.map((a) => a.area_m2).filter((a) => a > 0);
-    // Медиана, а не min/max: делить самую дешёвую цену на самую большую площадь
-    // дало бы метр, которого нет ни в одной реальной квартире.
-    const perM2 = apts
-      .filter((a) => a.area_m2 > 0)
-      .map((a) => a.price_from / a.area_m2)
-      .sort((x, y) => x - y);
-    return {
-      districtSlug,
-      roomTypeSlug,
-      count: apts.length,
-      priceMin: Math.min(...prices),
-      priceMax: Math.max(...prices),
-      areaMin: areas.length ? Math.min(...areas) : 0,
-      areaMax: areas.length ? Math.max(...areas) : 0,
-      pricePerM2: perM2.length ? perM2[Math.floor(perM2.length / 2)] : 0,
-      projectSlugs: Array.from(projects.entries())
-        .sort((a, b) => a[1] - b[1])
-        .map(([slug]) => slug),
-    };
-  });
-}
-
-/** Только те срезы, под которые есть смысл заводить отдельный URL. */
-export async function getIndexableDistrictListings(): Promise<DistrictTypeListing[]> {
-  const all = await getDistrictTypeListings();
-  return all.filter(
-    (l) =>
-      l.count >= MIN_APARTMENTS_FOR_LANDING &&
-      l.projectSlugs.length >= MIN_PROJECTS_FOR_LANDING,
-  );
 }
 
 /**

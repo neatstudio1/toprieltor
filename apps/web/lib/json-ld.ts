@@ -120,7 +120,8 @@ export function articleSchema(article: Article, path: string) {
     "@type": "Article",
     headline: article.title,
     description: article.excerpt ?? undefined,
-    image: article.cover ? strapiMediaUrl(article.cover) : undefined,
+    // Без своей обложки — сгенерированная (app/blog/[slug]/cover).
+    image: article.cover ? strapiMediaUrl(article.cover) : `${SITE_URL}${path}/cover`,
     datePublished: article.published_date,
     author: { "@type": "Person", name: article.author_name ?? SITE_NAME },
     publisher: { "@type": "Organization", name: SITE_NAME },

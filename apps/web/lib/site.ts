@@ -17,12 +17,21 @@ export const AGENT_PHOTO = "/yana-chekulova.webp";
 /** 400px-вариант — для аватарки в списке, чтобы не тянуть портрет целиком. */
 export const AGENT_PHOTO_SM = "/yana-chekulova-sm.webp";
 
+/** До этой длины Яндекс показывает title целиком — бренд дописываем, только если влезает. */
+const BRANDED_TITLE_MAX = 70;
+const BRAND_SUFFIX = ` | ${SITE_NAME}`;
+
+/** «Заголовок | TOPиелтор», если вместе укладываются в 70 символов, иначе заголовок как есть. */
+export function withBrand(title: string): string {
+  if (title.includes(SITE_NAME)) return title;
+  const branded = `${title}${BRAND_SUFFIX}`;
+  return branded.length <= BRANDED_TITLE_MAX ? branded : title;
+}
+
 /**
  * Fills in canonical + OG/Twitter for a page from its title/description/path.
- * `title` is run through the root layout's "%s | TOPиелтор" template — pass
- * plain page titles without the brand suffix. Set `absoluteTitle: true` only
- * when the title should bypass the template (e.g. it already reads naturally
- * with the brand name baked in, like the home page's own title).
+ * Pass plain page titles without the brand suffix: it is added by withBrand()
+ * when it fits. `absoluteTitle: true` skips the suffix entirely.
  */
 export function pageMetadata({
   title,
@@ -39,7 +48,7 @@ export function pageMetadata({
 }): Metadata {
   const ogImage = image ?? "/hero-poster.webp";
   return {
-    title: absoluteTitle ? { absolute: title } : title,
+    title: { absolute: absoluteTitle ? title : withBrand(title) },
     description,
     alternates: { canonical: path },
     openGraph: {

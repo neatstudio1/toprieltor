@@ -8,6 +8,7 @@ import {
 import { RelatedPosts } from "@/components/blog/related-posts";
 import { formatRub } from "@/lib/format";
 import { pageMetadata } from "@/lib/site";
+import { seoCopy } from "@/lib/seo-copy";
 import { JsonLd } from "@/components/json-ld";
 import { faqPageSchema, realEstateAgentSchema } from "@/lib/json-ld";
 import { SiteHeader } from "@/components/site-header";
@@ -27,11 +28,8 @@ import { FinalCtaSection } from "@/components/home/final-cta-section";
 export const revalidate = 3600;
 
 export const metadata: Metadata = pageMetadata({
-  title: "TOPиелтор — подбор новостроек Екатеринбурга под ключ",
-  description:
-    "Подбираем новостройку в Екатеринбурге под ваш бюджет и капитал. Ипотека, юридическая проверка, приёмка, дизайн и ремонт — бесплатно для клиента.",
+  ...seoCopy("/")!,
   path: "/",
-  absoluteTitle: true,
 });
 
 async function buildPopularZhkCards(

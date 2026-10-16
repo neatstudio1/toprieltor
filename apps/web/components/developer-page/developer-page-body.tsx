@@ -89,7 +89,10 @@ export function DeveloperPageBody({
                 </span>
               ) : null}
             </div>
-            <h1 className={styles.title}>{dev.name}</h1>
+            <h1 className={styles.title}>
+              {dev.name}
+              <span className={styles.titleTail}> — застройщик в Екатеринбурге</span>
+            </h1>
             {dev.lead ? <p className={styles.lead}>{dev.lead}</p> : null}
           </div>
         </div>

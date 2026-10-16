@@ -7,7 +7,6 @@ import {
   getIndexableApartmentSlugs,
   getSimilarApartments,
 } from "@/lib/cms/client";
-import { formatRub } from "@/lib/format";
 import { SiteHeader } from "@/components/site-header";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { LightboxProvider } from "@/components/apartment/lightbox-provider";
@@ -19,6 +18,8 @@ import { MortgageCalculator } from "@/components/apartment/mortgage-calculator";
 import { SimilarApartments } from "@/components/apartment/similar-apartments";
 import { FinalCta } from "@/components/apartment/final-cta";
 import { pageMetadata } from "@/lib/site";
+import { apartmentSeo } from "@/lib/seo-templates";
+import { normalizeDistrict } from "@/lib/districts";
 import { JsonLd } from "@/components/json-ld";
 import { apartmentRealEstateListingSchema, breadcrumbListSchema } from "@/lib/json-ld";
 import styles from "./page.module.css";
@@ -55,12 +56,13 @@ export async function generateMetadata({
   const apartment = await loadApartment(resolved);
   if (!apartment) return {};
 
-  const areaLabel = apartment.area_m2.toFixed(2).replace(".", ",");
-  const priceLabel = apartment.price_from
-    ? ` — ${(apartment.price_from / 1_000_000).toFixed(2).replace(".", ",")} млн ₽`
-    : "";
-  const title = `${typeShort(apartment.type)} ${areaLabel} м² в ЖК ${apartment.project!.name}${priceLabel}`;
-  const description = `${typeShort(apartment.type)}, ${areaLabel} м² в ЖК «${apartment.project!.name}» (${apartment.project!.district}). Цена от ${formatRub(apartment.price_from)} ₽. Подбор и сопровождение сделки бесплатно.`;
+  const { title, description } = apartmentSeo({
+    type: apartment.type,
+    areaM2: apartment.area_m2,
+    price: apartment.price_from,
+    projectName: apartment.project!.name,
+    district: normalizeDistrict(apartment.project!.district)?.name ?? apartment.project!.district,
+  });
   const photo = apartment.photo_urls?.[0];
 
   // Only one apartment per room type stays indexable — the rest are near-identical

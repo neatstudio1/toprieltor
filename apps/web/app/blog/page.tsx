@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { ArticleCover } from "@/components/blog/article-cover";
 import { BlogFilters } from "@/components/blog/blog-filters";
 import { pageMetadata } from "@/lib/site";
+import { seoCopy } from "@/lib/seo-copy";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbListSchema } from "@/lib/json-ld";
 import styles from "./page.module.css";
@@ -14,9 +15,7 @@ import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 export const revalidate = 3600;
 
 export const metadata: Metadata = pageMetadata({
-  title: "Блог",
-  description:
-    "Ипотека, маткапитал, приёмка, инвестиции — коротко и по делу от команды TOPиелтор.",
+  ...seoCopy("/blog")!,
   path: "/blog",
 });
 
@@ -37,8 +36,8 @@ export default async function BlogPage() {
       <SiteHeader active="blog" />
 
       <div className={styles.head}>
-        <div className={styles.eyebrow}>Блог · разбираемся в новостройках</div>
-        <h1 className={styles.title}>Как купить квартиру грамотно — без переплат и ошибок</h1>
+        <h1 className={styles.eyebrow}>Блог · разбираемся в новостройках</h1>
+        <p className={styles.title}>Как купить квартиру грамотно — без переплат и ошибок</p>
         <p className={styles.lead}>
           Ипотека, маткапитал, приёмка, инвестиции — коротко и по делу от нашей команды.
         </p>
@@ -49,6 +48,7 @@ export default async function BlogPage() {
           <Link data-feat="" href={`/blog/${featured.slug}`} className={styles.featured}>
             <div className={styles.featPhoto}>
               <ArticleCover
+                slug={featured.slug}
                 cover={featured.cover}
                 alt={featured.title}
                 fallbackLabel={featured.category ?? "Разбор недели"}

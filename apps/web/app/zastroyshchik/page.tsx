@@ -5,14 +5,14 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EntityHub, type HubItem } from "@/components/entity-hub/entity-hub";
 import { pageMetadata } from "@/lib/site";
+import { seoCopy } from "@/lib/seo-copy";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbListSchema } from "@/lib/json-ld";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = pageMetadata({
-  title: "Застройщики Екатеринбурга",
-  description: "Досье застройщиков Екатеринбурга: репутация, сроки, условия сотрудничества и их проекты в каталоге.",
+  ...seoCopy("/zastroyshchik")!,
   path: "/zastroyshchik",
 });
 
@@ -34,8 +34,8 @@ export default async function DevelopersPage() {
       <SiteHeader active="developers" />
       <EntityHub
         eyebrow="Застройщики · досье"
-        title="Кто строит в Екатеринбурге и на что смотреть перед покупкой"
-        lead="Репутация, сроки сдачи и условия сотрудничества по каждому застройщику — без рекламных обещаний."
+        title="Застройщики Екатеринбурга"
+        lead="Кто строит в Екатеринбурге и на что смотреть перед покупкой. Репутация, сроки сдачи и условия сотрудничества по каждому застройщику — без рекламных обещаний."
         items={items}
         ctaTitle="Сомневаетесь в застройщике?"
         ctaLead="Оставьте заявку — сравним варианты и проверим договор перед сделкой."

@@ -62,6 +62,9 @@ export function SiteFooter() {
       <div className={styles.bottomBar}>
         <div className={styles.bottomInner}>
           <span>© TOPиелтор 2026</span>
+          <Link href="/karta-sayta" className={styles.columnLink}>
+            Карта сайта
+          </Link>
           <Link href="/privacy" className={styles.columnLink}>
             Политика конфиденциальности
           </Link>

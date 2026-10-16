@@ -1,14 +1,25 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAllArticleSlugs, getArticleBySlug, getArticles, pickRelatedArticles, strapiMediaUrl } from "@/lib/cms/client";
+import {
+  getAllArticleSlugs,
+  getArticleBySlug,
+  getArticles,
+  getCatalogCards,
+  pickRelatedArticles,
+  strapiMediaUrl,
+} from "@/lib/cms/client";
+import { getCatalogPicks } from "@/lib/catalog-picks";
+import { LEAD_BLOCKS, picksMentioned, projectsMentioned, splitArticle, topicBlock } from "@/lib/article-blocks";
+import { ArticleCatalogLinks, ArticleLeadBlock } from "@/components/blog/article-lead-block";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { ArticleCover } from "@/components/blog/article-cover";
+import { ArticleCover, generatedCoverPath } from "@/components/blog/article-cover";
 import { Prose } from "@/components/prose";
 import { ViewTracker } from "@/components/blog/view-tracker";
 import { CommentSection } from "@/components/blog/comment-section";
 import { pageMetadata } from "@/lib/site";
+import { seoCopy } from "@/lib/seo-copy";
 import { JsonLd } from "@/components/json-ld";
 import { articleSchema, breadcrumbListSchema, faqPageSchema } from "@/lib/json-ld";
 import { extractFaqFromMarkdown } from "@/lib/article-faq";
@@ -35,11 +46,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
   if (!article) return {};
+  const copy = seoCopy(`/blog/${slug}`);
   return pageMetadata({
-    title: article.seo_title ?? article.title,
-    description: article.seo_description ?? article.excerpt ?? article.title,
+    title: copy?.title ?? article.seo_title ?? article.title,
+    description: copy?.description ?? article.seo_description ?? article.excerpt ?? article.title,
     path: `/blog/${slug}`,
-    image: article.cover ? strapiMediaUrl(article.cover) : undefined,
+    image: article.cover ? strapiMediaUrl(article.cover) : generatedCoverPath(slug),
   });
 }
 
@@ -54,11 +66,15 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
   const article = await getArticleBySlug(slug);
   if (!article) notFound();
 
-  const all = await getArticles();
+  const [all, cards, picks] = await Promise.all([getArticles(), getCatalogCards(), getCatalogPicks()]);
   const keywords = [...(article.category?.split("·") ?? []), ...(article.tags ?? [])].map((k) => k.trim());
   const related = pickRelatedArticles(all, keywords, 3, slug);
   const faq = extractFaqFromMarkdown(article.content);
   const service = matchServiceForArticle(article);
+  const [intro, middle, rest] = splitArticle(article.content);
+  const midBlock = topicBlock(article);
+  const mentionedProjects = projectsMentioned(article, cards);
+  const mentionedPicks = picksMentioned(article, picks);
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
@@ -105,6 +121,7 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
         <div className={styles.heroWrap}>
           <div className={styles.hero}>
             <ArticleCover
+              slug={article.slug}
               cover={article.cover}
               alt={article.title}
               fallbackLabel={article.category ?? article.title}
@@ -114,34 +131,28 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
         </div>
 
         <div className={styles.body}>
-          <Prose content={article.content} className="prose" />
+          <Prose content={intro} className="prose" />
+          {middle ? <ArticleLeadBlock block={LEAD_BLOCKS.podbor} /> : null}
+          {middle ? <Prose content={middle} className="prose" /> : null}
+          {rest && midBlock ? <ArticleLeadBlock block={midBlock} /> : null}
+          {rest ? <Prose content={rest} className="prose" /> : null}
+          <ArticleCatalogLinks projects={mentionedProjects} picks={mentionedPicks} />
+          <ArticleLeadBlock block={LEAD_BLOCKS.telegram} />
         </div>
 
-        <div className={styles.inlineCtaWrap}>
-          <div className={styles.inlineCta}>
-            {service ? (
-              <>
-                <div>
-                  <div className={styles.inlineCtaTitle}>{service.title}</div>
-                  <div className={styles.inlineCtaLead}>{service.cta}</div>
-                </div>
-                <Link href={`/uslugi/${service.slug}`} className={`tpl-btn-prim ${styles.inlineCtaBtn}`}>
-                  Подробнее об услуге
-                </Link>
-              </>
-            ) : (
-              <>
-                <div>
-                  <div className={styles.inlineCtaTitle}>Посчитаем ваш платёж бесплатно</div>
-                  <div className={styles.inlineCtaLead}>Без давления. Ответим в Telegram.</div>
-                </div>
-                <LeadCtaButton className={`tpl-btn-prim ${styles.inlineCtaBtn}`}>
-                  Подобрать квартиру
-                </LeadCtaButton>
-              </>
-            )}
+        {service ? (
+          <div className={styles.inlineCtaWrap}>
+            <div className={styles.inlineCta}>
+              <div>
+                <div className={styles.inlineCtaTitle}>{service.title}</div>
+                <div className={styles.inlineCtaLead}>{service.cta}</div>
+              </div>
+              <Link href={`/uslugi/${service.slug}`} className={`tpl-btn-prim ${styles.inlineCtaBtn}`}>
+                Подробнее об услуге
+              </Link>
+            </div>
           </div>
-        </div>
+        ) : null}
 
         <CommentSection articleDocumentId={article.documentId} />
       </article>
@@ -154,6 +165,7 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
               <Link key={`/blog/${p.slug}`} data-post="" href={`/blog/${p.slug}`} className={styles.relatedCard}>
                 <div className={styles.relatedPhoto}>
                   <ArticleCover
+                    slug={p.slug}
                     cover={p.cover}
                     alt={p.title}
                     fallbackLabel={p.category ?? "Статья"}

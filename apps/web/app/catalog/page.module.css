@@ -161,3 +161,18 @@
     padding: 40px 18px 0;
   }
 }
+
+.pickLinks {
+  margin-top: 24px;
+}
+
+.picksDistrict a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+}
+
+.picksDistrict a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}

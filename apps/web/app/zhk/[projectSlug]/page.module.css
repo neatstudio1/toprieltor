@@ -24,6 +24,16 @@
   margin: 0 0 14px;
 }
 
+.titleTail {
+  display: block;
+  margin-top: 10px;
+  font-size: clamp(17px, 1.6vw, 22px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  color: var(--muted);
+}
+
 .subline {
   font-family: var(--mono);
   font-size: 14px;

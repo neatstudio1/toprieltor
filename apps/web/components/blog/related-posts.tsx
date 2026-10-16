@@ -33,7 +33,7 @@ export function RelatedPosts({
         {posts.map((p) => (
           <Link key={`/blog/${p.slug}`} data-post="" href={`/blog/${p.slug}`} className={styles.card}>
             <div className={styles.photo}>
-              <ArticleCover cover={p.cover} alt={p.title} fallbackLabel={p.category ?? "Статья"} sizes="(min-width: 1280px) 400px, 90vw" />
+              <ArticleCover slug={p.slug} cover={p.cover} alt={p.title} fallbackLabel={p.category ?? "Статья"} sizes="(min-width: 1280px) 400px, 90vw" />
             </div>
             <div className={styles.body}>
               {p.category ? <div className={styles.category}>{p.category}</div> : null}

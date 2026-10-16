@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
+  getAllApartmentsWithProject,
   getArticles,
   getCatalogCards,
   getDeveloperBySlug,
@@ -11,6 +12,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { DeveloperPageBody } from "@/components/developer-page/developer-page-body";
 import { pageMetadata } from "@/lib/site";
+import { developerSeo } from "@/lib/seo-templates";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbListSchema, faqPageSchema } from "@/lib/json-ld";
 import { articlesAbout } from "@/lib/article-service";
@@ -34,11 +36,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const dev = await getDeveloperBySlug(slug);
   if (!dev) return {};
-  return pageMetadata({
-    title: `${dev.name} — застройщик в Екатеринбурге`,
-    description: dev.lead ?? `Досье застройщика «${dev.name}»: репутация, сроки, условия сотрудничества и его проекты в каталоге.`,
-    path: `/zastroyshchik/${slug}`,
-  });
+  const [cards, apartments] = await Promise.all([getCatalogCards(), getAllApartmentsWithProject()]);
+  const projects = cards.filter((c) => c.developerName === dev.name);
+  const slugs = new Set(projects.map((p) => p.slug));
+  const count = apartments.filter((a) => a.price_from > 0 && a.project && slugs.has(a.project.slug)).length;
+  const { title, description } = developerSeo(dev.name, projects, count);
+  return pageMetadata({ title, description, path: `/zastroyshchik/${slug}` });
 }
 
 export default async function DeveloperDetailPage({ params }: { params: Promise<RouteParams> }) {

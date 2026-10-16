@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getCatalogCards, getIndexableDistrictListings, getMortgageConfig } from "@/lib/cms/client";
+import { getCatalogCards, getMortgageConfig } from "@/lib/cms/client";
+import { getCatalogPicks } from "@/lib/catalog-picks";
+import { millionsRub, pickLabel } from "@/lib/seo-templates";
+import { PickLinks } from "@/components/catalog/pick-links";
 import { DISTRICTS, ROOM_TYPES } from "@/lib/districts";
 import { pluralizeRu } from "@/lib/format";
 import { SiteHeader } from "@/components/site-header";
@@ -14,31 +17,41 @@ import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = pageMetadata({
-  title: "Каталог новостроек Екатеринбурга",
-  description:
-    "Новостройки Екатеринбурга под ваш бюджет и капитал. Подбор и покупка через нашу команду — бесплатно, цена та же, что у застройщика.",
-  path: "/catalog",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const picks = await getCatalogPicks();
+  // Срезы по комнатности не пересекаются — вместе это весь каталог с ценами.
+  const rooms = picks.filter((p) => p.kind === "room");
+  const flats = rooms.reduce((sum, p) => sum + p.count, 0);
+  const projects = new Set(rooms.flatMap((p) => p.projectSlugs)).size;
+  const priceMin = Math.min(...rooms.map((p) => p.priceMin));
+  return pageMetadata({
+    title: rooms.length
+      ? `Новостройки Екатеринбурга: купить квартиру по цене застройщика от ${millionsRub(priceMin)}`
+      : "Новостройки Екатеринбурга: купить квартиру по цене застройщика",
+    description: `${projects} ЖК и ${flats} ${pluralizeRu(flats, "квартира", "квартиры", "квартир")} с ценами, планировками и сроками сдачи. Бесплатный подбор, ипотека и сопровождение сделки.`,
+    path: "/catalog",
+  });
+}
 
 export default async function CatalogPage() {
-  const [cards, mortgageConfig, districtListings] = await Promise.all([
+  const [cards, mortgageConfig, allPicks] = await Promise.all([
     getCatalogCards(),
     getMortgageConfig(),
-    getIndexableDistrictListings(),
+    getCatalogPicks(),
   ]);
 
   // Подборки по району и комнатности: отдельные адреса под запросы вида
   // «купить двухкомнатную в Ботаническом» — фильтры каталога живут в состоянии
   // компонента и своего URL не имеют, садиться таким запросам было некуда.
+  const picks = allPicks.filter((p) => p.indexable);
   const byDistrict = DISTRICTS.map((district) => ({
     district,
-    items: districtListings
-      .filter((l) => l.districtSlug === district.slug)
-      .map((l) => ({ listing: l, type: ROOM_TYPES.find((t) => t.slug === l.roomTypeSlug)! }))
-      .filter((x) => x.type)
-      .sort((a, b) => ROOM_TYPES.indexOf(a.type) - ROOM_TYPES.indexOf(b.type)),
-  })).filter((g) => g.items.length > 0);
+    page: picks.find((p) => p.kind === "district" && p.district === district),
+    items: picks
+      .filter((p) => p.kind === "districtRoom" && p.district === district)
+      .sort((a, b) => ROOM_TYPES.indexOf(a.roomType!) - ROOM_TYPES.indexOf(b.roomType!)),
+  })).filter((g) => g.page || g.items.length > 0);
+  const cityPicks = picks.filter((p) => p.kind === "room" || p.kind === "flag");
 
   const districts = Array.from(new Set(cards.map((c) => c.district).filter((d): d is string => Boolean(d)))).sort(
     (a, b) => a.localeCompare(b, "ru"),
@@ -63,34 +76,50 @@ export default async function CatalogPage() {
 
       <div className={styles.head}>
         <div className={styles.eyebrow}>Каталог новостроек · Екатеринбург</div>
-        <h1 className={styles.title}>Новостройки под ваш бюджет и капитал</h1>
+        <h1 className={styles.title}>Новостройки Екатеринбурга</h1>
         <p className={styles.lead}>
           Подбор и покупка через нашу команду — бесплатно. Цена та же, что в отделе продаж застройщика.
         </p>
+        <div className={styles.pickLinks}>
+          <PickLinks picks={allPicks} />
+        </div>
       </div>
 
       <CatalogFilters cards={cards} districts={districts} developers={developers} terms={terms} rateText={rateText} />
 
       {byDistrict.length > 0 ? (
         <section className={styles.picksSection}>
-          <h2 className={styles.picksTitle}>Подборки по районам</h2>
+          <h2 className={styles.picksTitle}>Подборки новостроек</h2>
           <p className={styles.picksLead}>
             Готовые срезы каталога — только те, где действительно есть выбор.
           </p>
           <div className={styles.picksGrid}>
-            {byDistrict.map(({ district, items }) => (
-              <div key={district.slug} className={styles.picksGroup}>
-                <div className={styles.picksDistrict}>{district.name}</div>
+            {cityPicks.length > 0 ? (
+              <div className={styles.picksGroup}>
+                <div className={styles.picksDistrict}>Весь город</div>
                 <div className={styles.picksLinks}>
-                  {items.map(({ listing, type }) => (
-                    <Link
-                      key={`${listing.districtSlug}/${listing.roomTypeSlug}`}
-                      href={`/catalog/${listing.districtSlug}/${listing.roomTypeSlug}`}
-                      className={styles.picksLink}
-                    >
-                      {type.plural.toLowerCase()}
+                  {cityPicks.map((p) => (
+                    <Link key={p.path} href={p.path} className={styles.picksLink}>
+                      {pickLabel(p).toLowerCase()}
                       <span className={styles.picksCount}>
-                        {listing.count} {pluralizeRu(listing.count, "вариант", "варианта", "вариантов")}
+                        {p.count} {pluralizeRu(p.count, "вариант", "варианта", "вариантов")}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            {byDistrict.map(({ district, page, items }) => (
+              <div key={district.slug} className={styles.picksGroup}>
+                <div className={styles.picksDistrict}>
+                  {page ? <Link href={page.path}>{district.name}</Link> : district.name}
+                </div>
+                <div className={styles.picksLinks}>
+                  {items.map((p) => (
+                    <Link key={p.path} href={p.path} className={styles.picksLink}>
+                      {p.roomType!.plural.toLowerCase()}
+                      <span className={styles.picksCount}>
+                        {p.count} {pluralizeRu(p.count, "вариант", "варианта", "вариантов")}
                       </span>
                     </Link>
                   ))}

@@ -62,6 +62,7 @@ export function BlogFilters({ articles }: { articles: Article[] }) {
                 <div className={styles.photo}>
                   <div data-pimg="" style={{ position: "absolute", inset: 0 }}>
                     <ArticleCover
+                      slug={p.slug}
                       cover={p.cover}
                       alt={p.title}
                       fallbackLabel={p.category ?? "Статья"}

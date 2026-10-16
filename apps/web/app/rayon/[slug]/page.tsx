@@ -11,6 +11,9 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { DistrictPageBody } from "@/components/district-page/district-page-body";
 import { pageMetadata } from "@/lib/site";
+import { seoCopy } from "@/lib/seo-copy";
+import { getIndexablePicks, pickPath } from "@/lib/catalog-picks";
+import { districtBySlug } from "@/lib/districts";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbListSchema, faqPageSchema } from "@/lib/json-ld";
 import { articlesAbout } from "@/lib/article-service";
@@ -45,22 +48,29 @@ export async function generateMetadata({
   const { slug } = await params;
   const d = await getDistrictBySlug(slug);
   if (!d) return {};
+  const copy = seoCopy(`/rayon/${slug}`);
   return pageMetadata({
-    title: `${d.name} в Екатеринбурге: новостройки и цены`,
-    description: d.lead ?? `Гид по району «${d.name}» в Екатеринбурге: новостройки, инфраструктура, транспорт, экология.`,
+    title: copy?.title ?? `Подбор новостройки в районе: ${d.name}, Екатеринбург`,
+    description:
+      copy?.description ?? d.lead ?? `Гид по району «${d.name}» в Екатеринбурге: новостройки, инфраструктура, транспорт, экология.`,
     path: `/rayon/${slug}`,
   });
 }
 
 export default async function DistrictDetailPage({ params }: { params: Promise<RouteParams> }) {
   const { slug } = await params;
-  const [d, districts, catalogCards, mortgageConfig, articles] = await Promise.all([
+  const [d, districts, catalogCards, mortgageConfig, articles, picks] = await Promise.all([
     getDistrictBySlug(slug),
     getDistricts(),
     getCatalogCards(),
     getMortgageConfig(),
     getArticles(),
+    getIndexablePicks(),
   ]);
+  const canonicalDistrict = districtBySlug(slug);
+  const catalogPath = canonicalDistrict
+    ? (picks.find((p) => p.path === pickPath({ district: canonicalDistrict }))?.path ?? null)
+    : null;
 
   if (!d) notFound();
 
@@ -91,6 +101,7 @@ export default async function DistrictDetailPage({ params }: { params: Promise<R
         rateText={rateText}
         posts={related}
         keyword={KEYWORD_BY_SLUG[d.slug] ?? d.name}
+        catalogPath={catalogPath}
       />
       <SiteFooter />
     </div>
