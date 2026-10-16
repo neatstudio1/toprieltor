@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Apartment } from "@/lib/cms/client";
@@ -44,7 +44,12 @@ export function ApartmentsList({
   const [sort, setSort] = useState<"priceAsc" | "priceDesc">("priceAsc");
   const [priceMin, setPriceMin] = useState<number | null>(null);
   const [priceMax, setPriceMax] = useState<number | null>(null);
-  const [page, setPage] = useState(1);
+  // Страница сбрасывается на первую при смене фильтров: номер хранится вместе с
+  // фильтрами, для которых он выбран, — без эффекта и лишнего рендера.
+  const filterKey = `${type}|${priceMin}|${priceMax}|${sort}`;
+  const [pageState, setPageState] = useState({ key: filterKey, page: 1 });
+  const page = pageState.key === filterKey ? pageState.page : 1;
+  const setPage = (p: number) => setPageState({ key: filterKey, page: p });
   const listTopRef = useRef<HTMLDivElement | null>(null);
 
   const typeChips = useMemo(() => {
@@ -65,10 +70,6 @@ export function ApartmentsList({
     );
     return list;
   }, [apartments, type, priceMin, priceMax, sort]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [type, priceMin, priceMax, sort]);
 
   const totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);

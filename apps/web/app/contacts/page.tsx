@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -98,7 +99,7 @@ export default function ContactsPage() {
           <h2 className={styles.sectionTitle}>Кто ответит</h2>
 
           <Link href="/o-nas" className={styles.person}>
-            <img
+            <Image
               src={AGENT_PHOTO_SM}
               alt={AGENT_NAME}
               width={56}

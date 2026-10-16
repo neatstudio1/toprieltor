@@ -636,10 +636,17 @@ details[data-acc][open] .acc-plus {
   display: block;
 }
 
+/* Широкая таблица прокручивается внутри своей обёртки, а не растягивает страницу на телефоне. */
+.prose .table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 0 28px;
+}
+
 .prose table {
   width: 100%;
   border-collapse: collapse;
-  margin: 0 0 28px;
+  margin: 0;
   font-size: 15.5px;
 }
 

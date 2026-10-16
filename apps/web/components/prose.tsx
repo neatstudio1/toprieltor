@@ -24,6 +24,11 @@ export function Prose({ content, className }: { content: string; className?: str
         remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ children }) => <h2>{children}</h2>,
+          table: ({ children }) => (
+            <div className="table-scroll">
+              <table>{children}</table>
+            </div>
+          ),
           // eslint-disable-next-line @next/next/no-img-element -- arbitrary content-factory image URLs, not known at build time
           img: ({ src, alt }) => <img src={typeof src === "string" ? src : undefined} alt={alt ?? ""} loading="lazy" />,
           a: ({ href, children }) =>

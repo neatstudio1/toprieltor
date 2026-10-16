@@ -1,5 +1,5 @@
 import { isMergedArticle } from "@/lib/article-redirects";
-import { deliveryYear, isDeliveredOrDue, isExplicitlyDelivered } from "@/lib/delivery";
+import { deliveryYear, isDeliveredOrDue } from "@/lib/delivery";
 const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
 const REVALIDATE_SECONDS = 3600;
 
@@ -530,7 +530,7 @@ export interface CatalogCard {
   matkapital: boolean;
   /** Хотя бы одна очередь сдана или срок её сдачи уже прошёл — «есть сданные». */
   hasDelivered: boolean;
-  /** Все очереди с явным статусом «Сдан» — квартиры точно в готовых домах. */
+  /** Все очереди сданы или их плановый срок сдачи уже прошёл — подборка «Дом сдан». */
   allDelivered: boolean;
   /** Годы сдачи ещё строящихся очередей, по возрастанию. */
   pendingYears: number[];
@@ -550,7 +550,7 @@ function deliveryStatus(project: Project) {
   ).sort((a, b) => a - b);
   return {
     hasDelivered: texts.some((t) => isDeliveredOrDue(t)),
-    allDelivered: texts.length > 0 && texts.every((t) => isExplicitlyDelivered(t)),
+    allDelivered: texts.length > 0 && texts.every((t) => isDeliveredOrDue(t)),
     pendingYears,
   };
 }

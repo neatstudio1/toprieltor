@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -79,12 +80,14 @@ export default function AboutPage() {
 
         <div className={styles.hero}>
           <div className={styles.photoFrame}>
-            <img
+            <Image
               src={AGENT_PHOTO}
               alt={`${AGENT_NAME} — сооснователь агентства ${SITE_NAME}`}
               width={800}
               height={1199}
               className={styles.photo}
+              // Портрет — первый экран страницы: грузим сразу, а не лениво.
+              loading="eager"
             />
           </div>
 

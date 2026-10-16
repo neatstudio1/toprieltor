@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
+import { useEffect, FormEvent, useRef, useState } from "react";
 import type { Magnet } from "@/lib/magnets";
 import { submitLead } from "@/lib/cms/leads";
 import { GOALS, reachGoal, trafficSource } from "@/lib/analytics";
@@ -17,7 +17,11 @@ export function MagnetForm({ magnet }: { magnet: Magnet }) {
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [error, setError] = useState("");
-  const mountedAt = useRef(Date.now());
+  // Время показа формы — для антиспама. Date.now() в рендере нечист, поэтому ставим после монтирования.
+  const mountedAt = useRef(0);
+  useEffect(() => {
+    mountedAt.current = Date.now();
+  }, []);
 
   const ready = name.trim().length > 0 && phone.trim().length >= 4 && consent;
 

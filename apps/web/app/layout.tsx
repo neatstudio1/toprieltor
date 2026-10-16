@@ -68,6 +68,8 @@ export default async function RootLayout({
         </Script>
         <noscript>
           <div>
+            {/* Пиксель Метрики для посетителей без JS — next/image тут не подходит. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`https://mc.yandex.ru/watch/${YANDEX_METRIKA_ID}`}
               style={{ position: "absolute", left: "-9999px" }}

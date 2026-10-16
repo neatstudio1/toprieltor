@@ -25,11 +25,7 @@ export function deliveryDeadline(text: string | null | undefined): Date | null {
   return null;
 }
 
-/**
- * Сдан ли дом: явное «сдан» или прошедший срок. Прошедший срок — это ещё не
- * подписанное разрешение на ввод, поэтому для подборки «Дом сдан» используется
- * только isExplicitlyDelivered, а это — для мягкой формулировки «есть сданные».
- */
+/** Сдан ли дом: явное «сдан» или прошедший плановый срок сдачи. */
 export function isDeliveredOrDue(text: string | null | undefined, now = new Date()): boolean {
   if (isExplicitlyDelivered(text)) return true;
   const deadline = deliveryDeadline(text);

@@ -1,11 +1,15 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { submitComment } from "@/lib/cms/comments";
 import styles from "./comment-section.module.css";
 
 export function CommentForm({ articleDocumentId }: { articleDocumentId: string }) {
-  const mountedAtRef = useRef(Date.now());
+  // Время показа формы — для антиспама. Date.now() в рендере нечист, поэтому ставим после монтирования.
+  const mountedAtRef = useRef(0);
+  useEffect(() => {
+    mountedAtRef.current = Date.now();
+  }, []);
   const [authorName, setAuthorName] = useState("");
   const [text, setText] = useState("");
   const [website, setWebsite] = useState("");
