@@ -6,17 +6,28 @@ import { millionsRub, pickLabel, quotedName } from "@/lib/seo-templates";
 import { pluralizeRu } from "@/lib/format";
 import { TELEGRAM_URL } from "@/lib/site";
 import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
+import { YanaAvatar } from "./yana-avatar";
 import styles from "./article-lead-block.module.css";
 
-/** Блок заявки внутри статьи: кнопка открывает форму, у «Напишите Яне» — ссылка в Telegram. */
-export function ArticleLeadBlock({ block }: { block: LeadBlock }) {
+/**
+ * Блок заявки внутри статьи: кнопка открывает форму, у «Напишите Яне» — ссылка
+ * в Telegram, у блока услуги — ссылка на страницу услуги.
+ */
+export function ArticleLeadBlock({ block, photo, href }: { block: LeadBlock; photo?: string; href?: string }) {
   return (
     <aside className={styles.block} data-lead-block={block.kind}>
-      <div>
-        <div className={styles.title}>{block.title}</div>
-        <div className={styles.text}>{block.text}</div>
+      <div className={styles.lead}>
+        {photo ? <YanaAvatar photo={photo} /> : null}
+        <div>
+          <div className={styles.title}>{block.title}</div>
+          <div className={styles.text}>{block.text}</div>
+        </div>
       </div>
-      {block.kind === "telegram" ? (
+      {href ? (
+        <Link href={href} className={styles.btn}>
+          {block.button}
+        </Link>
+      ) : block.kind === "telegram" ? (
         <a href={TELEGRAM_URL} className={styles.btn} target="_blank" rel="noopener noreferrer">
           {block.button}
         </a>

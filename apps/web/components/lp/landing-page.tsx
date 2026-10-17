@@ -95,6 +95,7 @@ export function LandingPage({ variant, heroAccent, prices }: LandingPageProps) {
                 alt="Яна Чекулова"
                 fill
                 priority
+                fetchPriority="high"
                 sizes="(max-width: 767px) 100vw, 45vw"
                 style={{ objectFit: "cover", objectPosition: "50% 20%" }}
               />

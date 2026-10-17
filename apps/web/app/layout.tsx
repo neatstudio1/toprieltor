@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { LeadModalProvider } from "@/components/lead-modal/lead-modal-provider";
 import { FloatingLeadButton } from "@/components/lead-modal/floating-lead-button";
@@ -8,17 +8,28 @@ import { FloatingLeadButton } from "@/components/lead-modal/floating-lead-button
 import { YANDEX_METRIKA_ID } from "@/lib/analytics";
 import "./globals.css";
 
-const inter = Inter({
+/**
+ * Шрифты — свои облегчённые файлы (2026-10-17), а не next/font/google.
+ *
+ * Google режет Inter на наборы символов: латиница 48 КБ, кириллица 19 КБ,
+ * и знак «₽» попадает в «расширенную латиницу» — ради одного символа телефон
+ * качал ещё 85 КБ. Для /lp отдельно грузилось начертание 800. Здесь один
+ * вариативный файл 400–800 только с нужными символами: латиница, кириллица,
+ * ₽, №, стрелки, тире — 33 КБ вместо ~180. Моноширинный — 14 КБ.
+ * Пересобрать после новых символов в дизайне: fonttools varLib.instancer
+ * (opsz=14, wght=400:800) → pyftsubset с --unicodes и --flavor=woff2.
+ */
+const inter = localFont({
+  src: "./fonts/inter.woff2",
   variable: "--font-inter",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
+  weight: "400 800",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const jetbrainsMono = localFont({
+  src: "./fonts/jetbrains-mono.woff2",
   variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: "400 600",
   display: "swap",
 });
 

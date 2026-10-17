@@ -10,12 +10,12 @@ import {
   strapiMediaUrl,
 } from "@/lib/cms/client";
 import { getCatalogPicks } from "@/lib/catalog-picks";
-import { LEAD_BLOCKS, picksMentioned, projectsMentioned, splitArticle, topicBlock } from "@/lib/article-blocks";
+import { LEAD_BLOCKS, endBlock, picksMentioned, projectsMentioned, splitArticle, topicBlock } from "@/lib/article-blocks";
 import { ArticleCatalogLinks, ArticleLeadBlock } from "@/components/blog/article-lead-block";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ArticleCover, generatedCoverPath } from "@/components/blog/article-cover";
-import { ArticleProse } from "@/components/blog/article-prose";
+import { ArticleProse, countForms } from "@/components/blog/article-prose";
 import { ViewTracker } from "@/components/blog/view-tracker";
 import { CommentSection } from "@/components/blog/comment-section";
 import { pageMetadata } from "@/lib/site";
@@ -25,7 +25,7 @@ import { articleSchema, breadcrumbListSchema, faqPageSchema } from "@/lib/json-l
 import { extractFaqFromMarkdown } from "@/lib/article-faq";
 import { matchServiceForArticle } from "@/lib/article-service";
 import styles from "./page.module.css";
-import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
+import { yanaPhotos } from "@/lib/yana-photos";
 
 export const revalidate = 3600;
 
@@ -75,6 +75,26 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
   const midBlock = topicBlock(article);
   const mentionedProjects = projectsMentioned(article, cards);
   const mentionedPicks = picksMentioned(article, picks);
+
+  // В конце статьи — один блок заявки по теме. Если статья сама заканчивается
+  // формой ([[форма]] в последней части), второй блок следом не ставим.
+  const lastPart = rest || middle || intro;
+  const end = countForms(lastPart) ? null : endBlock(service);
+
+  // У каждого блока заявки своё фото Яны: блоки по порядку на странице.
+  const slots = [
+    countForms(intro),
+    middle ? 1 : 0,
+    countForms(middle),
+    rest && midBlock ? 1 : 0,
+    countForms(rest),
+    end ? 1 : 0,
+  ];
+  const photos = yanaPhotos(slug);
+  const [introPhotos, [podborPhoto], middlePhotos, [midPhoto], restPhotos, [endPhoto]] = slots.map((n, i) => {
+    const from = slots.slice(0, i).reduce((a, b) => a + b, 0);
+    return photos.slice(from, from + n);
+  });
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
@@ -131,28 +151,14 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
         </div>
 
         <div className={styles.body}>
-          <ArticleProse content={intro} className="prose" />
-          {middle ? <ArticleLeadBlock block={LEAD_BLOCKS.podbor} /> : null}
-          {middle ? <ArticleProse content={middle} className="prose" /> : null}
-          {rest && midBlock ? <ArticleLeadBlock block={midBlock} /> : null}
-          {rest ? <ArticleProse content={rest} className="prose" /> : null}
+          <ArticleProse content={intro} className="prose" photos={introPhotos} />
+          {middle ? <ArticleLeadBlock block={LEAD_BLOCKS.podbor} photo={podborPhoto} /> : null}
+          {middle ? <ArticleProse content={middle} className="prose" photos={middlePhotos} /> : null}
+          {rest && midBlock ? <ArticleLeadBlock block={midBlock} photo={midPhoto} /> : null}
+          {rest ? <ArticleProse content={rest} className="prose" photos={restPhotos} /> : null}
           <ArticleCatalogLinks projects={mentionedProjects} picks={mentionedPicks} />
-          <ArticleLeadBlock block={LEAD_BLOCKS.telegram} />
+          {end ? <ArticleLeadBlock block={end.block} href={end.href} photo={endPhoto} /> : null}
         </div>
-
-        {service ? (
-          <div className={styles.inlineCtaWrap}>
-            <div className={styles.inlineCta}>
-              <div>
-                <div className={styles.inlineCtaTitle}>{service.title}</div>
-                <div className={styles.inlineCtaLead}>{service.cta}</div>
-              </div>
-              <Link href={`/uslugi/${service.slug}`} className={`tpl-btn-prim ${styles.inlineCtaBtn}`}>
-                Подробнее об услуге
-              </Link>
-            </div>
-          </div>
-        ) : null}
 
         <CommentSection articleDocumentId={article.documentId} />
       </article>
@@ -182,14 +188,6 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
         </div>
       ) : null}
 
-      <section className={styles.footerCtaSection}>
-        <div className={styles.footerCtaInner}>
-          <h2 className={styles.footerCtaTitle}>Подберём новостройку под ваш капитал — бесплатно</h2>
-          <LeadCtaButton className={`tpl-btn-prim ${styles.footerCtaBtn}`}>
-            Начать подбор
-          </LeadCtaButton>
-        </div>
-      </section>
 
       <SiteFooter />
     </div>

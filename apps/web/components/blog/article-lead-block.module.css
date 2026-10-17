@@ -12,6 +12,36 @@
   flex-wrap: wrap;
 }
 
+.lead {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.avatar {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.inlineFormHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.inlineFormHead strong {
+  display: block;
+  color: var(--ink);
+  font-size: 15px;
+}
+
 .title {
   font-size: 19px;
   font-weight: 600;
@@ -92,6 +122,16 @@
   .btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .lead {
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .avatar {
+    width: 52px;
+    height: 52px;
   }
 }
 

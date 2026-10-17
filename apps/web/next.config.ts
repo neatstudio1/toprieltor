@@ -84,6 +84,8 @@ const nextConfig: NextConfig = {
     // в замерах карточки каталога и квартир грузились по 6–9 с. Фото ЖК
     // меняются редко, а новое фото придёт с новым адресом.
     minimumCacheTTL: 60 * 60 * 24 * 30,
+    // 50 — фон первого экрана главной (под затемнением), остальное — 75.
+    qualities: [50, 75],
     remotePatterns: [
       ...DEVELOPER_IMAGE_HOSTS.map((hostname) => ({
         protocol: "https" as const,

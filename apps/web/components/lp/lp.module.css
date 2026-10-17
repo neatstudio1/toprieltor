@@ -3,7 +3,7 @@
 .page {
   --lp-pad: clamp(40px, 4.5vw, 96px);
   --lp-w: 1920px;
-  --f8: var(--font-inter-extra), var(--sans);
+  --f8: var(--sans);
   background: #fff;
   color: #18181b;
   font-family: var(--sans);
@@ -15,7 +15,7 @@
 }
 
 .overlays {
-  --f8: var(--font-inter-extra), var(--sans);
+  --f8: var(--sans);
   font-family: var(--sans);
 }
 

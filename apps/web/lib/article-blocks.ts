@@ -1,4 +1,5 @@
 import type { Article, CatalogCard } from "@/lib/cms/client";
+import type { ArticleService } from "@/lib/article-service";
 import type { CatalogPick } from "@/lib/catalog-picks";
 import { DISTRICTS, ROOM_TYPES } from "@/lib/districts";
 
@@ -11,13 +12,13 @@ import { DISTRICTS, ROOM_TYPES } from "@/lib/districts";
  * (ипотека / районы и застройщики / отделка), в конце — «Напишите Яне».
  */
 export interface LeadBlock {
-  kind: "podbor" | "ipoteka" | "price" | "remont" | "telegram";
+  kind: "podbor" | "ipoteka" | "price" | "remont" | "telegram" | "service";
   title: string;
   text: string;
   button: string;
 }
 
-export const LEAD_BLOCKS: Record<LeadBlock["kind"], LeadBlock> = {
+export const LEAD_BLOCKS: Record<Exclude<LeadBlock["kind"], "service">, LeadBlock> = {
   podbor: {
     kind: "podbor",
     title: "Подберём новостройку под ваш бюджет",
@@ -50,7 +51,20 @@ export const LEAD_BLOCKS: Record<LeadBlock["kind"], LeadBlock> = {
   },
 };
 
-const TOPICS: { kind: LeadBlock["kind"]; match: RegExp }[] = [
+/**
+ * Блок в конце статьи — один (2026-10-17: раньше подряд шли «Напишите Яне»,
+ * блок услуги и тёмная плашка «Начать подбор»). Есть услуга по теме статьи —
+ * ведём на неё, нет — в Telegram к Яне.
+ */
+export function endBlock(service: ArticleService | null): { block: LeadBlock; href?: string } {
+  if (!service) return { block: LEAD_BLOCKS.telegram };
+  return {
+    block: { kind: "service", title: service.title, text: service.cta, button: "Подробнее об услуге" },
+    href: `/uslugi/${service.slug}`,
+  };
+}
+
+const TOPICS: { kind: keyof typeof LEAD_BLOCKS; match: RegExp }[] = [
   { kind: "ipoteka", match: /ипотек|маткапитал|материнск|первоначальн|взнос|рассроч|ставк/i },
   { kind: "remont", match: /ремонт|отделк|приёмк|приемк|дизайн|white box/i },
   { kind: "price", match: /район|застройщик|девелопмент|брусник|атомстрой|астон|атлас/i },

@@ -11,13 +11,27 @@ import { ArticleInlineForm } from "./article-inline-form";
  */
 const FORM_MARKER = /^[ \t]*\[\[форма\]\][ \t]*$/m;
 
-export function ArticleProse({ content, className }: { content: string; className?: string }) {
+/** Сколько форм-меток в куске статьи — странице, чтобы раздать им разные фото. */
+export function countForms(content: string): number {
+  return content.match(new RegExp(FORM_MARKER.source, "gm"))?.length ?? 0;
+}
+
+export function ArticleProse({
+  content,
+  className,
+  photos = [],
+}: {
+  content: string;
+  className?: string;
+  /** Портреты Яны для форм по порядку. */
+  photos?: string[];
+}) {
   const parts = content.split(new RegExp(FORM_MARKER.source, "gm"));
   return (
     <>
       {parts.map((part, i) => (
         <Fragment key={i}>
-          {i > 0 ? <ArticleInlineForm /> : null}
+          {i > 0 ? <ArticleInlineForm photo={photos[i - 1]} /> : null}
           {part.trim() ? <Prose content={part} className={className} /> : null}
         </Fragment>
       ))}

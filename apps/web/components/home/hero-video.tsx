@@ -9,11 +9,24 @@ import { DeferredVideo } from "@/components/deferred-video";
  * next/image с priority — телефон получает версию под свою ширину вместо
  * 190 КБ оригинала, и она же становится крупнейшим элементом экрана.
  * Ролик подключает DeferredVideo после загрузки страницы.
+ *
+ * fetchPriority="high" — priority в Next 16 даёт только preload, и Lighthouse
+ * отмечал, что картинка первого экрана грузится наравне со шрифтами и JS.
+ * Качество 50: фон под затемнением, разницы не видно, а файл вдвое легче.
  */
 export function HeroVideo({ className }: { className?: string }) {
   return (
     <>
-      <Image src="/hero-bg.webp" alt="" fill priority sizes="100vw" className={className} />
+      <Image
+        src="/hero-bg.webp"
+        alt=""
+        fill
+        priority
+        fetchPriority="high"
+        quality={50}
+        sizes="100vw"
+        className={className}
+      />
       <DeferredVideo src="/hero.mp4" className={className} />
     </>
   );
