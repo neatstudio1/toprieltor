@@ -15,7 +15,7 @@ import { ArticleCatalogLinks, ArticleLeadBlock } from "@/components/blog/article
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ArticleCover, generatedCoverPath } from "@/components/blog/article-cover";
-import { Prose } from "@/components/prose";
+import { ArticleProse } from "@/components/blog/article-prose";
 import { ViewTracker } from "@/components/blog/view-tracker";
 import { CommentSection } from "@/components/blog/comment-section";
 import { pageMetadata } from "@/lib/site";
@@ -131,11 +131,11 @@ export default async function ArticlePage({ params }: { params: Promise<RoutePar
         </div>
 
         <div className={styles.body}>
-          <Prose content={intro} className="prose" />
+          <ArticleProse content={intro} className="prose" />
           {middle ? <ArticleLeadBlock block={LEAD_BLOCKS.podbor} /> : null}
-          {middle ? <Prose content={middle} className="prose" /> : null}
+          {middle ? <ArticleProse content={middle} className="prose" /> : null}
           {rest && midBlock ? <ArticleLeadBlock block={midBlock} /> : null}
-          {rest ? <Prose content={rest} className="prose" /> : null}
+          {rest ? <ArticleProse content={rest} className="prose" /> : null}
           <ArticleCatalogLinks projects={mentionedProjects} picks={mentionedPicks} />
           <ArticleLeadBlock block={LEAD_BLOCKS.telegram} />
         </div>
