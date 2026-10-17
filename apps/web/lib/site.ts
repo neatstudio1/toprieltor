@@ -18,27 +18,17 @@ export const AGENT_PHOTO = "/yana-chekulova.webp";
 export const AGENT_PHOTO_SM = "/yana-chekulova-sm.webp";
 
 /** До этой длины Яндекс показывает title целиком — бренд дописываем, только если влезает. */
-const BRANDED_TITLE_MAX = 70;
-const BRAND_SUFFIX = ` | ${SITE_NAME}`;
-
-/** «Заголовок | TOPиелтор», если вместе укладываются в 70 символов, иначе заголовок как есть. */
-export function withBrand(title: string): string {
-  if (title.includes(SITE_NAME)) return title;
-  const branded = `${title}${BRAND_SUFFIX}`;
-  return branded.length <= BRANDED_TITLE_MAX ? branded : title;
-}
-
 /**
  * Fills in canonical + OG/Twitter for a page from its title/description/path.
- * Pass plain page titles without the brand suffix: it is added by withBrand()
- * when it fits. `absoluteTitle: true` skips the suffix entirely.
+ * Title идёт как есть, без « | TOPиелтор»: во второй версии согласованной
+ * таблицы (2026-10-15) бренд из заголовков убран — место отдано под суть
+ * страницы и коммерческий запрос. `absoluteTitle` оставлен для совместимости.
  */
 export function pageMetadata({
   title,
   description,
   path,
   image,
-  absoluteTitle,
 }: {
   title: string;
   description: string;
@@ -48,7 +38,7 @@ export function pageMetadata({
 }): Metadata {
   const ogImage = image ?? "/hero-poster.webp";
   return {
-    title: { absolute: absoluteTitle ? title : withBrand(title) },
+    title: { absolute: title },
     description,
     alternates: { canonical: path },
     openGraph: {

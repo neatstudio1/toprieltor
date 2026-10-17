@@ -1,40 +1,48 @@
 import Link from "next/link";
-import { PICK_FLAGS, pickPath, type CatalogPick } from "@/lib/catalog-picks";
-import { DISTRICTS, ROOM_TYPES } from "@/lib/districts";
+import { PICK_FLAGS, pickPath, type CatalogPick, type PickFlag } from "@/lib/catalog-picks";
+import { DISTRICTS, ROOM_TYPES, type District, type RoomType } from "@/lib/districts";
 import styles from "./pick-links.module.css";
+
+interface Current {
+  district: District | null;
+  roomType: RoomType | null;
+  flag: PickFlag | null;
+}
 
 /**
  * Фильтры каталога в виде обычных ссылок: каждая кнопка ведёт на адрес своей
  * подборки, поэтому поисковик видит и индексирует их, а не только состояние
- * JS-фильтра. Кнопки показываются только для подборок, прошедших порог.
+ * JS-фильтра.
  *
- * Комнатность внутри района ведёт на «район × комнатность», если такая
- * подборка есть, иначе — на комнатность по всему городу.
+ * Фильтры складываются (2026-10-17): кнопка меняет только своё измерение и
+ * сохраняет остальные — «1-комнатные в Академическом» + «С отделкой» дают
+ * «1-комнатные с отделкой в Академическом», а не отделку по всему городу.
+ * Повторный клик по активной кнопке снимает этот фильтр. Кнопки, под которыми
+ * сейчас нет квартир, не показываются; ссылки на подборки вне индекса — nofollow.
  */
-export function PickLinks({ picks, current }: { picks: CatalogPick[]; current?: CatalogPick | null }) {
-  const byPath = new Map(picks.filter((p) => p.indexable).map((p) => [p.path, p]));
-  const district = current?.district ?? null;
-  const roomType = current?.roomType ?? null;
-  // Повторный клик по активной кнопке снимает этот фильтр, оставляя другой.
-  const withoutRoom = (district && byPath.get(pickPath({ district }))?.path) || "/catalog";
-  const withoutDistrict = (roomType && byPath.get(pickPath({ roomType }))?.path) || "/catalog";
+export function PickLinks({ picks, current }: { picks: CatalogPick[]; current?: Current | null }) {
+  const byPath = new Map(picks.map((p) => [p.path, p]));
+  const cur: Current = current ?? { district: null, roomType: null, flag: null };
 
-  const rooms = ROOM_TYPES.map((t) => {
-    const local = district ? byPath.get(pickPath({ district, roomType: t })) : undefined;
-    const target = local ?? byPath.get(pickPath({ roomType: t }));
-    return target ? { key: t.slug, label: t.short, href: roomType === t ? withoutRoom : target.path, on: roomType === t } : null;
-  }).filter((x) => x !== null);
+  function item(key: string, label: string, next: Current, on: boolean) {
+    const href = pickPath(next);
+    const target = byPath.get(href);
+    // Снять фильтр можно всегда — если уровнем выше подборки нет, это каталог.
+    if (!on && !target) return null;
+    return { key, label, href, on, count: on ? null : (target?.count ?? null), nofollow: Boolean(target && !target.indexable) };
+  }
 
-  const districts = DISTRICTS.map((d) => {
-    const local = roomType ? byPath.get(pickPath({ district: d, roomType })) : undefined;
-    const target = local ?? byPath.get(pickPath({ district: d }));
-    return target ? { key: d.slug, label: d.name, href: district === d ? withoutDistrict : target.path, on: district === d } : null;
-  }).filter((x) => x !== null);
+  const rooms = ROOM_TYPES.map((t) =>
+    item(t.slug, t.short, { ...cur, roomType: cur.roomType === t ? null : t }, cur.roomType === t),
+  ).filter((x) => x !== null);
 
-  const flags = PICK_FLAGS.map((f) => {
-    const target = byPath.get(pickPath({ flag: f.slug }));
-    return target ? { key: f.slug, label: f.label, href: current?.flag === f.slug ? "/catalog" : target.path, on: current?.flag === f.slug } : null;
-  }).filter((x) => x !== null);
+  const districts = DISTRICTS.map((d) =>
+    item(d.slug, d.name, { ...cur, district: cur.district === d ? null : d }, cur.district === d),
+  ).filter((x) => x !== null);
+
+  const flags = PICK_FLAGS.map((f) =>
+    item(f.slug, f.label, { ...cur, flag: cur.flag === f.slug ? null : f.slug }, cur.flag === f.slug),
+  ).filter((x) => x !== null);
 
   const groups = [
     { label: "Комнатность", items: rooms },
@@ -49,16 +57,22 @@ export function PickLinks({ picks, current }: { picks: CatalogPick[]; current?: 
       {groups.map((g) => (
         <div key={g.label} className={styles.row}>
           <span className={styles.label}>{g.label}</span>
-          {g.items.map((item) => (
-            <Link
-              key={item.key}
-              href={item.href}
-              className={item.on ? styles.chipOn : styles.chip}
-              aria-current={item.on ? "page" : undefined}
-            >
-              {item.label}
-            </Link>
-          ))}
+          <div className={styles.chips}>
+            {g.items.map((it) => (
+              <Link
+                key={it.key}
+                href={it.href}
+                className={it.on ? styles.chipOn : styles.chip}
+                aria-current={it.on ? "page" : undefined}
+                rel={it.nofollow ? "nofollow" : undefined}
+                title={it.on ? "Снять фильтр" : undefined}
+              >
+                {it.label}
+                {it.on ? <span className={styles.x}>×</span> : null}
+                {it.count !== null ? <span className={styles.count}>{it.count}</span> : null}
+              </Link>
+            ))}
+          </div>
         </div>
       ))}
     </nav>

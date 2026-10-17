@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { MERGED_ARTICLES } from "./lib/article-redirects";
+import { DISTRICTS, ROOM_TYPES } from "./lib/districts";
 
 const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
 const strapiUrl = new URL(STRAPI_URL);
@@ -45,12 +46,33 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return Object.entries(MERGED_ARTICLES).map(([from, to]) => ({
+    // Подборки каталога: сегменты в адресе идут строго район → комнатность →
+    // особенность. Переставленный адрес — дубль, уводим его на канонический 301-м
+    // (permanentRedirect в странице дал бы 308, а Яндекс надёжно клеит по 301).
+    const D = `:d(${DISTRICTS.map((d) => d.slug).join("|")})`;
+    const R = `:r(${ROOM_TYPES.map((t) => t.slug).join("|")})`;
+    const F = ":f(s-otdelkoy|sdannye)";
+    const pickOrder: [string, string][] = [
+      [`/catalog/${R}/${D}`, "/catalog/:d/:r"],
+      [`/catalog/${F}/${D}`, "/catalog/:d/:f"],
+      [`/catalog/${F}/${R}`, "/catalog/:r/:f"],
+      [`/catalog/${D}/${F}/${R}`, "/catalog/:d/:r/:f"],
+      [`/catalog/${R}/${D}/${F}`, "/catalog/:d/:r/:f"],
+      [`/catalog/${R}/${F}/${D}`, "/catalog/:d/:r/:f"],
+      [`/catalog/${F}/${D}/${R}`, "/catalog/:d/:r/:f"],
+      [`/catalog/${F}/${R}/${D}`, "/catalog/:d/:r/:f"],
+    ];
+    const pickRedirects = pickOrder.map(([source, destination]) => ({
+      source,
+      destination,
+      statusCode: 301 as const,
+    }));
+    return [...pickRedirects, ...Object.entries(MERGED_ARTICLES).map(([from, to]) => ({
       source: `/blog/${from}`,
       destination: `/blog/${to}`,
       // permanent: true даёт 308, а Яндекс склейку надёжно делает по 301.
       statusCode: 301 as const,
-    }));
+    }))];
   },
   images: {
     // Strapi runs on localhost in dev — the private-IP SSRF guard only needs

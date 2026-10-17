@@ -53,9 +53,6 @@ export default async function CatalogPage() {
   })).filter((g) => g.page || g.items.length > 0);
   const cityPicks = picks.filter((p) => p.kind === "room" || p.kind === "flag");
 
-  const districts = Array.from(new Set(cards.map((c) => c.district).filter((d): d is string => Boolean(d)))).sort(
-    (a, b) => a.localeCompare(b, "ru"),
-  );
   const developers = Array.from(new Set(cards.map((c) => c.developerName).filter(Boolean))).sort((a, b) =>
     a.localeCompare(b, "ru"),
   );
@@ -85,7 +82,7 @@ export default async function CatalogPage() {
         </div>
       </div>
 
-      <CatalogFilters cards={cards} districts={districts} developers={developers} terms={terms} rateText={rateText} />
+      <CatalogFilters cards={cards} developers={developers} terms={terms} rateText={rateText} />
 
       {byDistrict.length > 0 ? (
         <section className={styles.picksSection}>

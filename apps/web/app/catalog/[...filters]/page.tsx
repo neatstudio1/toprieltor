@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { getCatalogCards, getMortgageConfig, type CatalogCard } from "@/lib/cms/client";
-import { getCatalogPicks, getIndexablePicks, resolvePick, pickPath, type CatalogPick } from "@/lib/catalog-picks";
+import { getCatalogPicks, getIndexablePicks, resolvePick, pickPath, type CatalogPick, type PickParts } from "@/lib/catalog-picks";
 import { ROOM_TYPES } from "@/lib/districts";
-import { pickLabel, pickSeo, millionsRub } from "@/lib/seo-templates";
+import { partsLabel, pickLabel, pickSeo, millionsRub } from "@/lib/seo-templates";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { JkShowcaseGrid } from "@/components/catalog/jk-showcase-grid";
@@ -29,22 +29,40 @@ export async function generateStaticParams(): Promise<RouteParams[]> {
 
 async function load(params: RouteParams) {
   const resolution = await resolvePick(params.filters.map(decodeURIComponent));
-  // Ниже порога подборка своей страницы не получает: пара квартир в разделе —
-  // ровно та «малоценная страница», за которую Яндекс уже выкидывал наши хабы.
+  // Переставленные сегменты штатно уводит next.config (301); это страховка.
   if (resolution.type === "redirect") permanentRedirect(resolution.to);
   if (resolution.type === "notFound") notFound();
   const [cards, picks] = await Promise.all([getCatalogCards(), getCatalogPicks()]);
+  if (resolution.type === "empty") return { empty: resolution, picks } as const;
   const pick = resolution.pick;
   const projects = pick.projectSlugs
     .map((slug) => cards.find((c) => c.slug === slug))
     .filter((c): c is CatalogCard => Boolean(c));
-  return { pick, picks, projects };
+  return { pick, picks, projects, empty: null } as const;
 }
 
+const NOINDEX = { robots: { index: false, follow: true } } as const;
+
 export async function generateMetadata({ params }: { params: Promise<RouteParams> }): Promise<Metadata> {
-  const { pick, projects } = await load(await params);
-  const seo = pickSeo(pick, projects);
-  return pageMetadata({ title: seo.title, description: seo.description, path: pick.path });
+  const data = await load(await params);
+  if (data.empty) {
+    const label = partsLabel(data.empty.parts);
+    return {
+      ...pageMetadata({
+        title: `${label} в Екатеринбурге — подберём под заявку`,
+        description: `${label}: сейчас в открытой продаже нет. Оставьте заявку — найдём варианты, в том числе вне каталога. Подбор бесплатно.`,
+        path: data.empty.path,
+      }),
+      ...NOINDEX,
+    };
+  }
+  const seo = pickSeo(data.pick, data.projects);
+  return {
+    ...pageMetadata({ title: seo.title, description: seo.description, path: data.pick.path }),
+    // Подборки меньше пяти квартир и сочетания из трёх фильтров работают для
+    // посетителей, но в индекс не идут (см. MIN_APARTMENTS_FOR_INDEX).
+    ...(data.pick.indexable ? {} : NOINDEX),
+  };
 }
 
 const variantsText = (n: number) => `${n} ${pluralizeRu(n, "вариант", "варианта", "вариантов")}`;
@@ -105,6 +123,18 @@ function NoteText({ pick, picks, projects }: { pick: CatalogPick; picks: Catalog
       </p>
     );
   }
+  if (pick.flag && (pick.district || pick.roomType)) {
+    return (
+      <p>
+        {pickLabel(pick)}: {variantsText(pick.count)} в {pick.projectSlugs.length} ЖК, самая доступная стоит {priceText}.
+        {pick.flag === "s-otdelkoy" && pick.cleanFinishCount > 0
+          ? ` С чистовой отделкой — ${pick.cleanFinishCount}, остальные с предчистовой (white box).`
+          : ""}
+        {pick.flag === "sdannye" ? " Плановый срок сдачи уже наступил — точный статус дома уточним у застройщика до брони." : ""}
+        {perM2}
+      </p>
+    );
+  }
   if (pick.flag === "sdannye") {
     return (
       <p>
@@ -144,11 +174,62 @@ function relatedPicks(pick: CatalogPick, picks: CatalogPick[]): CatalogPick[] {
       .filter((p) => p.kind === "districtRoom" && p.roomType === pick.roomType)
       .sort((a, b) => a.priceMin - b.priceMin);
   }
+  if (pick.flag && (pick.district || pick.roomType)) {
+    // То же место без особенности и та же особенность в соседних срезах.
+    return [
+      ...indexable.filter((p) => !p.flag && p.district === pick.district && p.roomType === pick.roomType),
+      ...indexable.filter((p) => p.flag === pick.flag && (p.district === pick.district || p.roomType === pick.roomType)),
+    ].slice(0, 12);
+  }
   return [...indexable.filter((p) => p.kind === "flag"), ...indexable.filter((p) => p.kind === "room")];
 }
 
+/** Подборка уровнем выше: без особенности, иначе без комнатности. */
+function parentPick(pick: CatalogPick, picks: CatalogPick[]): CatalogPick | undefined {
+  const up = pick.flag
+    ? pickPath({ district: pick.district, roomType: pick.roomType })
+    : pick.district && pick.roomType
+      ? pickPath({ district: pick.district })
+      : null;
+  return up ? picks.find((p) => p.path === up) : undefined;
+}
+
+function EmptyPick({ parts, picks }: { parts: PickParts; picks: CatalogPick[] }) {
+  const label = partsLabel(parts);
+  return (
+    <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
+      <SiteHeader active="catalog" />
+      <div className={styles.wrap}>
+        <div className={styles.crumbs}>
+          <Link href="/">Главная</Link> / <Link href="/catalog">Каталог ЖК</Link> / {label}
+        </div>
+        <h1 className={styles.title}>{label}</h1>
+        <p className={styles.lead}>
+          Сейчас таких квартир нет в открытой продаже. Оставьте заявку — проверим закрытые продажи и старты новых
+          очередей и пришлём варианты. Подбор бесплатно, платит застройщик.
+        </p>
+        <div className={styles.picks}>
+          <PickLinks picks={picks} current={{ district: parts.district ?? null, roomType: parts.roomType ?? null, flag: parts.flag ?? null }} />
+        </div>
+        <div className={styles.cta}>
+          <h2 className={styles.ctaTitle}>Подберём вариант под ваш запрос</h2>
+          <div className={styles.ctaRow}>
+            <LeadCtaButton className="btn-prim">Оставить заявку</LeadCtaButton>
+            <Link href="/catalog" className="btn-sec">
+              Весь каталог новостроек
+            </Link>
+          </div>
+        </div>
+      </div>
+      <SiteFooter />
+    </div>
+  );
+}
+
 export default async function CatalogPickPage({ params }: { params: Promise<RouteParams> }) {
-  const [{ pick, picks, projects }, mortgageConfig] = await Promise.all([load(await params), getMortgageConfig()]);
+  const [data, mortgageConfig] = await Promise.all([load(await params), getMortgageConfig()]);
+  if (data.empty) return <EmptyPick parts={data.empty.parts} picks={data.picks} />;
+  const { pick, picks, projects } = data;
   const seo = pickSeo(pick, projects);
   const label = pickLabel(pick);
 
@@ -162,14 +243,14 @@ export default async function CatalogPickPage({ params }: { params: Promise<Rout
   const ready = projects.filter((p) => p.hasDelivered).length;
   const related = relatedPicks(pick, picks);
 
-  // «Район × комнатность» вложена в страницу района, если та есть.
-  const parent =
-    pick.kind === "districtRoom" && pick.district
-      ? picks.find((p) => p.indexable && p.path === pickPath({ district: pick.district }))
-      : undefined;
+  // Подборка вложена в ту, что уровнем выше: «1-комнатные в Академическом с отделкой»
+  // → «1-комнатные в Академическом» → «Новостройки в Академическом».
+  const parent = parentPick(pick, picks);
+  const grandParent = parent ? parentPick(parent, picks) : undefined;
   const crumbs = [
     { name: "Главная", path: "/" },
     { name: "Каталог ЖК", path: "/catalog" },
+    ...(grandParent ? [{ name: pickLabel(grandParent), path: grandParent.path }] : []),
     ...(parent ? [{ name: pickLabel(parent), path: parent.path }] : []),
     { name: label, path: pick.path },
   ];
@@ -199,7 +280,7 @@ export default async function CatalogPickPage({ params }: { params: Promise<Rout
         </p>
 
         <div className={styles.picks}>
-          <PickLinks picks={picks} current={pick} />
+          <PickLinks picks={picks} current={{ district: pick.district, roomType: pick.roomType, flag: pick.flag }} />
         </div>
 
         <div className={styles.stats}>

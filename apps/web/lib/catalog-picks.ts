@@ -7,8 +7,7 @@ import {
 } from "@/lib/cms/client";
 import {
   DISTRICTS,
-  MIN_APARTMENTS_FOR_LANDING,
-  MIN_PROJECTS_FOR_LANDING,
+  MIN_APARTMENTS_FOR_INDEX,
   ROOM_TYPES,
   districtBySlug,
   normalizeDistrict,
@@ -18,18 +17,20 @@ import {
 } from "@/lib/districts";
 
 /**
- * Подборки каталога — отдельные адреса под фильтры:
- *   /catalog/akademicheskiy      район
- *   /catalog/1k                  комнатность по всему городу
- *   /catalog/akademicheskiy/1k   район × комнатность
- *   /catalog/s-otdelkoy          с чистовой или предчистовой отделкой
- *   /catalog/sdannye             в домах, сданных или с прошедшим сроком сдачи
+ * Подборки каталога — отдельный адрес под любое сочетание фильтров.
+ * Сегменты всегда идут в одном порядке: район → комнатность → особенность.
+ *   /catalog/akademicheskiy                  район
+ *   /catalog/1k                              комнатность по всему городу
+ *   /catalog/s-otdelkoy                      с чистовой или предчистовой отделкой
+ *   /catalog/akademicheskiy/1k               район × комнатность
+ *   /catalog/akademicheskiy/s-otdelkoy       район × особенность
+ *   /catalog/1k/sdannye                      комнатность × особенность
+ *   /catalog/akademicheskiy/1k/s-otdelkoy    все три
  *
- * Фильтры каталога живут в состоянии клиентского компонента, своего URL у них
- * нет, и запросам вида «1-комнатная в Академическом» садиться было некуда.
- * Страница создаётся только при MIN_APARTMENTS_FOR_LANDING квартир и
- * MIN_PROJECTS_FOR_LANDING ЖК — с живыми данными подборка сама появляется
- * и исчезает (ниже порога — редирект на уровень выше).
+ * Страница есть при любом количестве квартир (решение 2026-10-16): для
+ * посетителей, Директа и перелинковки. В индекс — от MIN_APARTMENTS_FOR_INDEX
+ * квартир и не больше двух фильтров сразу: три фильтра почти никто не ищет,
+ * а таких страниц сотни.
  */
 
 export type PickFlag = "s-otdelkoy" | "sdannye";
@@ -39,7 +40,40 @@ export const PICK_FLAGS: { slug: PickFlag; label: string }[] = [
   { slug: "sdannye", label: "Дом сдан" },
 ];
 
-export type PickKind = "district" | "room" | "districtRoom" | "flag";
+export type PickKind =
+  | "district"
+  | "room"
+  | "flag"
+  | "districtRoom"
+  | "districtFlag"
+  | "roomFlag"
+  | "districtRoomFlag";
+
+export interface PickParts {
+  district?: District;
+  roomType?: RoomType;
+  flag?: PickFlag;
+}
+
+export function pickKind(parts: PickParts): PickKind {
+  const key = [parts.district ? "district" : "", parts.roomType ? "room" : "", parts.flag ? "flag" : ""]
+    .filter(Boolean)
+    .join("-");
+  const map: Record<string, PickKind> = {
+    district: "district",
+    room: "room",
+    flag: "flag",
+    "district-room": "districtRoom",
+    "district-flag": "districtFlag",
+    "room-flag": "roomFlag",
+    "district-room-flag": "districtRoomFlag",
+  };
+  return map[key];
+}
+
+export function pickDepth(parts: PickParts): number {
+  return [parts.district, parts.roomType, parts.flag].filter(Boolean).length;
+}
 
 export interface CatalogPick {
   kind: PickKind;
@@ -79,7 +113,7 @@ export function pickPath(parts: {
   flag?: PickFlag | null;
 }): string {
   const segments = [parts.district?.slug, parts.roomType?.slug, parts.flag].filter(Boolean);
-  return `/catalog/${segments.join("/")}`;
+  return segments.length ? `/catalog/${segments.join("/")}` : "/catalog";
 }
 
 interface Row {
@@ -90,12 +124,9 @@ interface Row {
   card: CatalogCard;
 }
 
-function summarize(
-  kind: PickKind,
-  rows: Row[],
-  parts: { district?: District; roomType?: RoomType; flag?: PickFlag },
-): CatalogPick | null {
+function summarize(rows: Row[], parts: PickParts): CatalogPick | null {
   if (!rows.length) return null;
+  const kind = pickKind(parts);
   const prices = rows.map((r) => r.apt.price_from);
   const areas = rows.map((r) => r.apt.area_m2).filter((a) => a > 0);
   // Медиана, а не min/max: делить самую дешёвую цену на самую большую площадь
@@ -126,7 +157,7 @@ function summarize(
     pricePerM2: perM2.length ? perM2[Math.floor(perM2.length / 2)] : 0,
     cleanFinishCount: rows.filter((r) => isCleanFinish(r.apt.finish)).length,
     projectSlugs,
-    indexable: rows.length >= MIN_APARTMENTS_FOR_LANDING && projectSlugs.length >= MIN_PROJECTS_FOR_LANDING,
+    indexable: rows.length >= MIN_APARTMENTS_FOR_INDEX && pickDepth(parts) <= 2,
   };
 }
 
@@ -149,19 +180,22 @@ export const getCatalogPicks = cache(async (): Promise<CatalogPick[]> => {
     });
   }
 
+  const flagTest: Record<PickFlag, (r: Row) => boolean> = {
+    "s-otdelkoy": (r) => hasFinish(r.apt.finish),
+    sdannye: (r) => r.card.allDelivered,
+  };
   const picks: (CatalogPick | null)[] = [];
-  for (const district of DISTRICTS) {
-    const inDistrict = rows.filter((r) => r.district === district);
-    picks.push(summarize("district", inDistrict, { district }));
-    for (const roomType of ROOM_TYPES) {
-      picks.push(summarize("districtRoom", inDistrict.filter((r) => r.roomType === roomType), { district, roomType }));
+  for (const district of [undefined, ...DISTRICTS]) {
+    const inDistrict = district ? rows.filter((r) => r.district === district) : rows;
+    for (const roomType of [undefined, ...ROOM_TYPES]) {
+      const inRoom = roomType ? inDistrict.filter((r) => r.roomType === roomType) : inDistrict;
+      for (const flag of [undefined, ...PICK_FLAGS.map((f) => f.slug)]) {
+        if (!district && !roomType && !flag) continue;
+        const subset = flag ? inRoom.filter(flagTest[flag]) : inRoom;
+        picks.push(summarize(subset, { district, roomType, flag }));
+      }
     }
   }
-  for (const roomType of ROOM_TYPES) {
-    picks.push(summarize("room", rows.filter((r) => r.roomType === roomType), { roomType }));
-  }
-  picks.push(summarize("flag", rows.filter((r) => hasFinish(r.apt.finish)), { flag: "s-otdelkoy" }));
-  picks.push(summarize("flag", rows.filter((r) => r.card.allDelivered), { flag: "sdannye" }));
 
   return picks.filter((p): p is CatalogPick => p !== null);
 });
@@ -172,47 +206,38 @@ export async function getIndexablePicks(): Promise<CatalogPick[]> {
 
 export type PickResolution =
   | { type: "page"; pick: CatalogPick }
+  /** Сочетание осмысленное, но квартир сейчас нет — страница-заглушка без индекса. */
+  | { type: "empty"; parts: PickParts; path: string }
   | { type: "redirect"; to: string }
   | { type: "notFound" };
 
-/** Адрес → подборка; ниже порога — куда уводить, мусорный адрес — 404. */
+/**
+ * Адрес → подборка. Мусорный адрес — 404; сегменты не в том порядке —
+ * редирект на канонический адрес (штатно его делает next.config со статусом
+ * 301, здесь — страховка).
+ */
 export async function resolvePick(segments: string[]): Promise<PickResolution> {
   const parsed = parseSegments(segments);
   if (!parsed) return { type: "notFound" };
-  const picks = await getCatalogPicks();
   const path = pickPath(parsed);
-  const pick = picks.find((p) => p.path === path);
-  if (pick?.indexable) return { type: "page", pick };
-
-  // Уровнем выше для «район × комнатность» — страница района, если она есть.
-  if (parsed.district && parsed.roomType) {
-    const parent = picks.find((p) => p.path === pickPath({ district: parsed.district }));
-    if (parent?.indexable) return { type: "redirect", to: parent.path };
-  }
-  // Район без подборки — гид по району, раньше адрес вёл туда.
-  if (parsed.district && !parsed.roomType && parsed.district.hasGuide) {
-    return { type: "redirect", to: `/rayon/${parsed.district.slug}` };
-  }
-  return { type: "redirect", to: "/catalog" };
+  if (path !== `/catalog/${segments.join("/")}`) return { type: "redirect", to: path };
+  const pick = (await getCatalogPicks()).find((p) => p.path === path);
+  if (pick) return { type: "page", pick };
+  return { type: "empty", parts: parsed, path };
 }
 
-function parseSegments(
-  segments: string[],
-): { district?: District; roomType?: RoomType; flag?: PickFlag } | null {
-  if (segments.length === 1) {
-    const [s] = segments;
+/** Сегменты в любом порядке, без повторов одного измерения. */
+function parseSegments(segments: string[]): PickParts | null {
+  if (!segments.length || segments.length > 3) return null;
+  const parts: PickParts = {};
+  for (const s of segments) {
     const district = districtBySlug(s);
-    if (district) return { district };
     const roomType = roomTypeBySlug(s);
-    if (roomType) return { roomType };
-    const flag = PICK_FLAGS.find((f) => f.slug === s);
-    if (flag) return { flag: flag.slug };
-    return null;
+    const flag = PICK_FLAGS.find((f) => f.slug === s)?.slug;
+    if (district && !parts.district) parts.district = district;
+    else if (roomType && !parts.roomType) parts.roomType = roomType;
+    else if (flag && !parts.flag) parts.flag = flag;
+    else return null;
   }
-  if (segments.length === 2) {
-    const district = districtBySlug(segments[0]);
-    const roomType = roomTypeBySlug(segments[1]);
-    if (district && roomType) return { district, roomType };
-  }
-  return null;
+  return parts;
 }

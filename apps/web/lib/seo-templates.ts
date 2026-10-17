@@ -88,6 +88,21 @@ export function pickSeo(pick: CatalogPick, projects: CatalogCard[]): SeoText {
       h1: `Новостройки ${pick.district.inCityPhrase}`,
     };
   }
+  // Сочетания с особенностью: «район × отделка», «комнатность × сдан», все три.
+  if (pick.flag && (pick.district || pick.roomType)) {
+    const what = pick.roomType ? roomAccusative(pick.roomType) : "квартиру";
+    const flagBuy = pick.flag === "sdannye" ? "в сданном доме" : "с отделкой";
+    const flagH1 = pick.flag === "sdannye" ? "в сданных домах" : "с отделкой в новостройках";
+    const where = pick.district ? pick.district.inCityPhrase : "Екатеринбурга";
+    const whereBuy = pick.district ? pick.district.inCityPhrase : pick.flag === "sdannye" ? "в Екатеринбурге" : "в новостройке Екатеринбурга";
+    const h1Where = pick.district ? pick.district.inCityPhrase : pick.flag === "sdannye" ? "Екатеринбурга" : "Екатеринбурга";
+    return {
+      title: withFreePick(`Купить ${what} ${flagBuy} ${whereBuy} от ${price}`),
+      description: withStatus(`${variants} в ${projectsCount} ЖК от ${price}`, status) +
+        " Бесплатный подбор и ипотека — цена как у застройщика.",
+      h1: `${pick.roomType ? pick.roomType.plural : "Квартиры"} ${flagH1} ${pick.district ? where : h1Where}`,
+    };
+  }
   if (pick.flag === "sdannye") {
     return {
       title: `Купить квартиру в сданном доме в Екатеринбурге от ${price} — заезд сразу`,
@@ -104,12 +119,25 @@ export function pickSeo(pick: CatalogPick, projects: CatalogCard[]): SeoText {
 
 /** Короткая подпись подборки для ссылок и крошек: «1-комнатные в Академическом». */
 export function pickLabel(pick: CatalogPick): string {
+  if (pick.flag && (pick.district || pick.roomType)) return partsLabel(pick);
   if (pick.kind === "districtRoom" && pick.district && pick.roomType) {
     return `${pick.roomType.plural} ${pick.district.inPhrase}`;
   }
   if (pick.kind === "room" && pick.roomType) return pick.roomType.plural;
   if (pick.kind === "district" && pick.district) return `Новостройки ${pick.district.inPhrase}`;
   return pick.flag === "sdannye" ? "Квартиры в сданных домах" : "Квартиры с отделкой";
+}
+
+/** Подпись любого сочетания фильтров — в том числе пустого, без подборки в базе. */
+export function partsLabel(parts: {
+  district?: { inPhrase: string } | null;
+  roomType?: RoomType | null;
+  flag?: string | null;
+}): string {
+  const what = parts.roomType ? parts.roomType.plural : parts.flag || parts.district ? "Квартиры" : "Новостройки";
+  const flag = parts.flag === "sdannye" ? " в сданных домах" : parts.flag === "s-otdelkoy" ? " с отделкой" : "";
+  const where = parts.district ? ` ${parts.district.inPhrase}` : "";
+  return `${what}${flag}${where}`;
 }
 
 // ───────────────────────── ЖК ─────────────────────────

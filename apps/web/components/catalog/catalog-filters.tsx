@@ -9,13 +9,6 @@ import styles from "./catalog-filters.module.css";
 
 type Chip = { key: string; label: string };
 
-const ROOM_GROUPS: { key: string; label: string; types: string[] }[] = [
-  { key: "студия", label: "Студии", types: ["студия"] },
-  { key: "1к", label: "1к", types: ["1к"] },
-  { key: "2к", label: "2к", types: ["2к"] },
-  { key: "3к", label: "3к", types: ["3к"] },
-  { key: "4plus", label: "4к+", types: ["4к", "5к"] },
-];
 const ROOM_ORDER = ["студия", "1к", "2к", "3к", "4к", "5к"];
 
 const PRICE_BUCKETS: { key: string; label: string; test: (n: number) => boolean }[] = [
@@ -89,36 +82,28 @@ function FilterChipGroup({
   );
 }
 
+/**
+ * Уточняющие фильтры каталога — застройщик, срок, цена, сортировка — работают
+ * на месте, без смены адреса. Комнатность и район вынесены в PickLinks: они
+ * ведут на отдельные страницы подборок со своими заголовками для поиска, и
+ * второй такой же набор кнопок на телефоне занимал весь первый экран.
+ */
 export function CatalogFilters({
   cards,
-  districts,
   developers,
   terms,
   rateText,
 }: {
   cards: CatalogCard[];
-  districts: string[];
   developers: string[];
   terms: number[];
   rateText: string;
 }) {
-  const [room, setRoom] = useState("all");
-  const [district, setDistrict] = useState("all");
   const [dev, setDev] = useState("all");
   const [term, setTerm] = useState("all");
   const [price, setPrice] = useState("all");
   const [sort, setSort] = useState<"priceAsc" | "priceDesc" | "name">("priceAsc");
 
-  const roomChips: Chip[] = useMemo(() => {
-    const present = new Set(cards.flatMap((c) => c.roomTypes));
-    const groups = ROOM_GROUPS.filter((g) => g.types.some((t) => present.has(t)));
-    return [{ key: "all", label: "Все" }, ...groups.map((g) => ({ key: g.key, label: g.label }))];
-  }, [cards]);
-
-  const districtChips: Chip[] = useMemo(
-    () => [{ key: "all", label: "Все районы" }, ...districts.map((d) => ({ key: d, label: d }))],
-    [districts],
-  );
   const devChips: Chip[] = useMemo(
     () => [{ key: "all", label: "Все" }, ...developers.map((d) => ({ key: d, label: d }))],
     [developers],
@@ -128,11 +113,9 @@ export function CatalogFilters({
     [terms],
   );
 
-  const hasFilters = room !== "all" || district !== "all" || dev !== "all" || term !== "all" || price !== "all";
+  const hasFilters = dev !== "all" || term !== "all" || price !== "all";
 
   const resetFilters = () => {
-    setRoom("all");
-    setDistrict("all");
     setDev("all");
     setTerm("all");
     setPrice("all");
@@ -140,10 +123,7 @@ export function CatalogFilters({
 
   const visible = useMemo(() => {
     const priceBucket = PRICE_BUCKETS.find((b) => b.key === price) ?? PRICE_BUCKETS[0];
-    const roomGroup = ROOM_GROUPS.find((g) => g.key === room);
     let list = cards.filter((c) => {
-      if (roomGroup && !roomGroup.types.some((t) => c.roomTypes.includes(t))) return false;
-      if (district !== "all" && c.district !== district) return false;
       if (dev !== "all" && c.developerName !== dev) return false;
       if (term !== "all" && String(c.termYear) !== term) return false;
       if (c.priceFrom !== null && !priceBucket.test(c.priceFrom)) return false;
@@ -158,14 +138,12 @@ export function CatalogFilters({
       return sort === "priceAsc" ? a.priceFrom - b.priceFrom : b.priceFrom - a.priceFrom;
     });
     return list;
-  }, [cards, room, district, dev, term, price, sort]);
+  }, [cards, dev, term, price, sort]);
 
   return (
     <>
       <div className={styles.filterBar}>
         <div className={styles.filterInner}>
-          <FilterChipGroup label="Комнатность" chips={roomChips} activeKey={room} onSelect={setRoom} />
-          <FilterChipGroup label="Район" chips={districtChips} activeKey={district} onSelect={setDistrict} />
           <FilterChipGroup label="Застройщик" chips={devChips} activeKey={dev} onSelect={setDev} />
           <div className={styles.chipGroups}>
             <FilterChipGroup label="Срок сдачи" chips={termChips} activeKey={term} onSelect={setTerm} />
