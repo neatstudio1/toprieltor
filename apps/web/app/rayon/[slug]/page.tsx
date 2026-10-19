@@ -50,7 +50,7 @@ export async function generateMetadata({
   if (!d) return {};
   const copy = seoCopy(`/rayon/${slug}`);
   return pageMetadata({
-    title: copy?.title ?? `Подбор новостройки в районе: ${d.name}, Екатеринбург`,
+    title: copy?.title ?? `${d.name} — район Екатеринбурга: жизнь, транспорт, новостройки`,
     description:
       copy?.description ?? d.lead ?? `Гид по району «${d.name}» в Екатеринбурге: новостройки, инфраструктура, транспорт, экология.`,
     path: `/rayon/${slug}`,

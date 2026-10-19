@@ -82,7 +82,7 @@ export function pickSeo(pick: CatalogPick, projects: CatalogCard[]): SeoText {
   }
   if (pick.kind === "district" && pick.district) {
     return {
-      title: `Купить квартиру в новостройке. Район: ${pick.district.name}, Екатеринбург — от ${price}`,
+      title: `Новостройки ${pick.district.inCityPhrase} — от ${price}`,
       description: withStatus(`${flats} в ${projectsCount} ЖК ${pick.district.inCityPhrase}, от ${price}`, status) +
         " Бесплатный подбор и ипотека — цена как у застройщика.",
       h1: `Новостройки ${pick.district.inCityPhrase}`,
