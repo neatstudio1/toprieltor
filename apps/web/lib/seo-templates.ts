@@ -8,20 +8,28 @@ import { formatRub, pluralizeRu } from "@/lib/format";
  * согласованной таблице ysrealty_title_description_2026-10-15.xlsx. Цифры
  * подставляются из живых данных и обновляются вместе с ними.
  *
- * Нормы: title до 85 символов (дальше Яндекс обрезает), description 120–160.
+ * Правила (таблица от 2026-10-23): title в форме запроса («Купить …») остаётся,
+ * в конец всегда добавляется «подбор бесплатный»; description начинается с
+ * действия («Подберём …», «Покажем …»).
  */
-export const TITLE_MAX = 85;
-const FREE_PICK_SUFFIX = " — бесплатный подбор";
+const FREE_PICK = "подбор бесплатный";
+
+/** Склонение для «из N вариантов»: «из 21 варианта», «из 5 вариантов». */
+function variantsAfterFrom(n: number): string {
+  return `${n} ${n % 10 === 1 && n % 100 !== 11 ? "варианта" : "вариантов"}`;
+}
 
 /** «4,3 млн ₽» */
 export function millionsRub(value: number): string {
   return `${(value / 1_000_000).toFixed(1).replace(".", ",")} млн ₽`;
 }
 
-/** Хвост «— бесплатный подбор», если заголовок с ним укладывается в норму. */
-function withFreePick(title: string): string {
-  const longer = `${title}${FREE_PICK_SUFFIX}`;
-  return longer.length <= TITLE_MAX ? longer : title;
+/**
+ * Хвост «подбор бесплатный»: через тире, а если в заголовке тире уже есть —
+ * через запятую, чтобы не было двух тире подряд.
+ */
+export function withFreePick(title: string): string {
+  return title.includes(" — ") ? `${title}, ${FREE_PICK}` : `${title} — ${FREE_PICK}`;
 }
 
 /** Винительный падеж для «купить …»: «студию», «2-комнатную квартиру». */
@@ -62,29 +70,28 @@ export function pickSeo(pick: CatalogPick, projects: CatalogCard[]): SeoText {
   const price = millionsRub(pick.priceMin);
   const projectsCount = pick.projectSlugs.length;
   const status = deliveryStatusText(projects);
-  const variants = `${pick.count} ${pluralizeRu(pick.count, "вариант", "варианта", "вариантов")}`;
-  const flats = `${pick.count} ${pluralizeRu(pick.count, "квартира", "квартиры", "квартир")}`;
+  const variants = variantsAfterFrom(pick.count);
 
   if (pick.kind === "districtRoom" && pick.district && pick.roomType) {
     return {
       title: withFreePick(`Купить ${roomAccusative(pick.roomType)} ${pick.district.inCityPhrase} от ${price}`),
-      description: withStatus(`${variants} в ${projectsCount} ЖК от ${price}`, status) +
-        " Бесплатный подбор и ипотека — цена как у застройщика.",
+      description: withStatus(`Подберём из ${variants} в ${projectsCount} ЖК от ${price}`, status) +
+        " Подбор и помощь с ипотекой бесплатно, цена как у застройщика.",
       h1: `${pick.roomType.plural} в новостройках ${pick.district.inCityPhrase}`,
     };
   }
   if (pick.kind === "room" && pick.roomType) {
     return {
       title: withFreePick(`Купить ${roomAccusative(pick.roomType)} в новостройке Екатеринбурга от ${price}`),
-      description: `${variants} в ${projectsCount} ЖК Екатеринбурга от ${price}. Бесплатный подбор, ипотека и сопровождение — платит застройщик.`,
+      description: `Подберём из ${variants} в ${projectsCount} ЖК Екатеринбурга от ${price}. Подбор, ипотеку и сопровождение сделки делаем бесплатно: платит застройщик.`,
       h1: `${pick.roomType.plural} в новостройках Екатеринбурга`,
     };
   }
   if (pick.kind === "district" && pick.district) {
     return {
-      title: `Новостройки ${pick.district.inCityPhrase} — от ${price}`,
-      description: withStatus(`${flats} в ${projectsCount} ЖК ${pick.district.inCityPhrase}, от ${price}`, status) +
-        " Бесплатный подбор и ипотека — цена как у застройщика.",
+      title: withFreePick(`Новостройки ${pick.district.inCityPhrase} — от ${price}`),
+      description: withStatus(`Подберём из ${variants} в ${projectsCount} ЖК ${pick.district.inCityPhrase}, от ${price}`, status) +
+        " Подбор и помощь с ипотекой бесплатно, цена как у застройщика.",
       h1: `Новостройки ${pick.district.inCityPhrase}`,
     };
   }
@@ -98,21 +105,21 @@ export function pickSeo(pick: CatalogPick, projects: CatalogCard[]): SeoText {
     const h1Where = pick.district ? pick.district.inCityPhrase : pick.flag === "sdannye" ? "Екатеринбурга" : "Екатеринбурга";
     return {
       title: withFreePick(`Купить ${what} ${flagBuy} ${whereBuy} от ${price}`),
-      description: withStatus(`${variants} в ${projectsCount} ЖК от ${price}`, status) +
-        " Бесплатный подбор и ипотека — цена как у застройщика.",
+      description: withStatus(`Подберём из ${variants} в ${projectsCount} ЖК от ${price}`, status) +
+        " Подбор и помощь с ипотекой бесплатно, цена как у застройщика.",
       h1: `${pick.roomType ? pick.roomType.plural : "Квартиры"} ${flagH1} ${pick.district ? where : h1Where}`,
     };
   }
   if (pick.flag === "sdannye") {
     return {
-      title: `Купить квартиру в сданном доме в Екатеринбурге от ${price} — заезд сразу`,
-      description: `${pick.count} ${pluralizeRu(pick.count, "квартира", "квартиры", "квартир")} в сданных домах в ${projectsCount} ЖК от ${price}. Заезд без ожидания стройки, подбор бесплатно.`,
+      title: withFreePick(`Купить квартиру в сданном доме в Екатеринбурге от ${price}`),
+      description: `Подберём из ${variants} в сданных домах в ${projectsCount} ЖК от ${price}. Заезд без ожидания стройки, подбор бесплатно.`,
       h1: "Квартиры в сданных домах Екатеринбурга",
     };
   }
   return {
-    title: `Купить квартиру с отделкой в новостройке Екатеринбурга от ${price}`,
-    description: `${flats} с чистовой и предчистовой отделкой в ${projectsCount} ЖК от ${price}. Посчитаем «квартира + ремонт» до брони, подбор бесплатно.`,
+    title: withFreePick(`Купить квартиру с отделкой в новостройке Екатеринбурга от ${price}`),
+    description: `Подберём из ${variants} с чистовой и предчистовой отделкой в ${projectsCount} ЖК от ${price}. Посчитаем «квартира + ремонт» до брони, подбор бесплатно.`,
     h1: "Квартиры с отделкой в новостройках Екатеринбурга",
   };
 }
@@ -157,35 +164,39 @@ export function projectSeo(input: {
 }): SeoText {
   const { name, developerName, district, apartmentsCount, priceMin, card } = input;
   const price = priceMin ? millionsRub(priceMin) : null;
-  const title = price
-    ? `ЖК ${name} — купить квартиру от ${price}: цены и планировки`
-    : `ЖК ${name} в Екатеринбурге — купить квартиру: цены и планировки`;
+  const title = withFreePick(
+    price
+      ? `ЖК ${name} — купить квартиру от ${price}: цены и планировки`
+      : `ЖК ${name} в Екатеринбурге — купить квартиру: цены и планировки`,
+  );
 
   let status = "сроки уточняются";
   if (card?.hasDelivered) status = "есть сданные";
   else if (card?.pendingYears.length) status = `сдача ${card.pendingYears[0]}`;
 
-  const flats = `${apartmentsCount} ${pluralizeRu(apartmentsCount, "квартира", "квартиры", "квартир")}`;
+  const variants = `${apartmentsCount} ${pluralizeRu(apartmentsCount, "вариант", "варианта", "вариантов")}`;
   const where = district ? ` (${district})` : "";
   const from = developerName ? ` от застройщика ${developerName}` : "";
-  const pricePart = price ? `от ${price}, ` : "";
   // Квартир в продаже нет — согласованный текст без цифр, вместо «0 квартир».
   if (!apartmentsCount) {
     return {
       title,
       description:
-        `ЖК ${quotedName(name)}${from}: планировки, сроки сдачи и условия покупки. ` +
+        `Подберём квартиру в ЖК ${quotedName(name)}${from}: планировки, сроки сдачи и условия покупки. ` +
         "Узнаем актуальные цены и акции — бесплатно.",
       h1: developerName ? `ЖК ${quotedName(name)} — квартиры от застройщика ${developerName}` : `ЖК ${quotedName(name)}`,
     };
   }
 
+  // Описание вида «Подберём квартиру в ЖК «X» (район) от застройщика Y: 36 вариантов от 4,3 млн ₽, есть сданные. …»
+  const pricePart2 = price ? ` от ${price}` : "";
+  const statusPart = `, ${status}`;
   let description =
-    `${apartmentsCount ? flats : "Квартиры"} в ЖК ${quotedName(name)}${where}${from}: ${pricePart}${status}. ` +
-    "Бесплатный подбор и ипотека по цене застройщика.";
-  // Норма 120–160, но в таблице согласованы и чуть более длинные — режем только явный перебор.
-  if (description.length > 170) {
-    description = `${apartmentsCount ? flats : "Квартиры"} в ЖК ${quotedName(name)}${developerName ? ` от ${developerName}` : ""}: ${pricePart}${status}. Бесплатный подбор и ипотека.`;
+    `Подберём квартиру в ЖК ${quotedName(name)}${where}${from}: ${variants}${pricePart2}${statusPart}. ` +
+    "Подбор и ипотека бесплатно, цена как у застройщика.";
+  // Явный перебор режем: короче, без района и без «цена как у застройщика».
+  if (description.length > 200) {
+    description = `Подберём квартиру в ЖК ${quotedName(name)}${developerName ? ` от ${developerName}` : ""}: ${variants}${pricePart2}${statusPart}. Подбор и ипотека бесплатно.`;
   }
 
   return {
@@ -204,11 +215,13 @@ export function developerSeo(name: string, projects: CatalogCard[], apartmentsCo
   const price = prices.length ? millionsRub(Math.min(...prices)) : null;
   const k = projects.length;
   return {
-    title: price
-      ? `${name}: купить квартиру в ЖК застройщика в Екатеринбурге от ${price}`
-      : `${name}: купить квартиру в ЖК застройщика в Екатеринбурге`,
+    title: withFreePick(
+      price
+        ? `${name}: купить квартиру в ЖК застройщика в Екатеринбурге от ${price}`
+        : `${name}: купить квартиру в ЖК застройщика в Екатеринбурге`,
+    ),
     description:
-      `Все ЖК ${name} в Екатеринбурге: ${k} ${pluralizeRu(k, "проект", "проекта", "проектов")}, ` +
+      `Покажем все ЖК ${name} в Екатеринбурге: ${k} ${pluralizeRu(k, "проект", "проекта", "проектов")}, ` +
       `${apartmentsCount} ${pluralizeRu(apartmentsCount, "квартира", "квартиры", "квартир")}` +
       `${price ? ` от ${price}` : ""}. Репутация, сроки сдачи, отделка. Подбор бесплатно.`,
     h1: `${name} — застройщик в Екатеринбурге`,
@@ -240,10 +253,10 @@ export function apartmentSeo(input: {
   const price = input.price ? ` за ${(input.price / 1_000_000).toFixed(2).replace(".", ",")} млн ₽` : "";
   const where = input.district ? ` (${input.district})` : "";
   return {
-    title: `Купить ${typeAccusative(input.type)} ${area} м² в ЖК ${input.projectName}${price}`,
+    title: withFreePick(`Купить ${typeAccusative(input.type)} ${area} м² в ЖК ${input.projectName}${price}`),
     description:
-      `${typeShort(input.type)}, ${area} м² в ЖК «${input.projectName}»${where}. ` +
-      `${input.price ? `Цена от ${formatRub(input.price)} ₽. ` : ""}` +
-      "Бесплатный подбор и ипотека — цена как у застройщика.",
+      `Подберём квартиру: ${typeShort(input.type).toLowerCase()}, ${area} м² в ЖК «${input.projectName}»${where}` +
+      `${input.price ? `, цена от ${formatRub(input.price)} ₽` : ""}. ` +
+      "Подбор и ипотека бесплатно, цена как у застройщика.",
   };
 }

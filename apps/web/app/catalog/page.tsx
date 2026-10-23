@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCatalogCards, getMortgageConfig } from "@/lib/cms/client";
 import { getCatalogPicks } from "@/lib/catalog-picks";
-import { millionsRub, pickLabel } from "@/lib/seo-templates";
+import { millionsRub, pickLabel, withFreePick } from "@/lib/seo-templates";
 import { PickLinks } from "@/components/catalog/pick-links";
 import { DISTRICTS, ROOM_TYPES } from "@/lib/districts";
 import { pluralizeRu } from "@/lib/format";
@@ -25,10 +25,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const projects = new Set(rooms.flatMap((p) => p.projectSlugs)).size;
   const priceMin = Math.min(...rooms.map((p) => p.priceMin));
   return pageMetadata({
-    title: rooms.length
-      ? `Новостройки Екатеринбурга: купить квартиру по цене застройщика от ${millionsRub(priceMin)}`
-      : "Новостройки Екатеринбурга: купить квартиру по цене застройщика",
-    description: `${projects} ЖК и ${flats} ${pluralizeRu(flats, "квартира", "квартиры", "квартир")} с ценами, планировками и сроками сдачи. Бесплатный подбор, ипотека и сопровождение сделки.`,
+    title: withFreePick(
+      rooms.length
+        ? `Новостройки Екатеринбурга: купить квартиру по цене застройщика от ${millionsRub(priceMin)}`
+        : "Новостройки Екатеринбурга: купить квартиру по цене застройщика",
+    ),
+    description: `Подберём квартиру из ${flats} ${flats % 10 === 1 && flats % 100 !== 11 ? "варианта" : "вариантов"} в ${projects} ЖК: цены, планировки и сроки сдачи. Ипотеку и сопровождение сделки делаем бесплатно: платит застройщик.`,
     path: "/catalog",
   });
 }

@@ -18,12 +18,13 @@ import {
   SITE_NAME,
   SITE_URL,
 } from "@/lib/site";
+import { seoCopy } from "@/lib/seo-copy";
 import styles from "./page.module.css";
 import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 export const metadata: Metadata = {
-  title: `Контакты ${SITE_NAME} — риелтор по новостройкам в Екатеринбурге`,
-  description: `Связаться с агентством ${SITE_NAME}: телефон ${PHONE_DISPLAY}, Telegram ${TELEGRAM_HANDLE}, MAX. Подбор новостроек в Екатеринбурге бесплатно для покупателя.`,
+  title: seoCopy("/contacts")!.title,
+  description: seoCopy("/contacts")!.description,
   alternates: { canonical: "/contacts" },
 };
 

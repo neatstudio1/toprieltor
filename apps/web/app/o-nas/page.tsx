@@ -16,15 +16,16 @@ import {
   SITE_NAME,
   SITE_URL,
 } from "@/lib/site";
+import { seoCopy } from "@/lib/seo-copy";
 import styles from "./page.module.css";
 import { LeadCtaButton } from "@/components/lead-modal/lead-cta-button";
 
 export const metadata: Metadata = {
-  title: `${AGENT_NAME} — риелтор по новостройкам Екатеринбурга с 2019 года`,
-  description: `${AGENT_NAME}, сооснователь агентства ${SITE_NAME}: подбор новостроек в Екатеринбурге с 2019 года, более 100 сделок, сертифицированный дизайнер интерьеров.`,
+  title: seoCopy("/o-nas")!.title,
+  description: seoCopy("/o-nas")!.description,
   alternates: { canonical: "/o-nas" },
   openGraph: {
-    title: `${AGENT_NAME} — риелтор по новостройкам Екатеринбурга с 2019 года`,
+    title: seoCopy("/o-nas")!.title,
     description: `Сооснователь ${SITE_NAME}. Подбор новостроек с 2019 года, более 100 сделок.`,
     url: "/o-nas",
     images: [{ url: AGENT_PHOTO }],
