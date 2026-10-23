@@ -361,7 +361,7 @@
 
 .heroNote {
   font-size: 14px;
-  color: #71717a;
+  color: #a1a1aa;
   margin: 14px 0 0;
 }
 
@@ -1381,6 +1381,8 @@ input:focus-visible + .checkBox {
 
 .page .footerInner a {
   color: #a1a1aa;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* ───────── sticky bar (mobile) ───────── */
@@ -1920,7 +1922,7 @@ a.modalPolicy {
     font-size: 11px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #a1a1aa;
+    color: #71717a;
   }
 
   /* audience */

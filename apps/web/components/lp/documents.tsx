@@ -47,9 +47,9 @@ export function Documents() {
       </div>
       <div ref={scroller} className={s.docsScroller}>
         {DOCUMENTS.map((d, i) => (
-          <button key={d.src} type="button" className={s.docCard} onClick={() => setZoom(i)} aria-label={`Открыть: ${d.title}`}>
+          <button key={d.src} type="button" className={s.docCard} onClick={() => setZoom(i)}>
             <span className={s.docImage}>
-              <Image src={d.src} alt={d.title} width={d.width} height={d.height} sizes="(max-width: 767px) 70vw, 420px" />
+              <Image src={d.src} alt="" width={d.width} height={d.height} sizes="(max-width: 767px) 70vw, 420px" />
             </span>
             <span className={s.docTitle}>{d.title}</span>
             <span className={s.docCaption}>{d.caption}</span>

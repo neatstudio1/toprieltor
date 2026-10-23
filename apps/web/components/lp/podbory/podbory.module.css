@@ -31,11 +31,11 @@
 }
 
 .compareLeft .compareHead {
-  color: #71717a;
+  color: #62626b;
 }
 
 .compareRight .compareHead {
-  color: #c7d2fe;
+  color: #e0e7ff;
   text-transform: none;
   letter-spacing: 0;
   font-size: 17px;
@@ -743,11 +743,11 @@
 }
 
 .swipeBad .swipeTag {
-  color: #8b8b95;
+  color: #62626b;
 }
 
 .swipeGood .swipeTag {
-  color: #c7d2fe;
+  color: #e0e7ff;
   text-transform: none;
   letter-spacing: 0;
   font-size: 13px;
