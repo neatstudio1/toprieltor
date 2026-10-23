@@ -1,11 +1,20 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { PROCESS_STEPS } from "@/lib/landings";
 import { Reveal } from "@/components/reveal";
 import s from "./lp.module.css";
 
-export function ProcessSteps() {
+export interface ProcessStepItem {
+  n: string;
+  tag: string;
+  title: string;
+  text: string;
+  /** Необязательная метка рядом с названием шага («Бесплатно» / «Платно»). */
+  badge?: ReactNode;
+}
+
+export function ProcessSteps({ steps = PROCESS_STEPS }: { steps?: ProcessStepItem[] }) {
   const rail = useRef<HTMLDivElement | null>(null);
   const fill = useRef<HTMLDivElement | null>(null);
 
@@ -46,13 +55,14 @@ export function ProcessSteps() {
     <div ref={rail} className={s.steps}>
       <div className={s.railLine} aria-hidden="true" />
       <div ref={fill} className={s.railFill} aria-hidden="true" />
-      {PROCESS_STEPS.map((step, i) => (
+      {steps.map((step, i) => (
         <Reveal key={step.n} delayMs={(i % 3) * 120} className={s.step}>
           <span data-step-dot="" data-on="false" className={s.stepDot} aria-hidden="true" />
           <div>
             <div className={s.stepTag}>
               <span className={s.stepNum}>{step.n} · </span>
               {step.tag}
+              {step.badge}
             </div>
             <div className={s.stepTitle}>{step.title}</div>
             <div className={s.stepText}>{step.text}</div>

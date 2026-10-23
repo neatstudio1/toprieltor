@@ -867,6 +867,42 @@ export async function getMinPriceByType(): Promise<Record<string, number>> {
   return min;
 }
 
+export interface PickFeedApartment {
+  slug: string;
+  type: string;
+  area_m2: number;
+  price_from: number;
+  finish: string | null;
+  floor_plan_url: string | null;
+  project: {
+    slug: string;
+    name: string;
+    district: string | null;
+    delivery_date: string | null;
+    queues: { delivery: string | null }[];
+  } | null;
+}
+
+/** Квартиры с ЖК и планировкой — для подборки на посадочной /lp/podbory. Один общий кешируемый запрос. */
+export async function getPickFeed(): Promise<PickFeedApartment[]> {
+  return fetchAllPages<PickFeedApartment>("/apartments", () => {
+    const qs = new URLSearchParams();
+    qs.set("fields[0]", "slug");
+    qs.set("fields[1]", "type");
+    qs.set("fields[2]", "area_m2");
+    qs.set("fields[3]", "price_from");
+    qs.set("fields[4]", "finish");
+    qs.set("fields[5]", "floor_plan_url");
+    qs.set("populate[project][fields][0]", "slug");
+    qs.set("populate[project][fields][1]", "name");
+    qs.set("populate[project][fields][2]", "district");
+    qs.set("populate[project][fields][3]", "delivery_date");
+    qs.set("populate[project][populate][queues][fields][0]", "delivery");
+    qs.set("sort", "id:asc");
+    return qs;
+  });
+}
+
 /**
  * Слаги квартир, которые остаются в индексе — одним множеством на всю базу.
  *

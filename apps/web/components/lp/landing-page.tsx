@@ -27,9 +27,9 @@ import { Documents } from "./documents";
 import { HeroVideo } from "./hero-video";
 import s from "./lp.module.css";
 
-const ICON = { stroke: "#4f46e5", strokeWidth: 1.5, fill: "none" } as const;
+export const ICON = { stroke: "#4f46e5", strokeWidth: 1.5, fill: "none" } as const;
 
-function AudienceGlyph({ name }: { name: AudienceIcon }) {
+export function AudienceGlyph({ name }: { name: AudienceIcon }) {
   if (name === "family") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true" {...ICON}>

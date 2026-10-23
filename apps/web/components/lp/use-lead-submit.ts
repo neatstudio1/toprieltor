@@ -11,6 +11,8 @@ interface SubmitArgs {
   name?: string;
   phone: string;
   messenger?: LpMessenger;
+  /** Примечание клиента (форма /lp/podbory). */
+  comment?: string;
   quizAnswers?: Record<string, unknown>;
   /** Honeypot: должно быть пустым. */
   website: string;
@@ -32,7 +34,7 @@ export function useLeadSubmit() {
       const result = await submitLead({
         name: args.name?.trim() || undefined,
         phone: args.phone,
-        comment: "",
+        comment: args.comment?.trim() ?? "",
         website: args.website,
         sourcePath: landing.path,
         sourceTitle: `Лендинг ${landing.label}`,

@@ -34,6 +34,10 @@ export const GOALS = {
   lpLead: "lp_lead",
   lpTgClick: "lp_tg_click",
   lpPhoneClick: "lp_phone_click",
+  /** /lp/podbory: первое действие с калькулятором ипотеки (один раз за визит). */
+  lpCalcUse: "lp_calc_use",
+  /** /lp/podbory: клик «Хочу такой вариант» в карточке подборки. */
+  lpPickClick: "lp_pick_click",
 } as const;
 
 export type GoalName = (typeof GOALS)[keyof typeof GOALS];

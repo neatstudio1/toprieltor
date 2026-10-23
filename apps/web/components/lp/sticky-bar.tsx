@@ -4,7 +4,15 @@ import { TELEGRAM_URL } from "@/lib/site";
 import { TrackedLink } from "./tracked-link";
 import s from "./lp.module.css";
 
-export function StickyBar({ visible, onOpen }: { visible: boolean; onOpen: () => void }) {
+export function StickyBar({
+  visible,
+  onOpen,
+  label = "Подобрать",
+}: {
+  visible: boolean;
+  onOpen: () => void;
+  label?: string;
+}) {
   return (
     <div className={`${s.stickyBar} ${visible ? s.stickyBarOn : ""}`} aria-hidden={!visible}>
       <TrackedLink href={TELEGRAM_URL} kind="tg" block="sticky" className={s.stickyTg}>
@@ -14,7 +22,7 @@ export function StickyBar({ visible, onOpen }: { visible: boolean; onOpen: () =>
         Telegram
       </TrackedLink>
       <button type="button" className={s.stickyCta} onClick={onOpen} tabIndex={visible ? 0 : -1}>
-        Подобрать
+        {label}
       </button>
     </div>
   );

@@ -15,12 +15,13 @@ export interface LandingMeta {
 
 interface LpContextValue {
   landing: LandingMeta;
-  openForm: (block: string) => void;
+  /** `note` необязателен: форма /lp/podbory подставляет его в поле «Примечание», а `hiddenNote` уходит в заявку скрытой строкой. */
+  openForm: (block: string, note?: string, hiddenNote?: string) => void;
   showThanks: (messenger?: LpMessenger) => void;
   closeForm: () => void;
 }
 
-const LpContext = createContext<LpContextValue | null>(null);
+export const LpContext = createContext<LpContextValue | null>(null);
 
 export function useLp(): LpContextValue {
   const ctx = useContext(LpContext);
