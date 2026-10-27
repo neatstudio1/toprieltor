@@ -4,6 +4,7 @@
  * не уходят в принципе (см. lifecycles лида).
  */
 import { isOwner } from './owner';
+import { telegramCall } from './telegram';
 
 const POLL_TIMEOUT_S = 25;
 const REFUSE_COOLDOWN_MS = 60_000;
@@ -19,24 +20,15 @@ export function startLeadBot(log: Log): () => void {
   const token = process.env.LEAD_BOT_TOKEN;
   if (!token) return () => {};
 
-  const api = `${process.env.LEAD_BOT_API || 'https://api.telegram.org'}/bot${token}`;
   const lastRefusal = new Map<number, number>();
   let stopped = false;
   let offset = 0;
-  let controller: AbortController | null = null;
 
-  const call = async (method: string, body: Record<string, unknown>, signal?: AbortSignal) => {
-    const res = await fetch(`${api}/${method}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal,
-    });
-    return (await res.json()) as { ok: boolean; result?: any; description?: string };
-  };
+  const call = (method: string, body: Record<string, unknown>, timeoutMs: number, attempts: number) =>
+    telegramCall(token, method, body, { timeoutMs, attempts }).then((r) => ({ ok: r.ok, result: r.body?.result, description: r.body?.description as string | undefined }));
 
   const send = (chatId: number, text: string) =>
-    call('sendMessage', { chat_id: chatId, text }).catch((e) => log.error(`[lead-bot] ${(e as Error).message}`));
+    call('sendMessage', { chat_id: chatId, text }, 7000, 3).catch((e) => log.error(`[lead-bot] ${(e as Error).message}`));
 
   const handle = async (u: Update) => {
     const msg = u.message;
@@ -57,27 +49,34 @@ export function startLeadBot(log: Log): () => void {
   };
 
   const loop = async () => {
+    let failures = 0;
     while (!stopped) {
-      controller = new AbortController();
       try {
+        // Один запрос на цикл: при сбое сети цикл сам повторит через паузу.
         const data = await call(
           'getUpdates',
           { offset, timeout: POLL_TIMEOUT_S, allowed_updates: ['message'] },
-          controller.signal,
+          (POLL_TIMEOUT_S + 10) * 1000,
+          1,
         );
         if (!data.ok) {
           log.error(`[lead-bot] getUpdates: ${data.description ?? 'ошибка'}`);
           await new Promise((r) => setTimeout(r, 15_000));
           continue;
         }
+        failures = 0;
         for (const u of data.result as Update[]) {
           offset = u.update_id + 1;
           await handle(u).catch((e) => log.error(`[lead-bot] ${(e as Error).message}`));
         }
       } catch (e) {
         if (stopped) break;
-        log.error(`[lead-bot] ${(e as Error).message}`);
-        await new Promise((r) => setTimeout(r, 15_000));
+        // Сеть до Telegram нестабильна, одиночные сбои в журнал не пишем: первый и каждый двадцатый.
+        failures += 1;
+        if (failures === 1 || failures % 20 === 0) {
+          log.error(`[lead-bot] нет связи с Telegram (${failures} подряд): ${(e as Error).message}`);
+        }
+        await new Promise((r) => setTimeout(r, 5_000));
       }
     }
   };
@@ -86,6 +85,5 @@ export function startLeadBot(log: Log): () => void {
   log.info('[lead-bot] слушаю бота (доступ только владельцу)');
   return () => {
     stopped = true;
-    controller?.abort();
   };
 }

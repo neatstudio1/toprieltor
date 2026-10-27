@@ -4,12 +4,11 @@
  * Токен бота и чат берутся из env (LEAD_BOT_TOKEN, LEAD_BOT_CHAT_ID). Бот личный:
  * в чат уходит только если id совпадает с владельцем из bot/owner.ts, любой другой
  * id из env отбрасывается. Нет настроек — один раз предупреждаем в лог и молчим. Сбой отправки никогда не роняет создание заявки: уведомление уходит
- * в фоне с таймаутом, ошибка только пишется в лог.
+ * в фоне с повторами (до пяти попыток, IPv6 и IPv4), ошибка только пишется в лог.
  */
 
 import { isOwner } from '../../../../bot/owner';
-
-const TIMEOUT_MS = 5000;
+import { telegramCall } from '../../../../bot/telegram';
 let warnedAboutMissingConfig = false;
 
 const SOURCE_LABEL: Record<string, string> = {
@@ -102,33 +101,26 @@ async function notify(lead: Record<string, any>): Promise<void> {
     return;
   }
 
-  const api = process.env.LEAD_BOT_API || 'https://api.telegram.org';
   const adminBase = (process.env.PUBLIC_ADMIN_URL || 'http://localhost:1337').replace(/\/$/, '');
   const text = buildLeadMessage(lead, adminBase);
 
   await Promise.all(
     chats.map(async (chatId) => {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
       try {
-        const res = await fetch(`${api}/bot${token}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text,
-            parse_mode: 'HTML',
-            disable_web_page_preview: true,
-          }),
-          signal: controller.signal,
-        });
+        // Сеть до Telegram с сервера нестабильна: повторы и IPv6 внутри telegramCall.
+        const res = await telegramCall(
+          token,
+          'sendMessage',
+          { chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true },
+          { timeoutMs: 7000, attempts: 5 },
+        );
         if (!res.ok) {
-          strapi.log.error(`[lead-notify] Telegram ответил ${res.status} для чата ${chatId}`);
+          strapi.log.error(
+            `[lead-notify] Telegram ответил ${res.status} для чата ${chatId}: ${res.body?.description ?? 'без описания'}`,
+          );
         }
       } catch (err) {
         strapi.log.error(`[lead-notify] не удалось отправить в чат ${chatId}: ${(err as Error).message}`);
-      } finally {
-        clearTimeout(timer);
       }
     }),
   );
